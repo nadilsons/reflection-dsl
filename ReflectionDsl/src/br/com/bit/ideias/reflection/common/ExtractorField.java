@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import br.com.bit.ideias.reflection.exceptions.FieldNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldPrivateException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
+import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 
 /**
  * @author Nadilson
@@ -32,10 +33,12 @@ public class ExtractorField {
 
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
 		if (params.length > 1)
-			throw new InvalidParameterException(String.format("Número excessivo de parametros [%s] para o metodo setter", params.length));
+			throw new InvalidParameterException(String.format(
+					"Número excessivo de parametros [%s] para o metodo setter", params.length));
 
 		try {
-			return (directAccess) ? invokeField(accessPrivateMembers, params) : invokeMethod(accessPrivateMembers, params);
+			return (directAccess) ? invokeField(accessPrivateMembers, params) : invokeMethod(accessPrivateMembers,
+					params);
 		} catch (final IllegalAccessException e) {
 			throw new FieldPrivateException(e);
 		}
@@ -51,7 +54,8 @@ public class ExtractorField {
 
 	// /////////////////////////////////////////////////////////////////////
 
-	private Object invokeField(final boolean accessPrivateMembers, final Object... params) throws IllegalAccessException {
+	private Object invokeField(final boolean accessPrivateMembers, final Object... params)
+			throws IllegalAccessException {
 		Object retorno = null;
 		final boolean getter = params.length == 0;
 		field.setAccessible(accessPrivateMembers);
@@ -69,7 +73,14 @@ public class ExtractorField {
 		final boolean getter = params.length == 0;
 		final ExtractorMethod em = new ExtractorMethod(extractor, getMethodForField(field, getter));
 
-		return em.invoke(accessPrivateMembers, params);
+		try {
+			return em.invoke(accessPrivateMembers, params);
+		} catch (MethodNotExistsException e) {
+			if (params.length == 1)
+				return em.invoke(accessPrivateMembers, true, params);
+			else
+				throw e;
+		}
 	}
 
 	private String getMethodForField(final Field field, final boolean getter) {

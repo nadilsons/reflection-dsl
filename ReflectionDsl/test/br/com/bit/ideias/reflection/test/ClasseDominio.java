@@ -17,6 +17,8 @@ public class ClasseDominio {
 
 	private String atributoIsolado;
 
+	private int atributoPrivadoInt;
+
 	public ClasseDominio() {
 		_evitaFinal();
 	}
@@ -61,6 +63,14 @@ public class ClasseDominio {
 
 	public void metodoQueVaiLancarException() {
 		throw new RuntimeException("Excecao de teste");
+	}
+
+	public int getAtributoPrivadoInt() {
+		return atributoPrivadoInt;
+	}
+
+	public void setAtributoPrivadoInt(int atributoPrivadoInt) {
+		this.atributoPrivadoInt = atributoPrivadoInt;
 	}
 
 	private void _evitaFinal() {

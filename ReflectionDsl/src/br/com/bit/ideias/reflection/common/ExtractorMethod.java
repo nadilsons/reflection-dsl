@@ -24,10 +24,14 @@ public class ExtractorMethod extends BaseExtractor {
 	}
 
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
+		return invoke(accessPrivateMembers, false, params);
+	}
+
+	public Object invoke(final boolean accessPrivateMembers, boolean primitiveParam, final Object... params) {
 		final Class<?> targetClass = extractor.getTargetClass();
 		final Object targetInstance = extractor.getTargetInstance();
 		try {
-			final Class<?>[] parametersTypes = getParametersTypes(params);
+			final Class<?>[] parametersTypes = getParametersTypes(primitiveParam, params);
 			final Method method = targetClass.getDeclaredMethod(methodName, parametersTypes);
 			method.setAccessible(accessPrivateMembers);
 			return method.invoke(targetInstance, params);

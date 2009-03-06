@@ -121,7 +121,7 @@ public class IntrospectorTest {
 
 	@Test
 	public void testInvokeFieldComParametro() throws Exception {
-		final Integer valorTeste = 200180;
+		final int valorTeste = 200180;
 
 		introspectorForClass.field("atributoPrivadoInteiro").invoke(valorTeste);
 		final Object invokeValue = introspectorForClass.field("atributoPrivadoInteiro").invoke();
@@ -176,6 +176,12 @@ public class IntrospectorTest {
 		Introspector.forClass(TARGET_CLASS).field("atributoIsolado").invoke(20);
 	}
 
+	@Test
+	public void testInvokeFieldParaAtributoIntPrimitivo() {
+		introspectorForClass.field("atributoPrivadoInt").directAccess().accessPrivateMembers().invoke(10);
+		introspectorInObject.field("atributoPrivadoInt").directAccess().accessPrivateMembers().invoke(10);
+	}
+
 	// /////////////////////////////////////////////////////////////////////////
 	// invokeMethod
 	// /////////////////////////////////////////////////////////////////////////
@@ -223,6 +229,12 @@ public class IntrospectorTest {
 	public void testInvokeMethodPrivadoComAcesso() throws Exception {
 		introspectorForClass.method("metodoPrivado").accessPrivateMembers().invoke("testando");
 		introspectorInObject.method("metodoPrivado").accessPrivateMembers().invoke("testando");
+	}
+
+	@Test
+	public void testInvokeMethodAtributoIntPrimitivo() {
+		introspectorForClass.field("atributoPrivadoInt").invoke(10);
+		introspectorInObject.field("atributoPrivadoInt").invoke(10);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
