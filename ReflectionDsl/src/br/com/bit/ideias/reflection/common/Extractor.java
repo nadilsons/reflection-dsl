@@ -24,7 +24,7 @@ public class Extractor extends BaseExtractor {
 		this.targetClass = classe;
 	}
 
-	public Extractor(Object instance) {
+	private Extractor(Object instance) {
 		this(instance.getClass());
 		this.extractorConstructor = new ExtractorConstructor(this, instance);
 	}
@@ -49,7 +49,7 @@ public class Extractor extends BaseExtractor {
 
 	public ExtractorMethod method() {
 		if (extractorMethod == null)
-			throw new InvalidStateException("Method nao foi especificado");
+			throw new InvalidStateException("Metodo nao foi especificado");
 
 		return extractorMethod;
 	}

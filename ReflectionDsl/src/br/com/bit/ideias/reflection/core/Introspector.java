@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.core;
 
 import br.com.bit.ideias.reflection.common.Extractor;
+import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
@@ -19,7 +20,7 @@ public class Introspector {
 
 	private boolean accessPrivateMembers;
 
-	private Introspector(Object instance) {
+	private Introspector(final Object instance) {
 		this.extractor = Extractor.inObject(instance);
 	}
 
@@ -27,7 +28,7 @@ public class Introspector {
 		this.extractor = Extractor.forClass(classe);
 	}
 
-	public static Introspector inObject(Object instance) {
+	public static Introspector inObject(final Object instance) {
 		if (instance == null)
 			throw new InvalidParameterException("A instância para introspecção nao pode ser nula");
 
@@ -96,7 +97,7 @@ public class Introspector {
 
 	public Introspector applyInterceptor(final Interceptor interceptor) {
 		if (!extractor.isEmpty())
-			throw new RuntimeException("Jah eh tarde");
+			throw new ApplyInterceptorException("Interceptadores não podem ser aplicados para objetos já instanciados");
 
 		extractor.applyInterceptor(interceptor);
 		return this;

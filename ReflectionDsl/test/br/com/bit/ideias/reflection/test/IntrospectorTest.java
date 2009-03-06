@@ -1,18 +1,23 @@
 package br.com.bit.ideias.reflection.test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import br.com.bit.ideias.reflection.core.Introspector;
+import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
+import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ConstructorNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldPrivateException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
+import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 
@@ -31,21 +36,22 @@ public class IntrospectorTest {
 
 	private static final ClasseDominio classeDominio = new ClasseDominio(INTEIRO, STRING);
 
-	private static final MyInterceptorTest interceptor = new MyInterceptorTest();
+	private Introspector introspectorForClass;
 
 	private Introspector introspectorInObject;
 
-	private Introspector introspectorForClass;
+	private MyInterceptorTest interceptor;
 
 	@BeforeMethod
 	public void prepare() {
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
 		introspectorForClass.create(INTEIRO, STRING);
 		introspectorInObject = Introspector.inObject(classeDominio);
+		interceptor = new MyInterceptorTest();
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
-	// forClass
+	// classForName
 	// /////////////////////////////////////////////////////////////////////////
 	@Test
 	public void testClassForName() throws Exception {
@@ -71,8 +77,8 @@ public class IntrospectorTest {
 		Introspector.inObject(null);
 	}
 
-	@Test(enabled = false)
-	public void testInObjectTentarAplicarInterceptador() throws Exception {
+	@Test(expectedExceptions = ApplyInterceptorException.class)
+	public void testInObjectTentarAplicarInterceptor() throws Exception {
 		introspectorInObject.applyInterceptor(interceptor);
 	}
 
@@ -93,18 +99,51 @@ public class IntrospectorTest {
 		}
 	}
 
-	@Test(dataProvider = "testCreateComSucessoDataProvider")
-	public void testCreateComInterceptor(final Object[] params) throws Exception {
-		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		introspectorForClass.applyInterceptor(new MyInterceptorTest());
-		introspectorForClass.create(INTEIRO, STRING);
-
-		introspectorForClass.field("atributoPrivadoInteiro").invoke();
-	}
-
 	@Test(expectedExceptions = ConstructorNotExistsException.class, dataProvider = "testCreateParaConstructorNaoExistenteDataProvider")
 	public void testCreateParaConstructorNaoExistente(final Object[] params) throws Exception {
 		introspectorForClass.create(params);
+	}
+
+	@Test(dataProvider = "testCreateComSucessoDataProvider")
+	public void testCreateComInterceptor(final Object[] params) throws Exception {
+		introspectorForClass = Introspector.forClass(TARGET_CLASS);
+		introspectorForClass.applyInterceptor(interceptor).create(params);
+	}
+
+	@Test(expectedExceptions = ApplyInterceptorException.class)
+	public void testApplyInterceptorParaObjetoJaCriado() throws Exception {
+		introspectorForClass.applyInterceptor(interceptor);
+	}
+
+	@Test
+	public void testChamadasAoInterceptador() throws Exception {
+		introspectorForClass = Introspector.forClass(TARGET_CLASS);
+		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
+
+		introspectorForClass.field("atributoPrivadoInteiro").invoke();
+		assertTrue(interceptor.isBeforedMethodCalled());
+		assertTrue(interceptor.isAfterMethodCalled());
+		assertFalse(interceptor.isAfterExceptionMethodCalled());
+	}
+
+	@Test(expectedExceptions = MethodAccessException.class)
+	public void testChamadasAoInterceptadorAposExcecaoQueDeveSerRelancada() throws Exception {
+		introspectorForClass = Introspector.forClass(TARGET_CLASS);
+		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
+
+		introspectorForClass.method("metodoQueVaiLancarException").invoke();
+	}
+
+	@Test
+	public void testChamadasAoInterceptadorAposExcecaoQueNaoDeveSerRelancada() throws Exception {
+		interceptor = new MyInterceptorTest(TreatmentExceptionType.STOP_EXCEPTION);
+		introspectorForClass = Introspector.forClass(TARGET_CLASS);
+		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
+
+		introspectorForClass.method("metodoQueVaiLancarException").invoke();
+		assertTrue(interceptor.isBeforedMethodCalled());
+		assertTrue(interceptor.isAfterMethodCalled());
+		assertTrue(interceptor.isAfterExceptionMethodCalled());
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
@@ -121,7 +160,7 @@ public class IntrospectorTest {
 
 	@Test
 	public void testInvokeFieldComParametro() throws Exception {
-		final int valorTeste = 200180;
+		final Integer valorTeste = 200180;
 
 		introspectorForClass.field("atributoPrivadoInteiro").invoke(valorTeste);
 		final Object invokeValue = introspectorForClass.field("atributoPrivadoInteiro").invoke();
@@ -231,12 +270,6 @@ public class IntrospectorTest {
 		introspectorInObject.method("metodoPrivado").accessPrivateMembers().invoke("testando");
 	}
 
-	@Test
-	public void testInvokeMethodAtributoIntPrimitivo() {
-		introspectorForClass.field("atributoPrivadoInt").invoke(10);
-		introspectorInObject.field("atributoPrivadoInt").invoke(10);
-	}
-
 	// /////////////////////////////////////////////////////////////////////////
 	// Checks
 	// /////////////////////////////////////////////////////////////////////////
@@ -279,7 +312,7 @@ public class IntrospectorTest {
 		final Object[] params3 = new Object[] { 8, 8 };
 		final Object[] params4 = new Object[] { 8 };
 
-		return new Object[][] { { "metodoInexistente", params1 }, { "metodoInexistente", params2 },
-				{ "getDobro", params3 }, { "getDobroAtributoPrivadoInteiro", params4 } };
+		return new Object[][] { { "metodoInexistente", params1 }, { "metodoInexistente", params2 }, { "getDobro", params3 },
+				{ "getDobroAtributoPrivadoInteiro", params4 } };
 	}
 }

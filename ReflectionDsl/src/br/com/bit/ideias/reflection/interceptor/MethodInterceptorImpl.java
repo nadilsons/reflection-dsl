@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
@@ -20,17 +21,19 @@ public class MethodInterceptorImpl implements MethodInterceptor {
 	}
 
 	public Object intercept(final Object proxy, final Method method, final Object[] args, final MethodProxy methodProxy) throws Throwable {
-		final InvocationContext ic = new InvocationContext(proxy, method, args);
-		interceptor.doBefore(ic);
+		Object retorno = null;
+		final InvocationContext invocationContext = new InvocationContext(proxy, method, args);
+		interceptor.doBefore(invocationContext);
 
 		try {
-			final Object retorno = methodProxy.invokeSuper(proxy, args);
-			return retorno;
+			retorno = methodProxy.invokeSuper(proxy, args);
 		} catch (final Exception e) {
-			interceptor.doAfterException(ic, e);
-			throw e;
+			if (!TreatmentExceptionType.STOP_EXCEPTION.equals(interceptor.doAfterException(invocationContext, e)))
+				throw e;
 		} finally {
-			interceptor.doAfter(ic);
+			interceptor.doAfter(invocationContext);
 		}
+
+		return retorno;
 	}
 }

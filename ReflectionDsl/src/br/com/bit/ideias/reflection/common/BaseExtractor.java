@@ -5,7 +5,7 @@ package br.com.bit.ideias.reflection.common;
  * @date 19/02/2009
  * 
  */
-public class BaseExtractor {
+public abstract class BaseExtractor {
 
 	protected Class<?>[] getParametersTypes(final Object... params) {
 		return getParametersTypes(false, params);

@@ -33,7 +33,7 @@ public class ExtractorConstructor extends BaseExtractor {
 	}
 
 	public Object newInstance(final Object... params) {
-		return (interceptor == null) ? constructorStandard(params) : constructorWithProxy(params);
+		return (interceptor == null) ? constructorStandard(params) : constructorWithInterceptor(params);
 	}
 
 	public Object getTargetInstance() {
@@ -59,7 +59,7 @@ public class ExtractorConstructor extends BaseExtractor {
 		}
 	}
 
-	private Object constructorWithProxy(final Object... params) {
+	private Object constructorWithInterceptor(final Object... params) {
 		final Enhancer e = new Enhancer();
 
 		e.setSuperclass(extractor.getTargetClass());
