@@ -44,6 +44,10 @@ public class Introspector {
 
 	// /////////////////////////////////////////////////////////////////////////
 
+	public Introspector create() {
+		return create(new Object[] {});
+	}
+
 	public Introspector create(final Object... params) {
 		this.extractor.constructor().newInstance(params);
 		return this;
