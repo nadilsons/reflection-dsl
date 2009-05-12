@@ -60,8 +60,21 @@ public class IntrospectorTest {
 	}
 
 	@Test(expectedExceptions = InvalidParameterException.class)
-	public void testClassForNameComParametroNulo() throws Exception {
-		Introspector.forClass(null);
+	public void testClassForNameComParametroClassNulo() throws Exception {
+		final Class<?> classe = null;
+		Introspector.forClass(classe);
+	}
+
+	@Test
+	public void testClassForNameComParametroString() throws Exception {
+		final String string = TARGET_CLASS.getName();
+		Introspector.forClass(string);
+	}
+
+	@Test(expectedExceptions = InvalidParameterException.class)
+	public void testClassForNameComParametroStringNulo() throws Exception {
+		final String string = null;
+		Introspector.forClass(string);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
