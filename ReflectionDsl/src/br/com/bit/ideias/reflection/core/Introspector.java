@@ -2,6 +2,7 @@ package br.com.bit.ideias.reflection.core;
 
 import br.com.bit.ideias.reflection.common.Extractor;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
+import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
@@ -35,6 +36,18 @@ public class Introspector {
 		return new Introspector(instance);
 	}
 
+	public static Introspector forClass(final String className) {
+		Class<?> clazz = null;
+		
+		try {
+			clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new ClassNotExistsException(e);
+		}
+		
+		return forClass(clazz);
+	}
+	
 	public static Introspector forClass(final Class<?> targetClass) {
 		if (targetClass == null)
 			throw new InvalidParameterException("A classe para introspecção nao pode ser nula");
