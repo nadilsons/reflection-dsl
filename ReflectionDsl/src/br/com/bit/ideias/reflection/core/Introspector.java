@@ -37,6 +37,7 @@ public class Introspector {
 	}
 
 	public static Introspector forClass(final String className) {
+		validateParam(className);
 		Class<?> clazz = null;
 		
 		try {
@@ -47,10 +48,9 @@ public class Introspector {
 		
 		return forClass(clazz);
 	}
-	
+
 	public static Introspector forClass(final Class<?> targetClass) {
-		if (targetClass == null)
-			throw new InvalidParameterException("A classe para introspecção nao pode ser nula");
+		validateParam(targetClass);
 
 		return new Introspector(targetClass);
 	}
@@ -132,6 +132,11 @@ public class Introspector {
 
 	// /////////////////////////////////////////////////////////////////////////
 
+	private static void validateParam(final Object param) {
+		if (param == null)
+			throw new InvalidParameterException("A classe para introspecção nao pode ser nula");
+	}
+	
 	private void reset(final boolean isMethod) {
 		this.isMethod = isMethod;
 		this.accessPrivateMembers = false;
