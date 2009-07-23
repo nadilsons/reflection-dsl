@@ -13,6 +13,10 @@ import br.com.bit.ideias.reflection.interfaces.Interceptor;
  * @date 18/02/2009
  * 
  */
+/**
+ * This is the main class of the project</br>
+ * It works as a façade.
+ */
 public class Introspector {
 
 	private final Extractor extractor;
@@ -29,9 +33,13 @@ public class Introspector {
 		this.extractor = Extractor.forClass(classe);
 	}
 
+	/**
+	 * Creates an instrospector for the instance.
+	 * @param instance represents the instance object of introspection
+	 */
 	public static Introspector inObject(final Object instance) {
 		if (instance == null)
-			throw new InvalidParameterException("A instância para introspecção nao pode ser nula");
+			throw new InvalidParameterException("The instance for instrospection can't be null");
 
 		return new Introspector(instance);
 	}
@@ -114,14 +122,16 @@ public class Introspector {
 
 	public Introspector applyInterceptor(final Interceptor interceptor) {
 		if (!extractor.isEmpty())
-			throw new ApplyInterceptorException("Interceptadores não podem ser aplicados para objetos já instanciados");
+			throw new ApplyInterceptorException("Interceptors can't be applyied to already instanced objects");
 
 		extractor.applyInterceptor(interceptor);
 		return this;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
-
+	/**
+	 * @return Class<?> the class held by this Instrospector, which is object of instrospection.
+	 */
 	public Class<?> getTargetClass() {
 		return extractor.getTargetClass();
 	}
@@ -134,7 +144,7 @@ public class Introspector {
 
 	private static void validateParam(final Object param) {
 		if (param == null)
-			throw new InvalidParameterException("A classe para introspecção nao pode ser nula");
+			throw new InvalidParameterException("Class for instrospector can't be null");
 	}
 	
 	private void reset(final boolean isMethod) {

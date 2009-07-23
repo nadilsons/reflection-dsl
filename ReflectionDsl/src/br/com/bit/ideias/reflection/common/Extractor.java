@@ -81,6 +81,9 @@ public class Extractor extends BaseExtractor {
 		return targetClass;
 	}
 
+	/**
+	 * Verifies if there is an extractorConstructor and if this extractorConstructor has an target instance reference
+	 */
 	public boolean isEmpty() {
 		return extractorConstructor == null || extractorConstructor.getTargetInstance() == null;
 	}
