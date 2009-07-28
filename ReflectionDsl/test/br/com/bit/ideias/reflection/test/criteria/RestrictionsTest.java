@@ -22,7 +22,7 @@ import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
  * @author Nadilson
  * @since 28/07/2009
  */
-public class RestristionsTest {
+public class RestrictionsTest {
 	
 	private final Introspector introspector = Introspector.forClass(ClasseDominio.class);
 	
