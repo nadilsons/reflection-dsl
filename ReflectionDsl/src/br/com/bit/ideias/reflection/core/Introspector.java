@@ -8,14 +8,11 @@ import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
+ * This is the main class of the project</br>
+ * It works as a façade.
  * 
  * @author Nadilson
  * @date 18/02/2009
- * 
- */
-/**
- * This is the main class of the project</br>
- * It works as a façade.
  */
 public class Introspector {
 
