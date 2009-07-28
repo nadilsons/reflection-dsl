@@ -20,6 +20,8 @@ import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
+import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
+import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
 
 /**
  * @author Nadilson

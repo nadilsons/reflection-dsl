@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.bit.ideias.reflection.test;
+package br.com.bit.ideias.reflection.test.artefacts;
 
 import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
 import br.com.bit.ideias.reflection.interceptor.InvocationContext;

@@ -1,6 +1,8 @@
 package br.com.bit.ideias.reflection.core;
 
 import br.com.bit.ideias.reflection.common.Extractor;
+import br.com.bit.ideias.reflection.criteria.Criterion;
+import br.com.bit.ideias.reflection.criteria.CriterionImpl;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
@@ -21,6 +23,8 @@ public class Introspector {
 	private boolean isMethod;
 
 	private boolean accessPrivateMembers;
+
+	private Criterion criterion;
 
 	private Introspector(final Object instance) {
 		this.extractor = Extractor.inObject(instance);
@@ -125,6 +129,10 @@ public class Introspector {
 		return this;
 	}
 
+	public Criterion makeCriterion() {
+		criterion = new CriterionImpl(this);
+		return criterion;
+	}
 	// /////////////////////////////////////////////////////////////////////////
 	/**
 	 * @return Class<?> the class held by this Instrospector, which is object of instrospection.
@@ -148,5 +156,6 @@ public class Introspector {
 		this.isMethod = isMethod;
 		this.accessPrivateMembers = false;
 	}
+
 
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.com.bit.ideias.reflection.test;
+package br.com.bit.ideias.reflection.test.artefacts;
 
 /**
  * @author Nadilson
@@ -11,13 +11,18 @@ package br.com.bit.ideias.reflection.test;
 @SuppressWarnings("unused")
 public class ClasseDominio {
 
+	@MyAnnotation
 	private Integer atributoPrivadoInteiro;
 
+	@MyAnnotation
 	private String atributoPrivadoString;
 
+	@MyAnnotation
 	private String atributoIsolado;
 
 	private int atributoPrivadoInt;
+	
+	private boolean isAlive;
 
 	public ClasseDominio() {
 		_evitaFinal();
@@ -33,6 +38,7 @@ public class ClasseDominio {
 		this.atributoPrivadoString = atributoPrivadoString;
 	}
 
+	@MyAnnotation
 	public Integer getAtributoPrivadoInteiro() {
 		return atributoPrivadoInteiro;
 	}
@@ -41,6 +47,7 @@ public class ClasseDominio {
 		this.atributoPrivadoInteiro = atributoPrivadoInteiro;
 	}
 
+	@MyAnnotation
 	public String getAtributoPrivadoString() {
 		return atributoPrivadoString;
 	}
@@ -75,5 +82,13 @@ public class ClasseDominio {
 
 	private void _evitaFinal() {
 		this.atributoIsolado = "only";
+	}
+
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
 	}
 }
