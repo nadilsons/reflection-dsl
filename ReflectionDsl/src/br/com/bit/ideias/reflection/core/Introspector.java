@@ -129,7 +129,7 @@ public class Introspector {
 		return this;
 	}
 
-	public Criterion makeCriterion() {
+	public Criterion createCriterion() {
 		criterion = new CriterionImpl(this);
 		return criterion;
 	}
