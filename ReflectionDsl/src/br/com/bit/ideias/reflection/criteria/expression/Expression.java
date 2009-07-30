@@ -10,13 +10,15 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  */
 public abstract class Expression {
 
+	public static final String NAME_SEPARATOR = ",";
+
 	protected String value;
 
 	protected SearchType searchType;
-	
+
 	protected TargetType targetType;
-	
-	public Expression(String value, SearchType searchType, TargetType targetType) {
+
+	public Expression(final String value, final SearchType searchType, final TargetType targetType) {
 		this.value = value;
 		this.searchType = searchType;
 		this.targetType = targetType;
@@ -29,19 +31,8 @@ public abstract class Expression {
 	public TargetType getTargetType() {
 		return targetType;
 	}
-	
+
 	public SearchType getSearchType() {
 		return searchType;
 	}
-
-//	public abstract List<?> filter(Class<?> classe);
-//	
-//	protected Field[] getFields(Class<?> classe) {
-//		classe.getDeclaredFields()[0].getName();
-//		return classe.getDeclaredFields(); 
-//	}
-//	
-//	protected Method[] getMethods(Class<?> classe) {
-//		return classe.getDeclaredMethods();
-//	}
 }

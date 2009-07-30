@@ -11,12 +11,12 @@ import java.util.List;
  * @since 28/07/2009
  */
 public class CriterionResult {
-	
+
 	private final List<Field> fields;
-	
+
 	private final List<Method> methods;
 
-	public CriterionResult(List fields, List methods) {
+	public CriterionResult(final List fields, final List methods) {
 		this.fields = fields;
 		this.methods = methods;
 	}

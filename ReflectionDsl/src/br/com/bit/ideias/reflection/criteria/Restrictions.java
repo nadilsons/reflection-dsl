@@ -13,8 +13,8 @@ public class Restrictions {
 	private Restrictions() {
 
 	}
-	public static PropertiesTarget properties() {
 
+	public static PropertiesTarget properties() {
 		return PropertiesTarget.getInstance();
 	}
 

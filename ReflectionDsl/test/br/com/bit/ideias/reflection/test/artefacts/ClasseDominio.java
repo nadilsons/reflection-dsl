@@ -1,6 +1,3 @@
-/**
- * 
- */
 package br.com.bit.ideias.reflection.test.artefacts;
 
 /**
@@ -21,8 +18,14 @@ public class ClasseDominio {
 	private String atributoIsolado;
 
 	private int atributoPrivadoInt;
-	
+
 	private boolean isAlive;
+
+	private boolean Privative;
+
+	public boolean comecaPriva;
+
+	private boolean comecapriva;
 
 	public ClasseDominio() {
 		_evitaFinal();
@@ -76,7 +79,7 @@ public class ClasseDominio {
 		return atributoPrivadoInt;
 	}
 
-	public void setAtributoPrivadoInt(int atributoPrivadoInt) {
+	public void setAtributoPrivadoInt(final int atributoPrivadoInt) {
 		this.atributoPrivadoInt = atributoPrivadoInt;
 	}
 
@@ -88,7 +91,7 @@ public class ClasseDominio {
 		return isAlive;
 	}
 
-	public void setAlive(boolean isAlive) {
+	public void setAlive(final boolean isAlive) {
 		this.isAlive = isAlive;
 	}
 }

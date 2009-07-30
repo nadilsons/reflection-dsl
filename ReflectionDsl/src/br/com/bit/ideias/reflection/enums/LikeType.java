@@ -7,5 +7,7 @@ package br.com.bit.ideias.reflection.enums;
  */
 public enum LikeType {
 
-	EXACT, END, START, ANYWHERE;
+	START,
+	END,
+	ANYWHERE;
 }
