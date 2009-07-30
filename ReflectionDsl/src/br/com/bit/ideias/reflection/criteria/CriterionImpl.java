@@ -34,13 +34,24 @@ public class CriterionImpl implements Criterion {
 
 	public CriterionResult search() {
 		final List<? extends Member> methods = new ArrayList<Method>();
-		final List<? extends Member> fields = searchFields();
+		final List<? extends Member> fields = searchMember(true);
 
 		return new CriterionResult(fields, methods);
 	}
 
-	private List<? extends Member> searchFields() {
+	private List<? extends Member> searchMember(boolean isField) {
 		Class<?> classe = introspector.getTargetClass();
+		List<? extends Member> fields = obtainFields(classe);
+
+		for (final Expression expression : fieldExpressions) {
+			final SearchType searchType = expression.getSearchType();
+			fields = searchType.filter(fields, expression);
+		}
+		return fields;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<? extends Member> obtainFields(Class<?> classe) {
 		List<? extends Member> fields = new ArrayList<Member>(Arrays.asList(classe.getDeclaredFields()));
 		
 		 while (classe.getSuperclass() != null) {
@@ -49,11 +60,6 @@ public class CriterionImpl implements Criterion {
 			 final List<? extends Member> lista = Arrays.asList(classe.getDeclaredFields());
 			 fields.addAll((List) lista);
 		 }
-
-		for (final Expression expression : fieldExpressions) {
-			final SearchType searchType = expression.getSearchType();
-			fields = searchType.filter(fields, expression);
-		}
 		return fields;
 	}
 
