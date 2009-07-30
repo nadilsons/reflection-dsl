@@ -50,6 +50,9 @@ public class IntrospectorTest {
 		introspectorForClass.create(INTEIRO, STRING);
 		introspectorInObject = Introspector.inObject(classeDominio);
 		interceptor = new MyInterceptorTest();
+		
+		classeDominio.setAtributoPrivadoInteiro(INTEIRO);
+		classeDominio.setAtributoPrivadoString(STRING);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
