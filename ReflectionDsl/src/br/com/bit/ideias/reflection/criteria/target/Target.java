@@ -1,7 +1,6 @@
 package br.com.bit.ideias.reflection.criteria.target;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
