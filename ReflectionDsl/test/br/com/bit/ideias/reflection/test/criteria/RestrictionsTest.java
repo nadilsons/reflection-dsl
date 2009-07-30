@@ -176,5 +176,15 @@ public class RestrictionsTest {
 		Assert.assertTrue(result.getMethods().isEmpty());
 		Assert.assertEquals(result.getFields().size(), 2);
 	}
+	
+	@Test
+	public void testRestrictionAnnotatedWithNaClassePai() throws Exception {
+		criterion = introspectorClasseFilha.createCriterion();
+		criterion.add(Restrictions.properties().annotatedWith(MyAnnotation.class));
+		final CriterionResult result = criterion.search();
+
+		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertEquals(result.getFields().size(), 3);
+	}
 
 }

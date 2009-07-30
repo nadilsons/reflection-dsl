@@ -40,15 +40,15 @@ public class CriterionImpl implements Criterion {
 	}
 
 	private List<? extends Member> searchFields() {
-		final Class<?> classe = introspector.getTargetClass();
-		List<? extends Member> fields = Arrays.asList(classe.getDeclaredFields());
-
-		// while (classe.getSuperclass() != null) {
-		// final List<? extends Member> lista =
-		// Arrays.asList(classe.getDeclaredFields());
-		// fields.addAll((List) lista);
-		// classe = classe.getSuperclass();
-		// }
+		Class<?> classe = introspector.getTargetClass();
+		List<? extends Member> fields = new ArrayList<Member>(Arrays.asList(classe.getDeclaredFields()));
+		
+		 while (classe.getSuperclass() != null) {
+			 classe = classe.getSuperclass();
+			 
+			 final List<? extends Member> lista = Arrays.asList(classe.getDeclaredFields());
+			 fields.addAll((List) lista);
+		 }
 
 		for (final Expression expression : fieldExpressions) {
 			final SearchType searchType = expression.getSearchType();

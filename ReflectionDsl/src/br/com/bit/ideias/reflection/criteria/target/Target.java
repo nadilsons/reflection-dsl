@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.criteria.target;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -59,8 +60,7 @@ public abstract class Target {
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
-	// ConfigExpression
-	// /////////////////////////////////////////////////////////
+	// ConfigExpression ////////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
 	public Expression showOnlyPublic(final boolean flag) {
 		return new SimpleExpression(Boolean.toString(flag), SearchType.ONLY_PUBLIC, getTargetType());
