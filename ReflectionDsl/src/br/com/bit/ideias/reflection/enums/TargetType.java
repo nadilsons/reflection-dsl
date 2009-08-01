@@ -6,5 +6,5 @@ package br.com.bit.ideias.reflection.enums;
  * @since 28/07/2009
  */
 public enum TargetType {
-	FIELD, METHOD
+	FIELD, METHOD, MEMBER
 }

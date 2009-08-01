@@ -10,6 +10,7 @@ import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
+import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
@@ -32,11 +33,25 @@ public class RestrictionsTest {
 	public void prepare() {
 		criterion = introspector.createCriterion();
 	}
+	
+	@Test
+    public void testRestrictionEq() throws Exception {
+        final Field field = ClasseDominio.class.getDeclaredField("atributoPrivadoInt");
+        criterion.add(Restrictions.properties().eq("atributoPrivadoInt"));
+        final CriterionResult result = criterion.search();
+
+        Assert.assertTrue(result.getMethods().isEmpty());
+        Assert.assertEquals(result.getFields().size(), 1);
+        Assert.assertEquals(result.getFields().get(0), field);
+    }
 
 	@Test
-	public void testRestrictionEq() throws Exception {
+	public void shouldReturnEitherWhenUsingDisjunction() throws Exception {
 		final Field field = ClasseDominio.class.getDeclaredField("atributoPrivadoInt");
-		criterion.add(Restrictions.properties().eq("atributoPrivadoInt"));
+		ComplexExpression disjunction = Restrictions.properties().disjunction(Restrictions.properties().eq("yzxabc"));
+		disjunction.add(Restrictions.properties().eq("atributoPrivadoInt"));
+		criterion.add(disjunction);
+		
 		final CriterionResult result = criterion.search();
 
 		Assert.assertTrue(result.getMethods().isEmpty());

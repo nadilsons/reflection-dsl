@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import br.com.bit.ideias.reflection.criteria.expression.Expression;
+import br.com.bit.ideias.reflection.criteria.expression.ExpressionImpl;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 
 /**
@@ -20,35 +20,35 @@ public enum SearchType {
 
 	EQ {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			return member.getName().equals(expression.getValue());
 		}
 	},
 
 	NE {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			return !SearchType.EQ.matches(member, expression);
 		}
 	},
 
 	LIKE_START {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			return member.getName().startsWith(expression.getValue());
 		}
 	},
 
 	LIKE_END {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			return member.getName().endsWith(expression.getValue());
 		}
 	},
 
 	REGEX {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			final String regex = String.format(".*%s.*", expression.getValue());
 			return Pattern.matches(regex, member.getName());
 		}
@@ -56,8 +56,8 @@ public enum SearchType {
 
 	IN {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
-			final String[] values = expression.getValue().split(Expression.NAME_SEPARATOR);
+		public boolean matches(final Member member, final ExpressionImpl expression) {
+			final String[] values = expression.getValue().split(ExpressionImpl.NAME_SEPARATOR);
 			for (final String value : values)
 				if (member.getName().equals(value))
 					return true;
@@ -68,7 +68,7 @@ public enum SearchType {
 
 	ANNOTATION {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			final Class<? extends Annotation> annotationClass = getAnnotatedClass(expression);
 			final AnnotatedElement annotatedElement = (AnnotatedElement) member;
 
@@ -76,7 +76,7 @@ public enum SearchType {
 		}
 
 		@SuppressWarnings("unchecked")
-		private Class<? extends Annotation> getAnnotatedClass(final Expression expression) {
+		private Class<? extends Annotation> getAnnotatedClass(final ExpressionImpl expression) {
 			Class<? extends Annotation> classe = null;
 			try {
 				classe = (Class<? extends Annotation>) Class.forName(expression.getValue());
@@ -89,13 +89,13 @@ public enum SearchType {
 
 	ONLY_PUBLIC {
 		@Override
-		public boolean matches(final Member member, final Expression expression) {
+		public boolean matches(final Member member, final ExpressionImpl expression) {
 			final boolean onlyPublic = Boolean.parseBoolean(expression.getValue());
 			return !onlyPublic || Modifier.isPublic(member.getModifiers());
 		}
 	};
 
-	public final List<Member> filter(final List<? extends Member> members, final Expression expression) {
+	public final List<Member> filter(final List<? extends Member> members, final ExpressionImpl expression) {
 		final List<Member> filtred = new ArrayList<Member>();
 		for (final Member member : members)
 			if (matches(member, expression))
@@ -104,6 +104,6 @@ public enum SearchType {
 		return filtred;
 	}
 
-	public abstract boolean matches(Member member, Expression expression);
+	public abstract boolean matches(Member member, ExpressionImpl expression);
 
 }
