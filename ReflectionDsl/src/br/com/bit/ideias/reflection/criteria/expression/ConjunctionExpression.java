@@ -7,6 +7,8 @@ import java.util.List;
 /**
  * @author Leonardo Campos
  * @date 31/07/2009
+ * 
+ * For a ConjunctionExpression to be evaluated as true, all its subexpressions should evaluate to true
  */
 public class ConjunctionExpression extends ExpressionImpl implements ComplexExpression {
 	private final List<Expression> methodExpressions = new ArrayList<Expression>();
