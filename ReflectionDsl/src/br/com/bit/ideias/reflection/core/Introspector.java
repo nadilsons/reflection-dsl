@@ -70,6 +70,10 @@ public class Introspector {
 		return create(new Object[] {});
 	}
 
+	/**
+	 * Creates an instance of the class under instrospection.<br/>
+	 * call getTargetInstance()<br/> if you want this instance right away<br/>
+	 */
 	public Introspector create(final Object... params) {
 		this.extractor.constructor().newInstance(params);
 		return this;
@@ -156,6 +160,4 @@ public class Introspector {
 		this.isMethod = isMethod;
 		this.accessPrivateMembers = false;
 	}
-
-
 }
