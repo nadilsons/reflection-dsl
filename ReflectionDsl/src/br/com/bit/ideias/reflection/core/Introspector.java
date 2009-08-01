@@ -100,9 +100,16 @@ public class Introspector {
 	}
 
 	public Object invoke(final Object... params) {
-		final boolean flag = accessPrivateMembers;
-		return isMethod ? extractor.method().invoke(flag, params) : extractor.field().invoke(flag, params);
+		return isMethod ? invokeMethod(params) : invokeField(params);
 	}
+
+    private Object invokeField(final Object... params) {
+        return extractor.field().invoke(accessPrivateMembers, params);
+    }
+
+    private Object invokeMethod(final Object... params) {
+        return extractor.method().invoke(accessPrivateMembers, params);
+    }
 
 	// /////////////////////////////////////////////////////////////////////////
 
