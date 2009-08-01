@@ -1,7 +1,6 @@
 package br.com.bit.ideias.reflection.criteria;
 
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,16 +27,22 @@ public class CriterionImpl implements Criterion {
 	}
 
 	public CriterionResult search() {
-		final List<? extends Member> methods = new ArrayList<Method>();
-		final List<? extends Member> fields = obtainAllMembers(true);
+		List<? extends Member> methods = obtainAllMembers(false);
+		List<? extends Member> fields = obtainAllMembers(true);
 
+		fields = executeSearch(fields);
+		methods = executeSearch(methods);
+
+		return new CriterionResult(fields, new ArrayList());
+	}
+
+	private List<Member> executeSearch(final List<? extends Member> members) {
 		final List<Member> filtred = new ArrayList<Member>();
-		for (final Member member : fields) {
+		for (final Member member : members) {
 			if (expressionHolder.accept(member))
 				filtred.add(member);
 		}
-
-		return new CriterionResult(filtred, methods);
+		return filtred;
 	}
 
 	@SuppressWarnings("unchecked")
