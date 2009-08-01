@@ -7,9 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import br.com.bit.ideias.reflection.core.Introspector;
+import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.enums.SearchType;
-import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
@@ -17,37 +16,30 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @since 28/07/2009
  */
 public class CriterionImpl implements Criterion {
-
+    private ConjunctionExpression expressionHolder = new ConjunctionExpression();
 	private final Introspector introspector;
-
-	private final List<Expression> methodExpressions = new ArrayList<Expression>();
-	private final List<Expression> fieldExpressions = new ArrayList<Expression>();
 
 	public CriterionImpl(final Introspector introspector) {
 		this.introspector = introspector;
 	}
 
 	public void add(final Expression expression) {
-		final List<Expression> lista = (TargetType.FIELD.equals(expression.getTargetType())) ? fieldExpressions : methodExpressions;
-		lista.add(expression);
+	    expressionHolder.add(expression);
 	}
 
 	public CriterionResult search() {
 		final List<? extends Member> methods = new ArrayList<Method>();
-		final List<? extends Member> fields = searchMember(true);
-
-		return new CriterionResult(fields, methods);
-	}
-
-	private List<? extends Member> searchMember(boolean isField) {
+		
 		Class<?> classe = introspector.getTargetClass();
-		List<? extends Member> fields = obtainFields(classe);
+        List<? extends Member> fields = obtainFields(classe);
+        
+        final List<Member> filtred = new ArrayList<Member>();
+        for (Member member : fields) {
+            if(expressionHolder.accept(member))
+                filtred.add(member);
+        }
 
-		for (final Expression expression : fieldExpressions) {
-			final SearchType searchType = expression.getSearchType();
-			fields = searchType.filter(fields, expression);
-		}
-		return fields;
+		return new CriterionResult(filtred, methods);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,5 +54,4 @@ public class CriterionImpl implements Criterion {
 		 }
 		return fields;
 	}
-
 }
