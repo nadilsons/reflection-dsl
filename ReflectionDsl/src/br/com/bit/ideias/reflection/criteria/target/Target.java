@@ -14,7 +14,7 @@ import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
- * @author nadilson
+ * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
 public abstract class Target {

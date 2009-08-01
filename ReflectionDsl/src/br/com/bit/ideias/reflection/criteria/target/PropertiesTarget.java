@@ -8,13 +8,13 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @since 28/07/2009
  */
 public class PropertiesTarget extends Target {
-	
+
 	private static final PropertiesTarget instance = new PropertiesTarget();
 
 	private PropertiesTarget() {
-		//TODO Colocar como default
+
 	}
-	
+
 	public static PropertiesTarget getInstance() {
 		return instance;
 	}
@@ -23,5 +23,5 @@ public class PropertiesTarget extends Target {
 	public TargetType getTargetType() {
 		return TargetType.FIELD;
 	}
-	
+
 }

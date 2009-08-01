@@ -7,12 +7,10 @@ import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
- * @author nadilson
+ * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
 public abstract class ExpressionImpl implements Expression {
-
-	public static final String NAME_SEPARATOR = ",";
 
 	protected String value;
 
@@ -37,8 +35,8 @@ public abstract class ExpressionImpl implements Expression {
 	public SearchType getSearchType() {
 		return searchType;
 	}
-	
-    public boolean accept(Member member) {
-        return searchType.matches(member, this);
-    }
+
+	public boolean accept(final Member member) {
+		return searchType.matches(member, this);
+	}
 }

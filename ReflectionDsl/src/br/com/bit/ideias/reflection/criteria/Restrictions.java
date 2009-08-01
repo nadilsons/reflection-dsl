@@ -14,7 +14,7 @@ public class Restrictions {
 
 	}
 
-	public static PropertiesTarget properties() {
+	public static PropertiesTarget fields() {
 		return PropertiesTarget.getInstance();
 	}
 
