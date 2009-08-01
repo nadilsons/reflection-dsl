@@ -8,7 +8,7 @@ import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */

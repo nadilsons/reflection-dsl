@@ -1,11 +1,11 @@
 package br.com.bit.ideias.reflection.criteria;
 
+import br.com.bit.ideias.reflection.criteria.target.FieldsTarget;
 import br.com.bit.ideias.reflection.criteria.target.MethodsTarget;
-import br.com.bit.ideias.reflection.criteria.target.PropertiesTarget;
 
 /**
  * 
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @since 27/07/2009
  */
 public class Restrictions {
@@ -14,8 +14,8 @@ public class Restrictions {
 
 	}
 
-	public static PropertiesTarget fields() {
-		return PropertiesTarget.getInstance();
+	public static FieldsTarget fields() {
+		return FieldsTarget.getInstance();
 	}
 
 	public static MethodsTarget methods() {

@@ -7,7 +7,7 @@ import br.com.bit.ideias.reflection.interceptor.InvocationContext;
 /**
  * 
  * @see Extractor#applyInterceptor(Interceptor)
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  */
 public interface Interceptor {

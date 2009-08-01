@@ -3,7 +3,7 @@ package br.com.bit.ideias.reflection.interceptor;
 import java.lang.reflect.Method;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */

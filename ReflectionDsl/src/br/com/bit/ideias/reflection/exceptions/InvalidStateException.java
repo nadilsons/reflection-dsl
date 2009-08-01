@@ -1,7 +1,7 @@
 package br.com.bit.ideias.reflection.exceptions;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */

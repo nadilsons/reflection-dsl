@@ -24,7 +24,7 @@ import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 18/02/2009
  * 
  */
@@ -50,7 +50,7 @@ public class IntrospectorTest {
 		introspectorForClass.create(INTEIRO, STRING);
 		introspectorInObject = Introspector.inObject(classeDominio);
 		interceptor = new MyInterceptorTest();
-		
+
 		classeDominio.setAtributoPrivadoInteiro(INTEIRO);
 		classeDominio.setAtributoPrivadoString(STRING);
 	}
@@ -330,7 +330,6 @@ public class IntrospectorTest {
 		final Object[] params3 = new Object[] { 8, 8 };
 		final Object[] params4 = new Object[] { 8 };
 
-		return new Object[][] { { "metodoInexistente", params1 }, { "metodoInexistente", params2 }, { "getDobro", params3 },
-				{ "getDobroAtributoPrivadoInteiro", params4 } };
+		return new Object[][] { { "metodoInexistente", params1 }, { "metodoInexistente", params2 }, { "getDobro", params3 }, { "getDobroAtributoPrivadoInteiro", params4 } };
 	}
 }

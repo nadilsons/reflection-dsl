@@ -1,7 +1,7 @@
 package br.com.bit.ideias.reflection.common;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */
@@ -11,18 +11,18 @@ public abstract class BaseExtractor {
 		return getParametersTypes(false, params);
 	}
 
-	protected Class<?>[] getParametersTypes(boolean primitiveParam, final Object... params) {
+	protected Class<?>[] getParametersTypes(final boolean primitiveParam, final Object... params) {
 		final Class<?>[] retorno = new Class<?>[params.length];
 
 		for (int i = 0; i < params.length; i++) {
-			Object param = params[i];
+			final Object param = params[i];
 			retorno[i] = (primitiveParam) ? transformInPrimitive(param) : param.getClass();
 		}
 
 		return retorno;
 	}
 
-	private Class<?> transformInPrimitive(Object param) {
+	private Class<?> transformInPrimitive(final Object param) {
 		Class<?> retorno = null;
 
 		if (param instanceof Byte) {

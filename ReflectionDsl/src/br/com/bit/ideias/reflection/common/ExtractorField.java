@@ -8,7 +8,7 @@ import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */
@@ -72,7 +72,7 @@ public class ExtractorField {
 
 		try {
 			return em.invoke(accessPrivateMembers, params);
-		} catch (MethodNotExistsException e) {
+		} catch (final MethodNotExistsException e) {
 			if (params.length == 1)
 				return em.invoke(accessPrivateMembers, true, params);
 			else

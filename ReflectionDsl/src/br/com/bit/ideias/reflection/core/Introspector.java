@@ -10,10 +10,9 @@ import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
- * This is the main class of the project</br>
- * It works as a façade.
+ * This is the main class of the project</br> It works as a façade.
  * 
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 18/02/2009
  */
 public class Introspector {
@@ -36,7 +35,9 @@ public class Introspector {
 
 	/**
 	 * Creates an instrospector for the instance.
-	 * @param instance represents the instance object of introspection
+	 * 
+	 * @param instance
+	 *            represents the instance object of introspection
 	 */
 	public static Introspector inObject(final Object instance) {
 		if (instance == null)
@@ -48,13 +49,13 @@ public class Introspector {
 	public static Introspector forClass(final String className) {
 		validateParam(className);
 		Class<?> clazz = null;
-		
+
 		try {
 			clazz = Class.forName(className);
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			throw new ClassNotExistsException(e);
 		}
-		
+
 		return forClass(clazz);
 	}
 
@@ -72,7 +73,8 @@ public class Introspector {
 
 	/**
 	 * Creates an instance of the class under instrospection.<br/>
-	 * call getTargetInstance()<br/> if you want this instance right away<br/>
+	 * call getTargetInstance()<br/>
+	 * if you want this instance right away<br/>
 	 */
 	public Introspector create(final Object... params) {
 		this.extractor.constructor().newInstance(params);
@@ -137,9 +139,11 @@ public class Introspector {
 		criterion = new CriterionImpl(this);
 		return criterion;
 	}
+
 	// /////////////////////////////////////////////////////////////////////////
 	/**
-	 * @return Class<?> the class held by this Instrospector, which is object of instrospection.
+	 * @return Class<?> the class held by this Instrospector, which is object of
+	 *         instrospection.
 	 */
 	public Class<?> getTargetClass() {
 		return extractor.getTargetClass();
@@ -155,7 +159,7 @@ public class Introspector {
 		if (param == null)
 			throw new InvalidParameterException("Class for instrospector can't be null");
 	}
-	
+
 	private void reset(final boolean isMethod) {
 		this.isMethod = isMethod;
 		this.accessPrivateMembers = false;

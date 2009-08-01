@@ -1,7 +1,7 @@
 package br.com.bit.ideias.reflection.enums;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 26/02/2009
  * 
  */

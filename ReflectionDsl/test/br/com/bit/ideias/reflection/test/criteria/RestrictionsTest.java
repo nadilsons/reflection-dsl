@@ -18,7 +18,7 @@ import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
 
 /**
  * 
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
 public class RestrictionsTest {

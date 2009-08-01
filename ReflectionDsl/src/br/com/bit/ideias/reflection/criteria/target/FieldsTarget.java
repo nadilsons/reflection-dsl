@@ -4,18 +4,18 @@ import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
-public class PropertiesTarget extends Target {
+public class FieldsTarget extends Target {
 
-	private static final PropertiesTarget instance = new PropertiesTarget();
+	private static final FieldsTarget instance = new FieldsTarget();
 
-	private PropertiesTarget() {
+	private FieldsTarget() {
 
 	}
 
-	public static PropertiesTarget getInstance() {
+	public static FieldsTarget getInstance() {
 		return instance;
 	}
 

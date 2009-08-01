@@ -8,7 +8,7 @@ import br.com.bit.ideias.reflection.interceptor.InvocationContext;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */
@@ -33,16 +33,14 @@ public class MyInterceptorTest implements Interceptor {
 	}
 
 	public void doAfter(final InvocationContext invocationContext) {
-		final String s = String.format("[After] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(),
-				invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
+		final String s = String.format("[After] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(), invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
 		System.out.println(s);
 		after = true;
 		this.invocationContext = invocationContext;
 	}
 
 	public TreatmentExceptionType doAfterException(final InvocationContext invocationContext, final Exception e) {
-		final String s = String.format("[After Exception] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(),
-				invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
+		final String s = String.format("[After Exception] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(), invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
 		System.out.println(s);
 		afterException = true;
 		this.invocationContext = invocationContext;
@@ -51,8 +49,7 @@ public class MyInterceptorTest implements Interceptor {
 	}
 
 	public void doBefore(final InvocationContext invocationContext) {
-		final String s = String.format("[Before] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(),
-				invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
+		final String s = String.format("[Before] - method: %s, na classe: %s, com os params: %s", invocationContext.getMethod().getName(), invocationContext.getProxy().getClass().getSimpleName(), invocationContext.getArgs());
 		System.out.println(s);
 		before = true;
 		this.invocationContext = invocationContext;

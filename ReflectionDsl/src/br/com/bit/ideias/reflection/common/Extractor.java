@@ -4,7 +4,7 @@ import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 18/02/2009
  * 
  */
@@ -24,12 +24,12 @@ public class Extractor extends BaseExtractor {
 		this.targetClass = classe;
 	}
 
-	private Extractor(Object instance) {
+	private Extractor(final Object instance) {
 		this(instance.getClass());
 		this.extractorConstructor = new ExtractorConstructor(this, instance);
 	}
 
-	public static Extractor inObject(Object instance) {
+	public static Extractor inObject(final Object instance) {
 		return new Extractor(instance);
 	}
 
@@ -82,7 +82,8 @@ public class Extractor extends BaseExtractor {
 	}
 
 	/**
-	 * Verifies if there is an extractorConstructor and if this extractorConstructor has an target instance reference
+	 * Verifies if there is an extractorConstructor and if this
+	 * extractorConstructor has an target instance reference
 	 */
 	public boolean isEmpty() {
 		return extractorConstructor == null || extractorConstructor.getTargetInstance() == null;

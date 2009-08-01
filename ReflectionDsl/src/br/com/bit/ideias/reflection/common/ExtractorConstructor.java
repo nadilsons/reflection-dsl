@@ -10,7 +10,7 @@ import br.com.bit.ideias.reflection.interceptor.MethodInterceptorImpl;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */
@@ -22,7 +22,7 @@ public class ExtractorConstructor extends BaseExtractor {
 
 	private final Interceptor interceptor;
 
-	ExtractorConstructor(Extractor extractor, Object instance) {
+	ExtractorConstructor(final Extractor extractor, final Object instance) {
 		this(extractor, null);
 		this.targetInstance = instance;
 	}

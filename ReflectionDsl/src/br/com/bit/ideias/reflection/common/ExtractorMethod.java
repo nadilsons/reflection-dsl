@@ -8,7 +8,7 @@ import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 
 /**
- * @author Nadilson
+ * @author Nadilson Oliveira da Silva
  * @date 19/02/2009
  * 
  */
@@ -27,7 +27,7 @@ public class ExtractorMethod extends BaseExtractor {
 		return invoke(accessPrivateMembers, false, params);
 	}
 
-	public Object invoke(final boolean accessPrivateMembers, boolean primitiveParam, final Object... params) {
+	public Object invoke(final boolean accessPrivateMembers, final boolean primitiveParam, final Object... params) {
 		final Class<?> targetClass = extractor.getTargetClass();
 		final Object targetInstance = extractor.getTargetInstance();
 		try {
