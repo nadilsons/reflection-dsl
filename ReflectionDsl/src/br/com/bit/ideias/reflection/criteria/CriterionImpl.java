@@ -23,8 +23,10 @@ public class CriterionImpl implements Criterion {
 		this.introspector = introspector;
 	}
 
-	public void add(final Expression expression) {
+	public Criterion add(final Expression expression) {
 		expressionHolder.add(expression);
+		
+		return this;
 	}
 
 	public CriterionResult search() {

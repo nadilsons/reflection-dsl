@@ -3,6 +3,10 @@ package br.com.bit.ideias.reflection.core;
 import br.com.bit.ideias.reflection.common.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionImpl;
+import br.com.bit.ideias.reflection.criteria.CriterionResult;
+import br.com.bit.ideias.reflection.criteria.Restrictions;
+import br.com.bit.ideias.reflection.criteria.expression.Expression;
+import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
@@ -83,14 +87,14 @@ public class Introspector {
 
 	public Introspector field(final String fieldName) {
 		this.extractor.setField(fieldName);
-		reset(false);
+		reset(TargetType.FIELD);
 
 		return this;
 	}
 
 	public Introspector method(final String methodName) {
 		this.extractor.setMethod(methodName);
-		reset(true);
+		reset(TargetType.METHOD);
 
 		return this;
 	}
@@ -167,8 +171,8 @@ public class Introspector {
 			throw new InvalidParameterException("Class for instrospector can't be null");
 	}
 
-	private void reset(final boolean isMethod) {
-		this.isMethod = isMethod;
+	private void reset(final TargetType targetType) {
+		this.isMethod = TargetType.METHOD.equals(targetType);
 		this.accessPrivateMembers = false;
 	}
 }

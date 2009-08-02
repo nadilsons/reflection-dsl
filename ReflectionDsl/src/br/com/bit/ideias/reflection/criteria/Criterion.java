@@ -9,7 +9,7 @@ import br.com.bit.ideias.reflection.criteria.expression.Expression;
  */
 public interface Criterion {
 
-	public void add(Expression expression);
+	public Criterion add(Expression expression);
 
 	public CriterionResult search();
 
