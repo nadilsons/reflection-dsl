@@ -1,5 +1,6 @@
 package br.com.bit.ideias.reflection.enums;
 
+
 /**
  * 
  * @author Nadilson Oliveira da Silva
@@ -7,4 +8,5 @@ package br.com.bit.ideias.reflection.enums;
  */
 public enum TargetType {
 	FIELD, METHOD, MEMBER
+
 }
