@@ -12,6 +12,8 @@ import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
+import br.com.bit.ideias.reflection.exceptions.NoResultException;
+import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
@@ -172,6 +174,32 @@ public class RestrictionsTest {
 		Assert.assertTrue(result.getMethods().isEmpty());
 		Assert.assertEquals(result.getFields().size(), 1);
 	}
+	
+	@Test(expectedExceptions=TooManyResultException.class)
+	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
+	    criterion.add(Restrictions.fields().annotatedWith(MyAnnotation.class));
+        final CriterionResult result = criterion.search();
+        
+        result.unique();
+	}
+	
+	@Test(expectedExceptions=NoResultException.class)
+    public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
+        criterion.add(Restrictions.fields().eq("xyzu"));
+        final CriterionResult result = criterion.search();
+        
+        result.unique();
+    }
+	
+	@Test
+    public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
+        criterion.add(Restrictions.fields().regex("comeca[P|p]riva"));
+        criterion.add(Restrictions.fields().showOnlyPublic(true));
+        final CriterionResult result = criterion.search();
+
+        final Field field = ClasseDominio.class.getDeclaredField("comecaPriva");
+        Assert.assertEquals(field, result.unique());
+    }
 
 	@Test
 	public void testRestrictionShowOnlyPublicFalse() throws Exception {
