@@ -8,6 +8,7 @@ import java.util.List;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
+import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
@@ -27,13 +28,13 @@ public class CriterionImpl implements Criterion {
 	}
 
 	public CriterionResult search() {
-		List<? extends Member> methods = obtainAllMembers(false);
-		List<? extends Member> fields = obtainAllMembers(true);
+		List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
+		List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
 
 		fields = executeSearch(fields);
 		methods = executeSearch(methods);
 
-		return new CriterionResult(fields, new ArrayList());
+		return new CriterionResult(fields, methods);
 	}
 
 	private List<Member> executeSearch(final List<? extends Member> members) {
@@ -46,19 +47,21 @@ public class CriterionImpl implements Criterion {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<? extends Member> obtainAllMembers(final boolean isField) {
+	private List<? extends Member> obtainAllMembers(final TargetType targetType) {
 		Class<?> classe = introspector.getTargetClass();
-		final List<? extends Member> fields = obtainAllMemberInClass(classe, isField);
 
+		final List<? extends Member> fields = obtainMembersInClass(classe, targetType);
 		while (classe.getSuperclass() != null) {
 			classe = classe.getSuperclass();
-			fields.addAll((List) obtainAllMemberInClass(classe, isField));
+			fields.addAll((List) obtainMembersInClass(classe, targetType));
 		}
 
 		return fields;
 	}
 
-	private ArrayList<Member> obtainAllMemberInClass(final Class<?> classe, final boolean isField) {
-		return new ArrayList<Member>(Arrays.asList(classe.getDeclaredFields()));
+	private ArrayList<Member> obtainMembersInClass(final Class<?> classe, final TargetType targetType) {
+		final boolean isField = TargetType.FIELD.equals(targetType);
+		final Member[] members = isField ? classe.getDeclaredFields() : classe.getDeclaredMethods();
+		return new ArrayList<Member>(Arrays.asList(members));
 	}
 }
