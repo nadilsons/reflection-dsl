@@ -1,15 +1,15 @@
 package br.com.bit.ideias.reflection.criteria;
 
-import static br.com.bit.ideias.reflection.util.CollectionUtil.*;
+import static br.com.bit.ideias.reflection.util.CollectionUtil.isEmpty;
+
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
-import br.com.bit.ideias.reflection.util.CollectionUtil;
 
 /**
  * 
@@ -34,26 +34,30 @@ public class CriterionResult {
 		return Collections.unmodifiableList(methods);
 	}
 
-    public Member unique() {
-        if(!(hasFields() || hasMethods())) throw new NoResultException();
-        if(hasFields() && hasMethods()) throw new TooManyResultException();
-        
-        if(hasFields()) {
-            if(fields.size() > 1) throw new TooManyResultException();
-            
-            return fields.get(0);
-        }
-        
-        if(methods.size() > 1) throw new TooManyResultException();
-        
-        return methods.get(0);
-    }
+	public <T extends AccessibleObject> T unique() {
+		if (!(hasFields() || hasMethods()))
+			throw new NoResultException();
+		if (hasFields() && hasMethods())
+			throw new TooManyResultException();
 
-    private boolean hasFields() {
-        return !isEmpty(fields);
-    }
-    
-    private boolean hasMethods() {
-        return !isEmpty(methods);
-    }
+		if (hasFields()) {
+			if (fields.size() > 1)
+				throw new TooManyResultException();
+
+			return (T) fields.get(0);
+		}
+
+		if (methods.size() > 1)
+			throw new TooManyResultException();
+
+		return (T) methods.get(0);
+	}
+
+	private boolean hasFields() {
+		return !isEmpty(fields);
+	}
+
+	private boolean hasMethods() {
+		return !isEmpty(methods);
+	}
 }
