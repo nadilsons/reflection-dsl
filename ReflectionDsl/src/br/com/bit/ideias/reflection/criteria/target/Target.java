@@ -27,21 +27,6 @@ public abstract class Target {
 	public Expression eq(final String value) {
 		return new SimpleExpression(value, SearchType.EQ, getTargetType());
 	}
-	
-	public ComplexExpression disjunction() {
-        return new DisjunctionExpression();
-    }
-	
-	public ComplexExpression disjunction(Expression...expressions) {
-        DisjunctionExpression disjunctionExpression = new DisjunctionExpression();
-        if(expressions == null) return disjunctionExpression;
-        
-        for (Expression expression : expressions) {
-            disjunctionExpression.add(expression);
-        }
-        
-        return disjunctionExpression;
-    }
 
 	public ExpressionImpl ne(final String value) {
 		return new SimpleExpression(value, SearchType.NE, getTargetType());
@@ -103,13 +88,25 @@ public abstract class Target {
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
-	// LogicalExpression //////////////////////////////////////////////////////
+	// ComplexExpression //////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	// public Restrictions conjuction() {
-	// return null;
-	// }
-	//	
-	// public Restrictions disjuction() {
+	public ComplexExpression disjunction() {
+		return new DisjunctionExpression();
+	}
+
+	public ComplexExpression disjunction(final Expression... expressions) {
+		final ComplexExpression disjunctionExpression = disjunction();
+		if (expressions == null)
+			return disjunctionExpression;
+
+		for (final Expression expression : expressions) {
+			disjunctionExpression.add(expression);
+		}
+
+		return disjunctionExpression;
+	}
+
+	// public ComplexExpression conjuction() {
 	// return null;
 	// }
 }
