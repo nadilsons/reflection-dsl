@@ -11,6 +11,8 @@ import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.enums.LikeType;
+import br.com.bit.ideias.reflection.exceptions.NoResultException;
+import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
@@ -188,6 +190,32 @@ public class RestrictionsMethodTest {
 
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertEquals(result.getMethods().size(), 2);
+	}
+
+	@Test(expectedExceptions = TooManyResultException.class)
+	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
+		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
+		final CriterionResult result = criterion.search();
+
+		result.unique();
+	}
+
+	@Test(expectedExceptions = NoResultException.class)
+	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
+		criterion.add(Restrictions.methods().eq("xyzu"));
+		final CriterionResult result = criterion.search();
+
+		result.unique();
+	}
+
+	@Test
+	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
+		criterion.add(Restrictions.methods().like("metodo")).add(Restrictions.methods().showOnlyPublic(true));
+		final CriterionResult result = criterion.search();
+		final Method methodExpected = ClasseDominio.class.getDeclaredMethod("metodoQueVaiLancarException");
+
+		final Method methodActual = result.unique();
+		Assert.assertEquals(methodExpected, methodActual);
 	}
 
 }

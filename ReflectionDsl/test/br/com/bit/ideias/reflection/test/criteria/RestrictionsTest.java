@@ -174,32 +174,32 @@ public class RestrictionsTest {
 		Assert.assertTrue(result.getMethods().isEmpty());
 		Assert.assertEquals(result.getFields().size(), 1);
 	}
-	
-	@Test(expectedExceptions=TooManyResultException.class)
-	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
-	    criterion.add(Restrictions.fields().annotatedWith(MyAnnotation.class));
-        final CriterionResult result = criterion.search();
-        
-        result.unique();
-	}
-	
-	@Test(expectedExceptions=NoResultException.class)
-    public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
-        criterion.add(Restrictions.fields().eq("xyzu"));
-        final CriterionResult result = criterion.search();
-        
-        result.unique();
-    }
-	
-	@Test
-    public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
-        criterion.add(Restrictions.fields().regex("comeca[P|p]riva"));
-        criterion.add(Restrictions.fields().showOnlyPublic(true));
-        final CriterionResult result = criterion.search();
 
-        final Field field = ClasseDominio.class.getDeclaredField("comecaPriva");
-        Assert.assertEquals(field, result.unique());
-    }
+	@Test(expectedExceptions = TooManyResultException.class)
+	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
+		criterion.add(Restrictions.fields().annotatedWith(MyAnnotation.class));
+		final CriterionResult result = criterion.search();
+
+		result.unique();
+	}
+
+	@Test(expectedExceptions = NoResultException.class)
+	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
+		criterion.add(Restrictions.fields().eq("xyzu"));
+		final CriterionResult result = criterion.search();
+
+		result.unique();
+	}
+
+	@Test
+	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
+		criterion.add(Restrictions.fields().regex("comeca[P|p]riva")).add(Restrictions.fields().showOnlyPublic(true));
+		final CriterionResult result = criterion.search();
+
+		final Field fieldExpected = ClasseDominio.class.getDeclaredField("comecaPriva");
+		final Field fieldActual = result.unique();
+		Assert.assertEquals(fieldExpected, fieldActual);
+	}
 
 	@Test
 	public void testRestrictionShowOnlyPublicFalse() throws Exception {
