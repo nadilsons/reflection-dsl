@@ -22,28 +22,24 @@ public enum SearchType {
 			return member.getName().equals(expression.getValue());
 		}
 	},
-
 	NE {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
 			return !SearchType.EQ.matches(member, expression);
 		}
 	},
-
 	LIKE_START {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
 			return member.getName().startsWith(expression.getValue());
 		}
 	},
-
 	LIKE_END {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
 			return member.getName().endsWith(expression.getValue());
 		}
 	},
-
 	REGEX {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
@@ -51,7 +47,6 @@ public enum SearchType {
 			return Pattern.matches(regex, member.getName());
 		}
 	},
-
 	IN {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
@@ -63,7 +58,6 @@ public enum SearchType {
 			return false;
 		}
 	},
-
 	ANNOTATION {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
@@ -84,7 +78,6 @@ public enum SearchType {
 			return classe;
 		}
 	},
-
 	ONLY_PUBLIC {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
@@ -92,16 +85,6 @@ public enum SearchType {
 			return !onlyPublic || Modifier.isPublic(member.getModifiers());
 		}
 	};
-
-	// public final List<Member> filter(final List<? extends Member> members,
-	// final Expression expression) {
-	// final List<Member> filtred = new ArrayList<Member>();
-	// for (final Member member : members)
-	// if (matches(member, expression))
-	// filtred.add(member);
-	//
-	// return filtred;
-	// }
 
 	public abstract boolean matches(Member member, Expression expression);
 
