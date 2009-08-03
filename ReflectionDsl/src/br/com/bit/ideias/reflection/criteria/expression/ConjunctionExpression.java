@@ -22,9 +22,11 @@ public class ConjunctionExpression extends ExpressionImpl implements ComplexExpr
 		super(null, null, null);
 	}
 
-	public void add(final Expression expression) {
+	public ComplexExpression add(final Expression expression) {
 		final List<Expression> list = getList(expression);
 		list.add(expression);
+		
+		return this;
 	}
 
 	@Override
