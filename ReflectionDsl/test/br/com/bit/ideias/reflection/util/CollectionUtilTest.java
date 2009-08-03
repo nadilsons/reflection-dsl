@@ -1,8 +1,5 @@
 package br.com.bit.ideias.reflection.util;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,9 +8,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.testng.annotations.Test;
+import static junit.framework.Assert.*;
+
+import org.junit.Test;
 
 public class CollectionUtilTest {
+
 	@Test
 	public void isEmptyShoudReturnFalseIfNotNullAndHasItems() {
 		final String item = "abc";
@@ -27,7 +27,7 @@ public class CollectionUtilTest {
 		final HashMap<String, String> map = new HashMap<String, String>();
 		map.put(item, item);
 
-		assertFalse(CollectionUtil.isEmpty(list));
+		 assertFalse(CollectionUtil.isEmpty(list));
 		assertFalse(CollectionUtil.isEmpty(set));
 		assertFalse(CollectionUtil.isEmpty(map));
 	}
