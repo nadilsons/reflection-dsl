@@ -12,6 +12,7 @@ import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
+import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
@@ -34,6 +35,7 @@ public class RestrictionsMethodTest {
 	@Before
 	public void prepare() {
 		criterion = introspector.createCriterion();
+		//criterion.add(Restrictions.setTargetType(TargetType.METHOD));
 	}
 
 	@Test

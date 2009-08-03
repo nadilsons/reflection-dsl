@@ -1,7 +1,9 @@
 package br.com.bit.ideias.reflection.criteria;
 
+import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.criteria.target.FieldsTarget;
 import br.com.bit.ideias.reflection.criteria.target.MethodsTarget;
+import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
@@ -20,6 +22,10 @@ public class Restrictions {
 
 	public static MethodsTarget methods() {
 		return MethodsTarget.getInstance();
+	}
+
+	public static Expression setTargetType(TargetType method) {
+		return null;
 	}
 
 }
