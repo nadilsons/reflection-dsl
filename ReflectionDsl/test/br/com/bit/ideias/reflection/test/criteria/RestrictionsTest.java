@@ -2,9 +2,9 @@ package br.com.bit.ideias.reflection.test.criteria;
 
 import java.lang.reflect.Field;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
@@ -31,7 +31,7 @@ public class RestrictionsTest {
 
 	private Criterion criterion;
 
-	@BeforeMethod
+	@Before
 	public void prepare() {
 		criterion = introspector.createCriterion();
 	}
@@ -175,7 +175,7 @@ public class RestrictionsTest {
 		Assert.assertEquals(result.getFields().size(), 1);
 	}
 
-	@Test(expectedExceptions = TooManyResultException.class)
+	@Test(expected = TooManyResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
 		criterion.add(Restrictions.fields().annotatedWith(MyAnnotation.class));
 		final CriterionResult result = criterion.search();
@@ -183,7 +183,7 @@ public class RestrictionsTest {
 		result.unique();
 	}
 
-	@Test(expectedExceptions = NoResultException.class)
+	@Test(expected = NoResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
 		criterion.add(Restrictions.fields().eq("xyzu"));
 		final CriterionResult result = criterion.search();

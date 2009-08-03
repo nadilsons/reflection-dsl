@@ -2,14 +2,15 @@ package br.com.bit.ideias.reflection.test.criteria;
 
 import java.lang.reflect.Method;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
+import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
@@ -30,7 +31,7 @@ public class RestrictionsMethodTest {
 
 	private Criterion criterion;
 
-	@BeforeMethod
+	@Before
 	public void prepare() {
 		criterion = introspector.createCriterion();
 	}
@@ -192,7 +193,7 @@ public class RestrictionsMethodTest {
 		Assert.assertEquals(result.getMethods().size(), 2);
 	}
 
-	@Test(expectedExceptions = TooManyResultException.class)
+	@Test(expected = TooManyResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
 		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
 		final CriterionResult result = criterion.search();
@@ -200,7 +201,7 @@ public class RestrictionsMethodTest {
 		result.unique();
 	}
 
-	@Test(expectedExceptions = NoResultException.class)
+	@Test(expected = NoResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
 		criterion.add(Restrictions.methods().eq("xyzu"));
 		final CriterionResult result = criterion.search();
@@ -216,6 +217,22 @@ public class RestrictionsMethodTest {
 
 		final Method methodActual = result.unique();
 		Assert.assertEquals(methodExpected, methodActual);
+	}
+	
+	@Test
+	public void testRestrictionDisjunction() throws Exception {
+		final Method method = ClasseDominio.class.getDeclaredMethod("getAtributoPrivadoInt");
+
+		ComplexExpression disjunction = Restrictions.methods().disjunction();
+		criterion.add(disjunction.add(Restrictions.methods().eq("AAa")));
+		criterion.add(disjunction.add(Restrictions.methods().eq("BBa")));
+		criterion.add(disjunction.add(Restrictions.methods().eq("getAtributoPrivadoInt")));
+		
+		final CriterionResult result = criterion.search();
+
+//		Assert.assertTrue(result.getFields().isEmpty());
+//		Assert.assertEquals(result.getMethods().size(), 1);
+//		Assert.assertEquals(result.getMethods().get(0), method);
 	}
 
 }
