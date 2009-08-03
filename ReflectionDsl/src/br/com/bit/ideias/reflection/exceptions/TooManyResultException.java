@@ -6,4 +6,6 @@ package br.com.bit.ideias.reflection.exceptions;
  */
 public class TooManyResultException extends BaseReflectionDslException {
 
+	private static final long serialVersionUID = 2166536868633102199L;
+
 }
