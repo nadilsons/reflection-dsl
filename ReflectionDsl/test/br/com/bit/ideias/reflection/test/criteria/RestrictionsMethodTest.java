@@ -230,9 +230,9 @@ public class RestrictionsMethodTest {
 		
 		final CriterionResult result = criterion.list();
 
-//		Assert.assertTrue(result.getFields().isEmpty());
-//		Assert.assertEquals(result.getMethods().size(), 1);
-//		Assert.assertEquals(result.getMethods().get(0), method);
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertEquals(result.getMethods().size(), 1);
+		Assert.assertEquals(result.getMethods().get(0), method);
 	}
 
 }
