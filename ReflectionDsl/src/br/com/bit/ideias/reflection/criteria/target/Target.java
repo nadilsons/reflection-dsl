@@ -24,19 +24,19 @@ public abstract class Target {
 	// /////////////////////////////////////////////////////////////////////////
 	// SimpleExpression ///////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	public Expression eq(final String value) {
+	public SimpleExpression eq(final String value) {
 		return new SimpleExpression(value, SearchType.EQ, getTargetType());
 	}
 
-	public ExpressionImpl ne(final String value) {
+	public SimpleExpression ne(final String value) {
 		return new SimpleExpression(value, SearchType.NE, getTargetType());
 	}
 
-	public ExpressionImpl like(final String value) {
+	public SimpleExpression like(final String value) {
 		return new SimpleExpression(value, SearchType.LIKE_START, getTargetType());
 	}
 
-	public ExpressionImpl like(final String value, final LikeType likeType) {
+	public SimpleExpression like(final String value, final LikeType likeType) {
 		switch (likeType) {
 		case START:
 			return like(value);
@@ -49,11 +49,11 @@ public abstract class Target {
 		}
 	}
 
-	public ExpressionImpl regex(final String value) {
+	public SimpleExpression regex(final String value) {
 		return new SimpleExpression(value, SearchType.REGEX, getTargetType());
 	}
 
-	public ExpressionImpl in(final String... values) {
+	public SimpleExpression in(final String... values) {
 		final StringBuilder concat = new StringBuilder();
 		for (final String value : values)
 			concat.append(value).append(ExpressionImpl.NAME_SEPARATOR);
