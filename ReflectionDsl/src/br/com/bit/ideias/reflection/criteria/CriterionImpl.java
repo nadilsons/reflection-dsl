@@ -2,7 +2,6 @@ package br.com.bit.ideias.reflection.criteria;
 
 import java.lang.reflect.Member;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import br.com.bit.ideias.reflection.core.Introspector;
@@ -52,18 +51,12 @@ public class CriterionImpl implements Criterion {
 	private List<? extends Member> obtainAllMembers(final TargetType targetType) {
 		Class<?> classe = introspector.getTargetClass();
 
-		final List<? extends Member> fields = obtainMembersInClass(classe, targetType);
+		final List<? extends Member> fields = targetType.obtainMembersInClass(classe);
 		while (classe.getSuperclass() != null) {
 			classe = classe.getSuperclass();
-			fields.addAll((List) obtainMembersInClass(classe, targetType));
+			fields.addAll((List) targetType.obtainMembersInClass(classe));
 		}
 
 		return fields;
-	}
-
-	private ArrayList<Member> obtainMembersInClass(final Class<?> classe, final TargetType targetType) {
-		final boolean isField = TargetType.FIELD.equals(targetType);
-		final Member[] members = isField ? classe.getDeclaredFields() : classe.getDeclaredMethods();
-		return new ArrayList<Member>(Arrays.asList(members));
 	}
 }
