@@ -28,7 +28,7 @@ public class CriterionImpl implements Criterion {
 		return this;
 	}
 
-	public CriterionResult search() {
+	public CriterionResult list() {
 		List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
 		List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
 

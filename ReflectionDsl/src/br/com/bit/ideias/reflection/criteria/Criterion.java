@@ -11,6 +11,6 @@ public interface Criterion {
 
 	public Criterion add(Expression expression);
 
-	public CriterionResult search();
+	public CriterionResult list();
 
 }
