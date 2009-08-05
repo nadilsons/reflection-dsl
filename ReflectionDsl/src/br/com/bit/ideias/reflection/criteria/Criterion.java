@@ -1,5 +1,7 @@
 package br.com.bit.ideias.reflection.criteria;
 
+import java.lang.reflect.AccessibleObject;
+
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 
 /**
@@ -13,4 +15,5 @@ public interface Criterion {
 
 	public CriterionResult list();
 
+	public <T extends AccessibleObject> T unique();
 }

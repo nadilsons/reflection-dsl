@@ -1,5 +1,6 @@
 package br.com.bit.ideias.reflection.criteria;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,10 @@ public class CriterionImpl implements Criterion {
 		expressionHolder.add(expression);
 		
 		return this;
+	}
+	
+	public <T extends AccessibleObject> T unique() {
+		return list().unique();
 	}
 
 	public CriterionResult list() {
