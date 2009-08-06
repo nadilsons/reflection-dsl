@@ -34,7 +34,7 @@ public class RestrictionsMethodTest {
 	@Before
 	public void prepare() {
 		criterion = introspector.createCriterion();
-		//criterion.add(Restrictions.setTargetType(TargetType.METHOD));
+		// criterion.add(Restrictions.setTargetType(TargetType.METHOD));
 	}
 
 	@Test
@@ -197,38 +197,34 @@ public class RestrictionsMethodTest {
 	@Test(expected = TooManyResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
 		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
-		final CriterionResult result = criterion.list();
-
-		result.unique();
+		criterion.uniqueResult();
 	}
 
 	@Test(expected = NoResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
 		criterion.add(Restrictions.methods().eq("xyzu"));
-		final CriterionResult result = criterion.list();
-
-		result.unique();
+		criterion.uniqueResult();
 	}
 
 	@Test
 	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
 		criterion.add(Restrictions.methods().like("metodo")).add(Restrictions.methods().showOnlyPublic(true));
-		final CriterionResult result = criterion.list();
+
+		final Method methodActual = criterion.uniqueResult();
 		final Method methodExpected = ClasseDominio.class.getDeclaredMethod("metodoQueVaiLancarException");
 
-		final Method methodActual = result.unique();
 		Assert.assertEquals(methodExpected, methodActual);
 	}
-	
+
 	@Test
 	public void testRestrictionDisjunction() throws Exception {
 		final Method method = ClasseDominio.class.getDeclaredMethod("getAtributoPrivadoInt");
 
-		ComplexExpression disjunction = Restrictions.methods().disjunction();
+		final ComplexExpression disjunction = Restrictions.methods().disjunction();
 		criterion.add(disjunction.add(Restrictions.methods().eq("AAa")));
 		criterion.add(disjunction.add(Restrictions.methods().eq("BBa")));
 		criterion.add(disjunction.add(Restrictions.methods().eq("getAtributoPrivadoInt")));
-		
+
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());

@@ -178,26 +178,21 @@ public class RestrictionsTest {
 	@Test(expected = TooManyResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
 		criterion.add(Restrictions.fields().annotatedWith(MyAnnotation.class));
-		final CriterionResult result = criterion.list();
-
-		result.unique();
+		criterion.uniqueResult();
 	}
 
 	@Test(expected = NoResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
 		criterion.add(Restrictions.fields().eq("xyzu"));
-		final CriterionResult result = criterion.list();
-
-		result.unique();
+		criterion.uniqueResult();
 	}
 
 	@Test
 	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
 		criterion.add(Restrictions.fields().regex("comeca[P|p]riva")).add(Restrictions.fields().showOnlyPublic(true));
-		final CriterionResult result = criterion.list();
+		final Field fieldActual = criterion.uniqueResult();
 
 		final Field fieldExpected = ClasseDominio.class.getDeclaredField("comecaPriva");
-		final Field fieldActual = result.unique();
 		Assert.assertEquals(fieldExpected, fieldActual);
 	}
 
