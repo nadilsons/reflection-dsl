@@ -12,6 +12,7 @@ import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
+import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
@@ -40,175 +41,175 @@ public class RestrictionsMethodTest {
 	@Test
 	public void testRestrictionEq() throws Exception {
 		final Method method = ClasseDominio.class.getDeclaredMethod("getAtributoPrivadoInt");
-		criterion.add(Restrictions.methods().eq("getAtributoPrivadoInt"));
+		criterion.add(Restrictions.eq("getAtributoPrivadoInt")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
-		Assert.assertEquals(result.getMethods().get(0), method);
+		
+		Assert.assertEquals(result.getMembers().size(), 1);
+		Assert.assertEquals(result.getMembers().get(0), method);
 	}
 
 	@Test
 	public void testRestrictionEqEncadeado() throws Exception {
-		criterion.add(Restrictions.methods().eq("getAtributoPrivadoInt"));
-		criterion.add(Restrictions.methods().eq("isAlive"));
+		criterion.add(Restrictions.eq("getAtributoPrivadoInt")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.eq("isAlive")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertTrue(result.getFields().isEmpty());
+		
+		
 	}
 
 	@Test
 	public void testRestrictionNe() throws Exception {
-		criterion.add(Restrictions.methods().ne("getAtributoPrivadoInt"));
-		criterion.add(Restrictions.methods().like("get"));
+		criterion.add(Restrictions.ne("getAtributoPrivadoInt")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.like("get")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 5);
+		
+		Assert.assertEquals(result.getMembers().size(), 5);
 	}
 
 	@Test
 	public void testRestrictionNeEncadead() throws Exception {
-		criterion.add(Restrictions.methods().ne("getAtributoPrivadoInt"));
-		criterion.add(Restrictions.methods().ne("getClass"));
-		criterion.add(Restrictions.methods().like("get"));
+		criterion.add(Restrictions.ne("getAtributoPrivadoInt")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.ne("getClass")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.like("get")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 4);
+		
+		Assert.assertEquals(result.getMembers().size(), 4);
 	}
 
 	@Test
 	public void testRestrictionLike() throws Exception {
-		criterion.add(Restrictions.methods().like("getA"));
+		criterion.add(Restrictions.like("getA")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 3);
+		
+		Assert.assertEquals(result.getMembers().size(), 3);
 	}
 
 	@Test
 	public void testRestrictionLikeEncadeado() throws Exception {
-		criterion.add(Restrictions.methods().like("getA"));
-		criterion.add(Restrictions.methods().ne("getAtributoPrivadoInteiro"));
+		criterion.add(Restrictions.like("getA")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.ne("getAtributoPrivadoInteiro")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		
+		Assert.assertEquals(result.getMembers().size(), 2);
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeStart() throws Exception {
-		criterion.add(Restrictions.methods().like("is", LikeType.START));
+		criterion.add(Restrictions.like("is", LikeType.START)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
+		
+		Assert.assertEquals(result.getMembers().size(), 1);
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeEnd() throws Exception {
-		criterion.add(Restrictions.methods().like("Inteiro", LikeType.END));
+		criterion.add(Restrictions.like("Inteiro", LikeType.END)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 3);
+		
+		Assert.assertEquals(result.getMembers().size(), 3);
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeAnywhere() throws Exception {
-		criterion.add(Restrictions.methods().like("Priva", LikeType.ANYWHERE));
+		criterion.add(Restrictions.like("Priva", LikeType.ANYWHERE)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 8);
+		
+		Assert.assertEquals(result.getMembers().size(), 8);
 	}
 
 	@Test
 	public void testRestrictionRegex() throws Exception {
-		criterion.add(Restrictions.methods().regex("getAtributoPrivado[I|S]"));
+		criterion.add(Restrictions.regex("getAtributoPrivado[I|S]")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 3);
+		
+		Assert.assertEquals(result.getMembers().size(), 3);
 	}
 
 	@Test
 	public void testRestrictionIn() throws Exception {
-		criterion.add(Restrictions.methods().in("getAtributoPrivadoInt", "setAlive"));
+		criterion.add(Restrictions.in("getAtributoPrivadoInt", "setAlive")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		
+		Assert.assertEquals(result.getMembers().size(), 2);
 	}
 
 	@Test
 	public void testRestrictionAnnotatedWith() throws Exception {
-		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
+		criterion.add(Restrictions.annotatedWith(MyAnnotation.class)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		
+		Assert.assertEquals(result.getMembers().size(), 2);
 	}
 
 	@Test
 	public void testRestrictionShowOnlyPublicTrue() throws Exception {
-		criterion.add(Restrictions.methods().like("metodo"));
-		criterion.add(Restrictions.methods().showOnlyPublic(true));
+		criterion.add(Restrictions.like("metodo")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.showOnlyPublic(true)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
+		
+		Assert.assertEquals(result.getMembers().size(), 1);
 	}
 
 	@Test
 	public void testRestrictionShowOnlyPublicFalse() throws Exception {
-		criterion.add(Restrictions.methods().like("metodo"));
-		criterion.add(Restrictions.methods().showOnlyPublic(false));
+		criterion.add(Restrictions.like("metodo")).add(Restrictions.type(TargetType.METHOD));
+		criterion.add(Restrictions.showOnlyPublic(false)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		
+		Assert.assertEquals(result.getMembers().size(), 2);
 	}
 
 	@Test
 	public void testRestrictionEqComPropriedadeNaClassePai() throws Exception {
 		criterion = introspectorClasseFilha.createCriterion();
 		final Method method = ClasseDominio.class.getDeclaredMethod("getAtributoPrivadoInt");
-		criterion.add(Restrictions.methods().eq("getAtributoPrivadoInt"));
+		criterion.add(Restrictions.eq("getAtributoPrivadoInt")).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
-		Assert.assertEquals(method, result.getMethods().get(0));
+		
+		Assert.assertEquals(result.getMembers().size(), 1);
+		Assert.assertEquals(method, result.getMembers().get(0));
 	}
 
 	@Test
 	public void testRestrictionAnnotatedWithNaClassePai() throws Exception {
 		criterion = introspectorClasseFilha.createCriterion();
-		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
+		criterion.add(Restrictions.annotatedWith(MyAnnotation.class)).add(Restrictions.type(TargetType.METHOD));
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		
+		Assert.assertEquals(result.getMembers().size(), 2);
 	}
 
 	@Test(expected = TooManyResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
-		criterion.add(Restrictions.methods().annotatedWith(MyAnnotation.class));
+		criterion.add(Restrictions.annotatedWith(MyAnnotation.class)).add(Restrictions.type(TargetType.METHOD));
 		criterion.uniqueResult();
 	}
 
 	@Test(expected = NoResultException.class)
 	public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreNoResults() throws Exception {
-		criterion.add(Restrictions.methods().eq("xyzu"));
+		criterion.add(Restrictions.eq("xyzu"));
 		criterion.uniqueResult();
 	}
 
 	@Test
 	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
-		criterion.add(Restrictions.methods().like("metodo")).add(Restrictions.methods().showOnlyPublic(true));
+		criterion.add(Restrictions.like("metodo")).add(Restrictions.showOnlyPublic(true)).add(Restrictions.type(TargetType.METHOD));
 
 		final Method methodActual = criterion.uniqueResult();
 		final Method methodExpected = ClasseDominio.class.getDeclaredMethod("metodoQueVaiLancarException");
@@ -220,16 +221,16 @@ public class RestrictionsMethodTest {
 	public void testRestrictionDisjunction() throws Exception {
 		final Method method = ClasseDominio.class.getDeclaredMethod("getAtributoPrivadoInt");
 
-		final ComplexExpression disjunction = Restrictions.methods().disjunction();
-		criterion.add(disjunction.add(Restrictions.methods().eq("AAa")));
-		criterion.add(disjunction.add(Restrictions.methods().eq("BBa")));
-		criterion.add(disjunction.add(Restrictions.methods().eq("getAtributoPrivadoInt")));
+		final ComplexExpression disjunction = Restrictions.disjunction();
+		criterion.add(disjunction.add(Restrictions.eq("AAa")));
+		criterion.add(disjunction.add(Restrictions.eq("BBa")));
+		criterion.add(disjunction.add(Restrictions.eq("getAtributoPrivadoInt"))).add(Restrictions.type(TargetType.METHOD));
 
 		final CriterionResult result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
-		Assert.assertEquals(result.getMethods().get(0), method);
+		
+		Assert.assertEquals(result.getMembers().size(), 1);
+		Assert.assertEquals(result.getMembers().get(0), method);
 	}
 
 }
