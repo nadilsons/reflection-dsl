@@ -12,7 +12,6 @@ import java.util.List;
  *       subexpressions should evaluate to true
  */
 public class ConjunctionExpression extends ExpressionImpl implements ComplexExpression {
-	//private final List<Expression> methodExpressions = new ArrayList<Expression>();
 	protected final List<Expression> expressions = new ArrayList<Expression>();
 
 	public ConjunctionExpression() {
@@ -20,28 +19,18 @@ public class ConjunctionExpression extends ExpressionImpl implements ComplexExpr
 	}
 
 	public ComplexExpression add(final Expression expression) {
-		final List<Expression> list = getList(expression);
-		list.add(expression);
-		
+		expressions.add(expression);
+
 		return this;
 	}
 
 	@Override
 	public boolean accept(final Member member) {
-		final List<Expression> list = getList(member);
-		for (final Expression expression : list) {
+		for (final Expression expression : expressions) {
 			if (!expression.accept(member))
 				return false;
 		}
 
-		return true && !list.isEmpty();
-	}
-
-	private List<Expression> getList(final Member member) {
-		return expressions;//(member.getClass().isAssignableFrom(Field.class)) ? fieldExpressions : methodExpressions;
-	}
-
-	private List<Expression> getList(final Expression expression) {
-		return expressions;//(TargetType.FIELD.equals(expression.getTargetType())) ? fieldExpressions : methodExpressions;
+		return true && !expressions.isEmpty();
 	}
 }
