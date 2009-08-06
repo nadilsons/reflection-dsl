@@ -4,7 +4,8 @@ import java.lang.annotation.Annotation;
 
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.criteria.target.MemberTarget;
+import br.com.bit.ideias.reflection.criteria.expression.SimpleExpression;
+import br.com.bit.ideias.reflection.criteria.target.Target;
 import br.com.bit.ideias.reflection.enums.LikeType;
 import br.com.bit.ideias.reflection.enums.TargetType;
 
@@ -13,53 +14,76 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @author Nadilson Oliveira da Silva
  * @since 27/07/2009
  */
-public class Restrictions {
-    private static MemberTarget target = MemberTarget.getInstance();
-    
+public class Restrictions { 
+
+	private static final Target TARGET = new Target();
+
 	private Restrictions() {
+
 	}
 
-    public static Expression eq(String value) {
-        return target.eq(value);
-    }
-    
-    public static Expression type(TargetType type) {
-        return target.type(type);
-    }
+	public static SimpleExpression annotatedWith(Class<? extends Annotation> clazzAnnotation) {
+		return TARGET.annotatedWith(clazzAnnotation);
+	}
 
-    public static Expression in(String... values) {
-        return target.in(values);
-    }
+	public static ComplexExpression disjunction() {
+		return TARGET.disjunction();
+	}
 
-    public static Expression like(String value, LikeType likeType) {
-        return target.like(value, likeType);
-    }
+	public static ComplexExpression disjunction(Expression... expressions) {
+		return TARGET.disjunction(expressions);
+	}
 
-    public static Expression like(String value) {
-        return target.like(value);
-    }
+	public static SimpleExpression eq(String value) {
+		return TARGET.eq(value);
+	}
 
-    public static Expression ne(String value) {
-        return target.ne(value);
-    }
+	public static SimpleExpression in(String... values) {
+		return TARGET.in(values);
+	}
 
-    public static Expression regex(String value) {
-        return target.regex(value);
-    }
+	public static SimpleExpression like(String value, LikeType likeType) {
+		return TARGET.like(value, likeType);
+	}
 
-    public static Expression showOnlyPublic(boolean flag) {
-        return target.showOnlyPublic(flag);
-    }
+	public static SimpleExpression like(String value) {
+		return TARGET.like(value);
+	}
 
-    public static Expression annotatedWith(Class<? extends Annotation> clazzAnnotation) {
-        return target.annotatedWith(clazzAnnotation);
-    }
+	public static SimpleExpression ne(String value) {
+		return TARGET.ne(value);
+	}
 
-    public static ComplexExpression disjunction() {
-        return target.disjunction();
-    }
+	public static SimpleExpression regex(String value) {
+		return TARGET.regex(value);
+	}
 
-    public static ComplexExpression disjunction(Expression... expressions) {
-        return target.disjunction(expressions);
-    }
+	public static SimpleExpression setTargetType(TargetType targetType) {
+		return TARGET.setTargetType(targetType);
+	}
+
+	public static SimpleExpression showOnlyPublic(boolean flag) {
+		return TARGET.showOnlyPublic(flag);
+	}
+
+	public static SimpleExpression typeEq__soParaFields(Class<?> classType) {
+		return TARGET.typeEq__soParaFields(classType);
+	}
+
+	public static SimpleExpression typeReturn__soParaMetodos(Class<?> classType) {
+		return TARGET.typeReturn__soParaMetodos(classType);
+	}
+
+	public static SimpleExpression typesParams__soParaMetodos(Class<?>... classTypes) {
+		return TARGET.typesParams__soParaMetodos(classTypes);
+	}
+
+	// public static static static FieldsTarget fields() {
+	// return FieldsTarget.getInstance();
+	// }
+	//
+	// public static static static MethodsTarget methods() {
+	// return MethodsTarget.getInstance();
+	// }
+
 }
