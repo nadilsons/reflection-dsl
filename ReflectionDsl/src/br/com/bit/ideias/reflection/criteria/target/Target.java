@@ -2,11 +2,9 @@ package br.com.bit.ideias.reflection.criteria.target;
 
 import java.lang.annotation.Annotation;
 
-import br.com.bit.ideias.reflection.criteria.Restrictions;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.criteria.expression.DisjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.criteria.expression.ExpressionImpl;
 import br.com.bit.ideias.reflection.criteria.expression.SimpleExpression;
 import br.com.bit.ideias.reflection.enums.LikeType;
 import br.com.bit.ideias.reflection.enums.SearchType;
@@ -17,7 +15,7 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
-public final class Target {
+public class Target {
 
 	// public abstract TargetType getTargetType();
 
@@ -71,23 +69,23 @@ public final class Target {
 	// /////////////////////////////////////////////////////////////////////////
 	// ClassExpression /////////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	public Expression setTargetType(final TargetType targetType) {
+	public SimpleExpression setTargetType(final TargetType targetType) {
 		return new SimpleExpression(targetType.name(), SearchType.TYPE);
 	}
 
-	public ExpressionImpl annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
+	public SimpleExpression annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
 		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION);
 	}
 
-	public Restrictions typeEq__soParaFields(final Class<?> classType) {
+	public SimpleExpression typeEq__soParaFields(final Class<?> classType) {
 		return null;
 	}
 
-	public Restrictions typeReturn__soParaMetodos(final Class<?> classType) {
+	public SimpleExpression typeReturn__soParaMetodos(final Class<?> classType) {
 		return null;
 	}
 
-	public Restrictions typesParams__soParaMetodos(final Class<?>... classTypes) {
+	public SimpleExpression typesParams__soParaMetodos(final Class<?>... classTypes) {
 		return null;
 	}
 
