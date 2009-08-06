@@ -2,7 +2,9 @@ package br.com.bit.ideias.reflection.enums;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.regex.Pattern;
 
@@ -84,7 +86,21 @@ public enum SearchType {
 			final boolean onlyPublic = Boolean.parseBoolean(expression.getValue());
 			return !onlyPublic || Modifier.isPublic(member.getModifiers());
 		}
-	};
+	}, TYPE {
+        @Override
+        public boolean matches(final Member member, final Expression expression) {
+            TargetType type = TargetType.valueOf(expression.getValue());
+            
+            switch (type) {
+                case FIELD:
+                    return member instanceof Field;
+                case METHOD:
+                    return member instanceof Method;
+            }
+            
+            return false;
+        }
+    };
 
 	public abstract boolean matches(Member member, Expression expression);
 
