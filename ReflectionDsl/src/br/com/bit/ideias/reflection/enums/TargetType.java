@@ -1,6 +1,8 @@
 package br.com.bit.ideias.reflection.enums;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,19 +18,32 @@ public enum TargetType {
 		protected Member[] getMembers(final Class<?> classe) {
 			return classe.getDeclaredFields();
 		}
-	}, 
+
+		@Override
+		public boolean isValidMember(final Member member) {
+			return member instanceof Field;
+			Field.class.isAssignableFrom(member.getClass());
+		}
+	},
 	METHOD {
 		@Override
 		protected Member[] getMembers(final Class<?> classe) {
-			return  classe.getDeclaredMethods();
+			return classe.getDeclaredMethods();
+		}
+
+		@Override
+		public boolean isValidMember(final Member member) {
+			return member instanceof Method;
 		}
 	};
-	
+
 	public List<Member> obtainMembersInClass(final Class<?> classe) {
 		final Member[] members = getMembers(classe);
 		return new ArrayList<Member>(Arrays.asList(members));
 	}
 
-	protected abstract Member[] getMembers(final Class<?> classe); 
+	public abstract boolean isValidMember(Member member);
+
+	protected abstract Member[] getMembers(final Class<?> classe);
 
 }
