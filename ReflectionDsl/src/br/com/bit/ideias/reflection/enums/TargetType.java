@@ -22,7 +22,6 @@ public enum TargetType {
 		@Override
 		public boolean isValidMember(final Member member) {
 			return member instanceof Field;
-			Field.class.isAssignableFrom(member.getClass());
 		}
 	},
 	METHOD {
