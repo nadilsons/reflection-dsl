@@ -42,6 +42,17 @@ public class RestrictionsTest {
 		criterionClasseFilha = introspectorClasseFilha.createCriterion();
 		criterionClasseFilha.add(Restrictions.setTargetType(TargetType.METHOD));
 	}
+	
+	@Test
+    public void testRestrictionEqDirectCriterion() throws Exception {
+        final Field field = ClasseDominio.class.getDeclaredField("atributoPrivadoInt");
+        Criterion localCriterion = Introspector.createCriterion(ClasseDominio.class).add(Restrictions.eq("atributoPrivadoInt"));
+        final CriterionResult result = localCriterion.list();
+
+        Assert.assertTrue(result.getMethods().isEmpty());
+        Assert.assertEquals(result.getFields().size(), 1);
+        Assert.assertEquals(result.getFields().get(0), field);
+    }
 
 	@Test
 	public void testRestrictionEq() throws Exception {

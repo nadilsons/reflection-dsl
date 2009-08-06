@@ -147,6 +147,14 @@ public class Introspector {
 		criterion = new CriterionImpl(this);
 		return criterion;
 	}
+	
+	public static Criterion createCriterion(String className) {
+        return forClass(className).createCriterion();
+    }
+	
+	public static Criterion createCriterion(Class<?> targetClass) {
+        return forClass(targetClass).createCriterion();
+    }
 
 	// /////////////////////////////////////////////////////////////////////////
 	/**
