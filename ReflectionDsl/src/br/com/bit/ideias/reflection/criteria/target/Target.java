@@ -72,7 +72,7 @@ public final class Target {
 	// ClassExpression /////////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
 	public Expression setTargetType(final TargetType targetType) {
-		return new SimpleExpression(targetType.name(), SearchType.TARGET_TYPE);
+		return new SimpleExpression(targetType.name(), SearchType.TYPE);
 	}
 
 	public ExpressionImpl annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
