@@ -110,12 +110,12 @@ public class IntrospectorTest {
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
 		introspectorForClass.create(10);
 		assertNotNull(introspectorForClass.getTargetInstance());
-		assertEquals(((ClasseDominio) introspectorForClass.getTargetInstance()).getAtributoPrivadoInteiro(), 10);
+		assertEquals(((ClasseDominio) introspectorForClass.getTargetInstance()).getAtributoPrivadoInteiro().intValue(), 10);
 
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
 		introspectorForClass.create(15, "String_ok");
 		assertNotNull(introspectorForClass.getTargetInstance());
-		assertEquals(((ClasseDominio) introspectorForClass.getTargetInstance()).getAtributoPrivadoInteiro(), 15);
+		assertEquals(((ClasseDominio) introspectorForClass.getTargetInstance()).getAtributoPrivadoInteiro().intValue(), 15);
 		assertEquals(((ClasseDominio) introspectorForClass.getTargetInstance()).getAtributoPrivadoString(), "String_ok");
 	}
 
