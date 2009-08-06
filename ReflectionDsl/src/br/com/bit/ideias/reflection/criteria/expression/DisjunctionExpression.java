@@ -11,7 +11,7 @@ import java.lang.reflect.Member;
 public class DisjunctionExpression extends ConjunctionExpression {
     @Override
     public boolean accept(Member member) {
-        for (Expression expression : fieldExpressions) {
+        for (Expression expression : expressions) {
             if(expression.accept(member)) return true;
         }
         

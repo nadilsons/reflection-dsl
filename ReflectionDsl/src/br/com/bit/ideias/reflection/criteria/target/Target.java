@@ -18,30 +18,31 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @since 28/07/2009
  */
 public abstract class Target {
-
-	public abstract TargetType getTargetType();
-
 	// /////////////////////////////////////////////////////////////////////////
 	// SimpleExpression ///////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	public SimpleExpression eq(final String value) {
-		return new SimpleExpression(value, SearchType.EQ, getTargetType());
+	public Expression eq(final String value) {
+		return new SimpleExpression(value, SearchType.EQ);
+	}
+	
+	public Expression type(TargetType type) {
+        return new SimpleExpression(type.name(), SearchType.TYPE);
+    }
+
+	public Expression ne(final String value) {
+		return new SimpleExpression(value, SearchType.NE);
 	}
 
-	public SimpleExpression ne(final String value) {
-		return new SimpleExpression(value, SearchType.NE, getTargetType());
+	public Expression like(final String value) {
+		return new SimpleExpression(value, SearchType.LIKE_START);
 	}
 
-	public SimpleExpression like(final String value) {
-		return new SimpleExpression(value, SearchType.LIKE_START, getTargetType());
-	}
-
-	public SimpleExpression like(final String value, final LikeType likeType) {
+	public Expression like(final String value, final LikeType likeType) {
 		switch (likeType) {
 		case START:
 			return like(value);
 		case END:
-			return new SimpleExpression(value, SearchType.LIKE_END, getTargetType());
+			return new SimpleExpression(value, SearchType.LIKE_END);
 		case ANYWHERE:
 			return regex(value);
 		default:
@@ -49,30 +50,30 @@ public abstract class Target {
 		}
 	}
 
-	public SimpleExpression regex(final String value) {
-		return new SimpleExpression(value, SearchType.REGEX, getTargetType());
+	public Expression regex(final String value) {
+		return new SimpleExpression(value, SearchType.REGEX);
 	}
 
-	public SimpleExpression in(final String... values) {
+	public Expression in(final String... values) {
 		final StringBuilder concat = new StringBuilder();
 		for (final String value : values)
 			concat.append(value).append(ExpressionImpl.NAME_SEPARATOR);
 
-		return new SimpleExpression(concat.toString(), SearchType.IN, getTargetType());
+		return new SimpleExpression(concat.toString(), SearchType.IN);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
 	// ConfigExpression ////////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	public ExpressionImpl showOnlyPublic(final boolean flag) {
-		return new SimpleExpression(Boolean.toString(flag), SearchType.ONLY_PUBLIC, getTargetType());
+	public Expression showOnlyPublic(final boolean flag) {
+		return new SimpleExpression(Boolean.toString(flag), SearchType.ONLY_PUBLIC);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
 	// ClassExpression /////////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
-	public ExpressionImpl annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
-		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION, getTargetType());
+	public Expression annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
+		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION);
 	}
 
 	public Restrictions typeEq__soParaFields(final Class<?> classType) {
@@ -105,8 +106,4 @@ public abstract class Target {
 
 		return disjunctionExpression;
 	}
-
-	// public ComplexExpression conjuction() {
-	// return null;
-	// }
 }

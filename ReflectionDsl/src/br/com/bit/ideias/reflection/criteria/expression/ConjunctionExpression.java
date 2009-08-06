@@ -1,11 +1,8 @@
 package br.com.bit.ideias.reflection.criteria.expression;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
-
-import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * @author Leonardo Campos
@@ -15,11 +12,11 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  *       subexpressions should evaluate to true
  */
 public class ConjunctionExpression extends ExpressionImpl implements ComplexExpression {
-	private final List<Expression> methodExpressions = new ArrayList<Expression>();
-	protected final List<Expression> fieldExpressions = new ArrayList<Expression>();
+	//private final List<Expression> methodExpressions = new ArrayList<Expression>();
+	protected final List<Expression> expressions = new ArrayList<Expression>();
 
 	public ConjunctionExpression() {
-		super(null, null, null);
+		super(null, null);
 	}
 
 	public ComplexExpression add(final Expression expression) {
@@ -41,10 +38,10 @@ public class ConjunctionExpression extends ExpressionImpl implements ComplexExpr
 	}
 
 	private List<Expression> getList(final Member member) {
-		return (member.getClass().isAssignableFrom(Field.class)) ? fieldExpressions : methodExpressions;
+		return expressions;//(member.getClass().isAssignableFrom(Field.class)) ? fieldExpressions : methodExpressions;
 	}
 
 	private List<Expression> getList(final Expression expression) {
-		return (TargetType.FIELD.equals(expression.getTargetType())) ? fieldExpressions : methodExpressions;
+		return expressions;//(TargetType.FIELD.equals(expression.getTargetType())) ? fieldExpressions : methodExpressions;
 	}
 }

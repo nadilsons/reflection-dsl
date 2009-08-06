@@ -1,6 +1,5 @@
 package br.com.bit.ideias.reflection.criteria.target;
 
-import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
@@ -18,9 +17,9 @@ public class MethodsTarget extends Target {
 	public static MethodsTarget getInstance() {
 		return instance;
 	}
-
-	@Override
-	public TargetType getTargetType() {
-		return TargetType.METHOD;
-	}
+//
+//	@Override
+//	public TargetType getTargetType() {
+//		return TargetType.METHOD;
+//	}
 }

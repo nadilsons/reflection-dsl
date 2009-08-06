@@ -3,7 +3,6 @@ package br.com.bit.ideias.reflection.criteria.expression;
 import java.lang.reflect.Member;
 
 import br.com.bit.ideias.reflection.enums.SearchType;
-import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * 
@@ -16,20 +15,13 @@ public abstract class ExpressionImpl implements Expression {
 
 	protected SearchType searchType;
 
-	protected TargetType targetType;
-
-	public ExpressionImpl(final String value, final SearchType searchType, final TargetType targetType) {
+	public ExpressionImpl(final String value, final SearchType searchType) {
 		this.value = value;
 		this.searchType = searchType;
-		this.targetType = targetType;
 	}
 
 	public String getValue() {
 		return value;
-	}
-
-	public TargetType getTargetType() {
-		return targetType;
 	}
 
 	public SearchType getSearchType() {

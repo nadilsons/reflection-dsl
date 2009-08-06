@@ -3,7 +3,6 @@ package br.com.bit.ideias.reflection.criteria.expression;
 import java.lang.reflect.Member;
 
 import br.com.bit.ideias.reflection.enums.SearchType;
-import br.com.bit.ideias.reflection.enums.TargetType;
 
 /**
  * @author Leonardo Campos
@@ -16,8 +15,6 @@ public interface Expression {
 	public boolean accept(Member member);
 
 	public String getValue();
-
-	public TargetType getTargetType();
 
 	public SearchType getSearchType();
 }

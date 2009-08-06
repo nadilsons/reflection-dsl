@@ -9,7 +9,7 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @since 28/07/2009
  */
 public class SimpleExpression extends ExpressionImpl {
-	public SimpleExpression(String value, SearchType searchType, TargetType targetType) {
-		super(value, searchType, targetType);
+	public SimpleExpression(String value, SearchType searchType) {
+		super(value, searchType);
 	}
 }

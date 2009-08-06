@@ -13,6 +13,7 @@ import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
+import br.com.bit.ideias.reflection.util.CollectionUtil;
 
 /**
  * 
@@ -33,35 +34,21 @@ public class CriterionImpl implements Criterion {
 		return this;
 	}
 
-	public <T extends AccessibleObject> T uniqueResult() {
+	@SuppressWarnings("unchecked")
+    public <T extends AccessibleObject> T uniqueResult() {
 		final CriterionResult result = list();
-		if (isEmpty(result.getFields()) && isEmpty(result.getMethods()))
+		if (isEmpty(result.getMembers()))
 			throw new NoResultException();
 
-		if (!isEmpty(result.getFields()) && !isEmpty(result.getMethods()))
+
+		if (result.getMembers().size() > 1)
 			throw new TooManyResultException();
 
-		if (!isEmpty(result.getFields())) {
-			if (result.getFields().size() > 1)
-				throw new TooManyResultException();
-
-			return (T) result.getFields().get(0);
-		}
-
-		if (result.getMethods().size() > 1)
-			throw new TooManyResultException();
-
-		return (T) result.getMethods().get(0);
+		return (T) result.getMembers().get(0);
 	}
 
 	public CriterionResult list() {
-		List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
-		List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
-
-		fields = executeSearch(fields);
-		methods = executeSearch(methods);
-
-		return new CriterionResult(fields, methods);
+		return new CriterionResult(executeSearch(obtainAllMembers()));
 	}
 
 	private List<Member> executeSearch(final List<? extends Member> members) {
@@ -73,6 +60,17 @@ public class CriterionImpl implements Criterion {
 		return filtred;
 	}
 
+    private List<Member> obtainAllMembers() {
+	    List<Member> members = new ArrayList<Member>();
+	    List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
+	    List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
+	    
+	    if(!CollectionUtil.isEmpty(fields)) members.addAll(fields);
+	    if(!CollectionUtil.isEmpty(methods)) members.addAll(methods);
+	    
+	    return members;
+    }
+	
 	@SuppressWarnings("unchecked")
 	private List<? extends Member> obtainAllMembers(final TargetType targetType) {
 		Class<?> classe = introspector.getTargetClass();
