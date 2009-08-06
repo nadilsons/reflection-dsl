@@ -1,5 +1,7 @@
 package br.com.bit.ideias.reflection.criteria;
 
+import static br.com.bit.ideias.reflection.util.CollectionUtil.isEmpty;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.enums.TargetType;
+import br.com.bit.ideias.reflection.exceptions.NoResultException;
+import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 
 /**
  * 
@@ -25,12 +29,29 @@ public class CriterionImpl implements Criterion {
 
 	public Criterion add(final Expression expression) {
 		expressionHolder.add(expression);
-		
+
 		return this;
 	}
-	
-	public <T extends AccessibleObject> T unique() {
-		return list().unique();
+
+	public <T extends AccessibleObject> T uniqueResult() {
+		final CriterionResult result = list();
+		if (isEmpty(result.getFields()) && isEmpty(result.getMethods()))
+			throw new NoResultException();
+
+		if (!isEmpty(result.getFields()) && !isEmpty(result.getMethods()))
+			throw new TooManyResultException();
+
+		if (!isEmpty(result.getFields())) {
+			if (result.getFields().size() > 1)
+				throw new TooManyResultException();
+
+			return (T) result.getFields().get(0);
+		}
+
+		if (result.getMethods().size() > 1)
+			throw new TooManyResultException();
+
+		return (T) result.getMethods().get(0);
 	}
 
 	public CriterionResult list() {

@@ -15,5 +15,5 @@ public interface Criterion {
 
 	public CriterionResult list();
 
-	public <T extends AccessibleObject> T unique();
+	public <T extends AccessibleObject> T uniqueResult();
 }
