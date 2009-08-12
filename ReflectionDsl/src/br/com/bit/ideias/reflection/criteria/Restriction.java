@@ -14,11 +14,11 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  * @author Nadilson Oliveira da Silva
  * @since 27/07/2009
  */
-public class Restrictions { 
+public class Restriction { 
 
 	private static final Target TARGET = new Target();
 
-	private Restrictions() {
+	private Restriction() {
 
 	}
 
