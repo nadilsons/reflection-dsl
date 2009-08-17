@@ -17,8 +17,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.springframework.util.StringUtils;
-
 /**
  * @author Leonardo Campos
  * @date 16/08/2009
@@ -748,6 +746,6 @@ public class PackageScanner {
      * @throws URISyntaxException if the location wasn't a valid URI
      */
     public static URI toURI(String location) throws URISyntaxException {
-        return new URI(StringUtils.replace(location, " ", "%20"));
+        return new URI(location.replace(" ", "%20"));
     }
 }
