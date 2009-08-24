@@ -10,5 +10,5 @@ import java.net.URL;
 public interface Resource {
     public File getFile();
     public URL getURL();
-    public Object createRelative(String relativePath);
+    public Resource createRelative(String relativePath);
 }

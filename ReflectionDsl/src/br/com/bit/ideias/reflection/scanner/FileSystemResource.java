@@ -14,7 +14,7 @@ public class FileSystemResource implements Resource {
         this.file = file;
     }
 
-    public Object createRelative(String relativePath) {
+    public Resource createRelative(String relativePath) {
         return null;
     }
 

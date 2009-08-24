@@ -2,14 +2,12 @@ package br.com.bit.ideias.reflection.scanner;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -48,11 +46,9 @@ public class PackageScanner {
     public static final String URL_PROTOCOL_CODE_SOURCE = "code-source";
 
     
-    private String packagePath;
     private String path;
 
     private PackageScanner(String packagePath) {
-        this.packagePath = packagePath;
         this.path = CLASSPATH_ALL_URL_PREFIX + convertClassNameToResourcePath(packagePath) + RESOURCE_PATTERN;
     }
     
@@ -72,14 +68,6 @@ public class PackageScanner {
     }
 
     public ScannerResult scan() {
-//        Enumeration<URL> resources = getResources();
-//        if(resources != null) {
-//            while (resources.hasMoreElements()) {
-//                URL url = (URL) resources.nextElement();
-//                
-//                System.out.println(url);
-//            }
-//        }
         try {
             Resource[] resources = getResources(path);
             
@@ -89,18 +77,9 @@ public class PackageScanner {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
         return new ScannerResult();
     }
-//
-//    protected Enumeration<URL> getResources() {
-//        try {
-//            return getClassLoader().getResources(path);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        
-//        return null;
-//    }
 
     protected ClassLoader getClassLoader() {
         return this.getClass().getClassLoader();
@@ -143,7 +122,7 @@ public class PackageScanner {
         String subPattern = locationPattern.substring(rootDirPath.length());
         
         Resource[] rootDirResources = getResources(rootDirPath);
-        Set result = new LinkedHashSet(16);
+        Set<Resource> result = new LinkedHashSet<Resource>(16);
         for (int i = 0; i < rootDirResources.length; i++) {
             Resource rootDirResource = resolveRootDirResource(rootDirResources[i]);
             if (isJarResource(rootDirResource)) {
@@ -167,7 +146,7 @@ public class PackageScanner {
      * @see #retrieveMatchingFiles
      * @see org.springframework.util.PathMatcher
      */
-    protected Set doFindPathMatchingFileResources(Resource rootDirResource, String subPattern) throws IOException {
+    protected Set<Resource> doFindPathMatchingFileResources(Resource rootDirResource, String subPattern) throws IOException {
         File rootDir = rootDirResource.getFile().getAbsoluteFile();
 
         return doFindMatchingFileSystemResources(rootDir, subPattern);
@@ -183,10 +162,10 @@ public class PackageScanner {
      * @see #retrieveMatchingFiles
      * @see org.springframework.util.PathMatcher
      */
-    protected Set doFindMatchingFileSystemResources(File rootDir, String subPattern) throws IOException {
-        Set matchingFiles = retrieveMatchingFiles(rootDir, subPattern);
-        Set result = new LinkedHashSet(matchingFiles.size());
-        for (Iterator it = matchingFiles.iterator(); it.hasNext();) {
+    protected Set<Resource> doFindMatchingFileSystemResources(File rootDir, String subPattern) throws IOException {
+        Set<File> matchingFiles = retrieveMatchingFiles(rootDir, subPattern);
+        Set<Resource> result = new LinkedHashSet<Resource>(matchingFiles.size());
+        for (Iterator<File> it = matchingFiles.iterator(); it.hasNext();) {
             File file = (File) it.next();
             result.add(new FileSystemResource(file));
         }
@@ -202,7 +181,7 @@ public class PackageScanner {
      * @return the Set of matching File instances
      * @throws IOException if directory contents could not be retrieved
      */
-    protected Set retrieveMatchingFiles(File rootDir, String pattern) throws IOException {
+    protected Set<File> retrieveMatchingFiles(File rootDir, String pattern) throws IOException {
         if (!rootDir.isDirectory()) {
             throw new IllegalArgumentException("Resource path [" + rootDir + "] does not denote a directory");
         }
@@ -213,7 +192,7 @@ public class PackageScanner {
         }
         
         fullPattern = fullPattern + pattern.replace(File.separatorChar, '/');
-        Set result = new LinkedHashSet(8);
+        Set<File> result = new LinkedHashSet<File>(8);
         doRetrieveMatchingFiles(fullPattern, rootDir, result);
         return result;
     }
@@ -227,7 +206,7 @@ public class PackageScanner {
      * @param result the Set of matching File instances to add to
      * @throws IOException if directory contents could not be retrieved
      */
-    protected void doRetrieveMatchingFiles(String fullPattern, File dir, Set result) throws IOException {
+    protected void doRetrieveMatchingFiles(String fullPattern, File dir, Set<File> result) throws IOException {
         File[] dirContents = dir.listFiles();
         if (dirContents == null) {
             throw new IOException("Could not retrieve contents of directory [" + dir.getAbsolutePath() + "]");
@@ -390,7 +369,7 @@ public class PackageScanner {
      * @see java.net.JarURLConnection
      * @see org.springframework.util.PathMatcher
      */
-    protected Set doFindPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
+    protected Set<Resource> doFindPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
         URLConnection con = rootDirResource.getURL().openConnection();
         JarFile jarFile = null;
         String jarFileUrl = null;
@@ -432,8 +411,8 @@ public class PackageScanner {
                 // The Sun JRE does not return a slash here, but BEA JRockit does.
                 rootEntryPath = rootEntryPath + "/";
             }
-            Set result = new LinkedHashSet(8);
-            for (Enumeration entries = jarFile.entries(); entries.hasMoreElements();) {
+            Set<Resource> result = new LinkedHashSet<Resource>(8);
+            for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements();) {
                 JarEntry entry = (JarEntry) entries.nextElement();
                 String entryPath = entry.getName();
                 if (entryPath.startsWith(rootEntryPath)) {
@@ -491,12 +470,14 @@ public class PackageScanner {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        Enumeration resourceUrls = getClassLoader().getResources(path);
-        Set result = new LinkedHashSet(16);
+        
+        Enumeration<URL> resourceUrls = getClassLoader().getResources(path);
+        Set<Resource> result = new LinkedHashSet<Resource>(16);
         while (resourceUrls.hasMoreElements()) {
             URL url = (URL) resourceUrls.nextElement();
             result.add(convertClassLoaderURL(url));
         }
+        
         return (Resource[]) result.toArray(new Resource[result.size()]);
     }
     
@@ -746,6 +727,6 @@ public class PackageScanner {
      * @throws URISyntaxException if the location wasn't a valid URI
      */
     public static URI toURI(String location) throws URISyntaxException {
-        return new URI(location.replace(" ", "%20"));
+        return new URI(location.replaceAll(" ", "%20"));
     }
 }

@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.scanner;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -21,8 +22,16 @@ public class UrlResource implements Resource {
         return url;
     }
 
-    public Object createRelative(String relativePath) {
-        return null;
+    public Resource createRelative(String relativePath) {
+        if (relativePath.startsWith("/")) {
+            relativePath = relativePath.substring(1);
+        }
+        
+        try {
+            return new UrlResource(new URL(this.url, relativePath));
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
     public File getFile() {
