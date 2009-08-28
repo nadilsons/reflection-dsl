@@ -17,8 +17,6 @@ import br.com.bit.ideias.reflection.enums.TargetType;
  */
 public class Target {
 
-	// public abstract TargetType getTargetType();
-
 	// /////////////////////////////////////////////////////////////////////////
 	// SimpleExpression ///////////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////////////////
@@ -107,8 +105,4 @@ public class Target {
 
 		return disjunctionExpression;
 	}
-
-	// public ComplexExpression conjuction() {
-	// return null;
-	// }
 }
