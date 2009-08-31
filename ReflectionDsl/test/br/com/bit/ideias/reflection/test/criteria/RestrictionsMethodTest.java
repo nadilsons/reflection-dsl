@@ -165,7 +165,7 @@ public class RestrictionsMethodTest {
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 1);
+		Assert.assertEquals(3, result.getMethods().size());
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class RestrictionsMethodTest {
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(result.getMethods().size(), 2);
+		Assert.assertEquals(4, result.getMethods().size());
 	}
 
 	@Test
@@ -213,7 +213,7 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
-		criterion.add(Restriction.like("metodo")).add(Restriction.showOnlyPublic(true));
+		criterion.add(Restriction.like("metodoQueVaiLanc")).add(Restriction.showOnlyPublic(true));
 
 		final Method methodActual = criterion.uniqueResult();
 		final Method methodExpected = ClasseDominio.class.getDeclaredMethod("metodoQueVaiLancarException");
@@ -240,4 +240,48 @@ public class RestrictionsMethodTest {
 		Assert.assertEquals(result.getMethods().get(0), method);
 	}
 
+	@Test
+	public void testTypeEq() {
+		criterion.add(Restriction.typeEq(String.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertTrue(result.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testTypeReturn() {
+		criterion.add(Restriction.typeReturn(Integer.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertEquals(3, result.getMethods().size());
+	}
+	
+	@Test
+	public void testTypeParams() {
+		criterion.add(Restriction.typesParams(String.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertEquals(2, result.getMethods().size());
+	}
+	
+	@Test
+	public void testTypeParamsComMaisDeUmParametro() {
+		criterion.add(Restriction.typesParams(String.class, Integer.class, Boolean.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertEquals(1, result.getMethods().size());
+	}
+	
+	@Test
+	public void testTypeParamsComMaisDeUmParametroPrimitivo() {
+		criterion.add(Restriction.typesParams(String.class, Integer.class, boolean.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertEquals(1, result.getMethods().size());
+	}
 }

@@ -66,16 +66,16 @@ public class Restriction {
 		return TARGET.showOnlyPublic(flag);
 	}
 
-	public static SimpleExpression typeEq__soParaFields(Class<?> classType) {
-		return TARGET.typeEq__soParaFields(classType);
+	public static SimpleExpression typeEq(Class<?> classType) {		
+		return TARGET.typeEq(classType);
 	}
 
-	public static SimpleExpression typeReturn__soParaMetodos(Class<?> classType) {
-		return TARGET.typeReturn__soParaMetodos(classType);
+	public static SimpleExpression typeReturn(Class<?> classType) {
+		return TARGET.typeReturn(classType);
 	}
 
-	public static SimpleExpression typesParams__soParaMetodos(Class<?>... classTypes) {
-		return TARGET.typesParams__soParaMetodos(classTypes);
+	public static SimpleExpression typesParams(Class<?>... classTypes) {
+		return TARGET.typesParams(classTypes);
 	}
 
 	// public static static static FieldsTarget fields() {

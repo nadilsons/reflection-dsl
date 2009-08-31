@@ -2,7 +2,9 @@ package br.com.bit.ideias.reflection.enums;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.regex.Pattern;
 
@@ -91,8 +93,51 @@ public enum SearchType {
 			final TargetType targetType = TargetType.valueOf(expression.getValue());
 			return targetType.isValidMember(member);
 		}
+	}, 
+	TYPE_EQ {
+		@Override
+		public boolean matches(Member member, Expression expression) {
+			Class<?> classe = extractClass(expression.getValue());
+			return Field.class.equals(member.getClass()) && ((Field)member).getType().equals(classe);
+		}
+	},
+	TYPE_RETURN {
+		@Override
+		public boolean matches(Member member, Expression expression) {
+			Class<?> classe = extractClass(expression.getValue());
+			return Method.class.equals(member.getClass()) && ((Method)member).getReturnType().equals(classe);
+		}
+	}, 
+	TYPES_PARAMS {
+		@Override
+		public boolean matches(Member member, Expression expression) {		
+			if(!Method.class.equals(member.getClass()))
+				return false;
+			
+			final String[] values = expression.getValue().split(Expression.NAME_SEPARATOR);
+			Class<?>[] parameterTypes = ((Method)member).getParameterTypes();
+			
+			if(values.length != parameterTypes.length)
+				return false;
+			
+			for (int i = 0; i < parameterTypes.length; i++) {
+				if(!parameterTypes[i].equals(extractClass(values[i])))
+					return false;
+			}
+			
+			return true;
+		}
 	};
 
 	public abstract boolean matches(Member member, Expression expression);
+	
+	private static Class<?> extractClass(String className) {
+		try {
+			return Class.forName(className);			
+		} catch (ClassNotFoundException e) {
+			throw new ClassNotExistsException(e);
+		}
+	}
+	
 
 }

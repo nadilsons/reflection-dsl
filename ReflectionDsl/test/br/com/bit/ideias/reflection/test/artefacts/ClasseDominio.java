@@ -95,4 +95,12 @@ public class ClasseDominio {
 	public void setAlive(final boolean isAlive) {
 		this.isAlive = isAlive;
 	}
+	
+	public void metodoComTresParametros(String p1, Integer p2, Boolean p3) {
+		
+	}
+	
+	public void metodoComTresParametrosPrimitivos(String p1, Integer p2, boolean p3) {
+		
+	}
 }

@@ -252,5 +252,41 @@ public class RestrictionsTest {
 		Assert.assertTrue(result.getMethods().isEmpty());
 		Assert.assertEquals(result.getFields().size(), 3);
 	}
+	
+	@Test
+	public void testTypeEq() {
+		criterion.add(Restriction.typeEq(String.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertEquals(2, result.getFields().size());
+		Assert.assertTrue(result.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testTypeReturn() {
+		criterion.add(Restriction.typeReturn(Integer.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertTrue(result.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testTypeParams() {
+		criterion.add(Restriction.typesParams(String.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertTrue(result.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testTypeParamsComMaisDeUmParametro() {
+		criterion.add(Restriction.typesParams(String.class, Integer.class, boolean.class));
+		final CriterionResult result = criterion.list();
+		
+		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertTrue(result.getMethods().isEmpty());
+	}
 
 }

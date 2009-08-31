@@ -75,16 +75,20 @@ public class Target {
 		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION);
 	}
 
-	public SimpleExpression typeEq__soParaFields(final Class<?> classType) {
-		return null;
+	public SimpleExpression typeEq(final Class<?> classType) {
+		return new SimpleExpression(classType.getName(), SearchType.TYPE_EQ);
 	}
 
-	public SimpleExpression typeReturn__soParaMetodos(final Class<?> classType) {
-		return null;
+	public SimpleExpression typeReturn(final Class<?> classType) {
+		return new SimpleExpression(classType.getName(), SearchType.TYPE_RETURN);
 	}
 
-	public SimpleExpression typesParams__soParaMetodos(final Class<?>... classTypes) {
-		return null;
+	public SimpleExpression typesParams(final Class<?>... classTypes) {
+		final StringBuilder concat = new StringBuilder();
+		for (final Class<?> value : classTypes)
+			concat.append(value.getName()).append(Expression.NAME_SEPARATOR);
+		
+		return new SimpleExpression(concat.toString(), SearchType.TYPES_PARAMS);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
