@@ -18,9 +18,18 @@ public class ExtractorMethod extends BaseExtractor {
 
 	private final String methodName;
 
+	private final Method method;
+
 	ExtractorMethod(final Extractor extractor, final String methodName) {
 		this.extractor = extractor;
 		this.methodName = methodName;
+		this.method = null;
+	}
+	
+	ExtractorMethod(final Extractor extractor, final Method method) {
+		this.extractor = extractor;
+		this.methodName = null;
+		this.method = method;
 	}
 
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
@@ -32,7 +41,7 @@ public class ExtractorMethod extends BaseExtractor {
 		final Object targetInstance = extractor.getTargetInstance();
 		try {
 			final Class<?>[] parametersTypes = getParametersTypes(primitiveParam, params);
-			final Method method = targetClass.getDeclaredMethod(methodName, parametersTypes);
+			final Method method = (this.method == null) ? targetClass.getDeclaredMethod(methodName, parametersTypes) : this.method;
 			method.setAccessible(accessPrivateMembers);
 			return method.invoke(targetInstance, params);
 

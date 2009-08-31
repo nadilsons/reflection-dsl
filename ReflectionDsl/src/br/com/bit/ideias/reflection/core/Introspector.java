@@ -1,5 +1,8 @@
 package br.com.bit.ideias.reflection.core;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import br.com.bit.ideias.reflection.common.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionImpl;
@@ -88,11 +91,25 @@ public class Introspector {
 
 		return this;
 	}
+	
+	public Introspector field(final Field field) {
+		this.extractor.setField(field);
+		reset(TargetType.FIELD);
+		
+		return this;
+	}
 
 	public Introspector method(final String methodName) {
 		this.extractor.setMethod(methodName);
 		reset(TargetType.METHOD);
 
+		return this;
+	}
+	
+	public Introspector method(final Method method) {
+		this.extractor.setMethod(method);
+		reset(TargetType.METHOD);
+		
 		return this;
 	}
 

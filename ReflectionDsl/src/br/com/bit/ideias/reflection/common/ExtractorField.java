@@ -31,6 +31,11 @@ public class ExtractorField {
 		}
 	}
 
+	ExtractorField(Extractor extractor, Field field) {
+		this.extractor = extractor;
+		this.field = field;
+	}
+
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
 		if (params.length > 1)
 			throw new InvalidParameterException(String.format("Número excessivo de parametros [%s] para o metodo setter", params.length));

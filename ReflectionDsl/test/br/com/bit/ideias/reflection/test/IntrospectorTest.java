@@ -5,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -128,7 +131,7 @@ public class IntrospectorTest {
 	@Test
 	public void testCreateComInterceptor() throws Exception {
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		// introspectorForClass.applyInterceptor(interceptor).create(params);
+		//introspectorForClass.applyInterceptor(interceptor).create(params);
 	}
 
 	@Test(expected = ApplyInterceptorException.class)
@@ -170,6 +173,34 @@ public class IntrospectorTest {
 	// /////////////////////////////////////////////////////////////////////////
 	// invokeField
 	// /////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testInvokeFieldUsandoApiReflection() throws Exception { 
+		final String valorTeste = "Valor para o teste";
+		final Field field = TARGET_CLASS.getDeclaredField("atributoPrivadoString");
+		
+		introspectorForClass.field(field).invoke(valorTeste);
+		final Object invokeValue = introspectorForClass.field(field).invoke();
+		assertEquals(invokeValue, valorTeste);
+
+		introspectorInObject.field(field).invoke(valorTeste);
+		final Object invokeValue2 = introspectorForClass.field(field).invoke();
+		assertEquals(invokeValue2, valorTeste);
+	}
+	
+	@Test
+	public void testInvokeFieldUsandoApiReflectionDiretoComAcesso() throws Exception {
+		final Integer valorTeste = 200180;
+		final Field field = TARGET_CLASS.getDeclaredField("atributoIsolado");
+		
+		introspectorForClass.field(field).directAccess().invoke(valorTeste);
+		final Object invokeValue = introspectorForClass.field(field).directAccess().invoke();
+		assertEquals(invokeValue, valorTeste);
+
+		introspectorInObject.field(field).directAccess().invoke(valorTeste);
+		final Object invokeValue2 = introspectorForClass.field(field).directAccess().invoke();
+		assertEquals(invokeValue2, valorTeste);
+	}
+	
 	@Test
 	public void testInvokeFieldSemParametro() throws Exception {
 		final Object invokeValue = introspectorForClass.field("atributoPrivadoInteiro").invoke();
@@ -246,6 +277,23 @@ public class IntrospectorTest {
 	// invokeMethod
 	// /////////////////////////////////////////////////////////////////////////
 	@Test
+	public void testInvokeMethodSemParametroUsandoApiReflection() throws Exception {
+		final Method method = TARGET_CLASS.getDeclaredMethod("getDobroAtributoPrivadoInteiro");
+		final Object invoke = introspectorForClass.method(method).invoke();
+		
+		assertEquals(invoke, INTEIRO * 2);
+	}
+	
+	@Test
+	public void testInvokeMethodComParametroUsandoApiReflection() throws Exception {
+		final Integer valorTeste = 200180;
+		final Method method = TARGET_CLASS.getDeclaredMethod("getDobro", Integer.class);
+
+		final Object invoke = introspectorForClass.method(method).invoke(valorTeste);
+		assertEquals(invoke, valorTeste * 2);
+	}
+	
+	@Test
 	public void testInvokeMethodSemParametros() throws Exception {
 		final Object invoke = introspectorForClass.method("getDobroAtributoPrivadoInteiro").invoke();
 		assertEquals(invoke, INTEIRO * 2);
@@ -306,4 +354,5 @@ public class IntrospectorTest {
 		introspectorForClass.accessPrivateMembers();
 	}
 
+	
 }

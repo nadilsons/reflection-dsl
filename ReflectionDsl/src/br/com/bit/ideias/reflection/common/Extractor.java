@@ -1,5 +1,8 @@
 package br.com.bit.ideias.reflection.common;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
@@ -46,6 +49,11 @@ public class Extractor extends BaseExtractor {
 		extractorMethod = new ExtractorMethod(this, methodName);
 		return extractorMethod;
 	}
+	
+	public ExtractorMethod setMethod(final Method method) {
+		extractorMethod = new ExtractorMethod(this, method);
+		return extractorMethod;
+	}
 
 	public ExtractorMethod method() {
 		if (extractorMethod == null)
@@ -58,6 +66,12 @@ public class Extractor extends BaseExtractor {
 		extractorField = new ExtractorField(this, fieldName);
 		return extractorField;
 	}
+	
+	public ExtractorField setField(final Field field) {
+		extractorField = new ExtractorField(this, field);
+		return extractorField;
+	}
+
 
 	public ExtractorField field() {
 		if (extractorField == null)
