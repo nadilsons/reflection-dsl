@@ -58,7 +58,7 @@ public class Restriction {
 		return TARGET.regex(value);
 	}
 
-	public static SimpleExpression setTargetType(TargetType targetType) {
+	public static SimpleExpression targetType(TargetType targetType) {
 		return TARGET.setTargetType(targetType);
 	}
 

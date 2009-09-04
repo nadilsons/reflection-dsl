@@ -37,10 +37,10 @@ public class RestrictionsMethodTest {
 	@Before
 	public void prepare() {
 		criterion = introspector.createCriterion();
-		criterion.add(Restriction.setTargetType(TargetType.METHOD));
+		criterion.add(Restriction.targetType(TargetType.METHOD));
 
 		criterionClasseFilha = introspectorClasseFilha.createCriterion();
-		criterionClasseFilha.add(Restriction.setTargetType(TargetType.METHOD));
+		criterionClasseFilha.add(Restriction.targetType(TargetType.METHOD));
 	}
 
 	@Test
