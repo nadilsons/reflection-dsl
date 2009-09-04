@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.test.criteria;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -287,6 +288,24 @@ public class RestrictionsTest {
 		
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertTrue(result.getMethods().isEmpty());
+	}
+	
+	@Test
+	public void testCriteriaProcuraPorFieldsConstantes() {
+		criterion.add(Restriction.typeModifiers(ModifierType.FINAL, ModifierType.STATIC));
+		final CriterionResult result = criterion.list();
+	}
+	
+	@Test
+	public void testCriteriaProcuraPorFieldsEstaticos() {
+		criterion.add(Restriction.typeModifiers(ModifierType.STATIC));
+		final CriterionResult result = criterion.list();
+	}
+	
+	@Test
+	public void testCriteriaProcuraPorFieldsModificador() {
+		criterion.add(Restriction.typeModifiers(ModifierType.SYNCHRONIZED));
+		final CriterionResult result = criterion.list();
 	}
 
 }
