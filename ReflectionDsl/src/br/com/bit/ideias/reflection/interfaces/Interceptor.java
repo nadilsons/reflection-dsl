@@ -1,8 +1,8 @@
 package br.com.bit.ideias.reflection.interfaces;
 
 import br.com.bit.ideias.reflection.common.Extractor;
-import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
 import br.com.bit.ideias.reflection.interceptor.InvocationContext;
+import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**
  * 

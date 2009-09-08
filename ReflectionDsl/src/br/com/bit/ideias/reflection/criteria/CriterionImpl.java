@@ -10,9 +10,9 @@ import java.util.List;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
+import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
  * 

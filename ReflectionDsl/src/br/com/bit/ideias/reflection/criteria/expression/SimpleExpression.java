@@ -1,6 +1,6 @@
 package br.com.bit.ideias.reflection.criteria.expression;
 
-import br.com.bit.ideias.reflection.enums.SearchType;
+import br.com.bit.ideias.reflection.type.SearchType;
 
 /**
  * 

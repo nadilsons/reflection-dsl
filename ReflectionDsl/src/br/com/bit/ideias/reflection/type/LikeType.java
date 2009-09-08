@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.enums;
+package br.com.bit.ideias.reflection.type;
 
 /**
  * 

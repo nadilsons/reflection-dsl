@@ -2,7 +2,7 @@ package br.com.bit.ideias.reflection.criteria.expression;
 
 import java.lang.reflect.Member;
 
-import br.com.bit.ideias.reflection.enums.SearchType;
+import br.com.bit.ideias.reflection.type.SearchType;
 
 /**
  * @author Leonardo Campos

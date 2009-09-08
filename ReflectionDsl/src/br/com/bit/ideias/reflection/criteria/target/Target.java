@@ -6,9 +6,9 @@ import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.criteria.expression.DisjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.criteria.expression.SimpleExpression;
-import br.com.bit.ideias.reflection.enums.LikeType;
-import br.com.bit.ideias.reflection.enums.SearchType;
-import br.com.bit.ideias.reflection.enums.TargetType;
+import br.com.bit.ideias.reflection.type.LikeType;
+import br.com.bit.ideias.reflection.type.SearchType;
+import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
  * 

@@ -6,12 +6,12 @@ import java.lang.reflect.Method;
 import br.com.bit.ideias.reflection.common.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionImpl;
-import br.com.bit.ideias.reflection.enums.TargetType;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interfaces.Interceptor;
+import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
  * This is the main class of the project</br> It works as a façade.

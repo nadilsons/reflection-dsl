@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import br.com.bit.ideias.reflection.core.Introspector;
-import br.com.bit.ideias.reflection.enums.TreatmentExceptionType;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ConstructorNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldNotExistsException;
@@ -24,6 +23,7 @@ import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
+import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**
  * @author Nadilson Oliveira da Silva
