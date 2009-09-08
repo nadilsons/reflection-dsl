@@ -59,7 +59,7 @@ public class Restriction {
 	}
 
 	public static SimpleExpression targetType(TargetType targetType) {
-		return TARGET.setTargetType(targetType);
+		return TARGET.targetType(targetType);
 	}
 
 	public static SimpleExpression showOnlyPublic(boolean flag) {
