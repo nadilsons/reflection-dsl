@@ -2,7 +2,6 @@ package br.com.bit.ideias.reflection.criteria;
 
 import static br.com.bit.ideias.reflection.util.CollectionUtil.isEmpty;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,8 @@ public class CriterionImpl implements Criterion {
 		return this;
 	}
 
-	public <T extends AccessibleObject> T uniqueResult() {
+	@SuppressWarnings("unchecked")
+	public <T extends Member> T uniqueResult() {
 		final CriterionResult result = list();
 		if (isEmpty(result.getFields()) && isEmpty(result.getMethods()))
 			throw new NoResultException();

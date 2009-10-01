@@ -1,6 +1,6 @@
 package br.com.bit.ideias.reflection.criteria;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Member;
 
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 
@@ -15,5 +15,5 @@ public interface Criterion {
 
 	public CriterionResult list();
 
-	public <T extends AccessibleObject> T uniqueResult();
+	public <T extends Member> T uniqueResult();
 }
