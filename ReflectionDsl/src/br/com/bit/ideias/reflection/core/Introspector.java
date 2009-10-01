@@ -92,7 +92,7 @@ public class Introspector {
 		else if (member instanceof Method)
 			return method((Method) member);
 		else
-			throw new InvalidParameterException("Colocar uma exception Me");
+			throw new InvalidParameterException(String.format("Parameter []%s is invalid", member.getClass().getName()));
 	}
 
 	public Introspector field(final String fieldName) {
