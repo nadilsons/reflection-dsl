@@ -52,7 +52,7 @@ public class Introspector {
 	}
 
 	public static Introspector forClass(final String className) {
-		validateParam(className);
+		validateParam(className, "ClassName for instrospector can't be null");
 		Class<?> clazz = null;
 
 		try {
@@ -65,7 +65,7 @@ public class Introspector {
 	}
 
 	public static Introspector forClass(final Class<?> targetClass) {
-		validateParam(targetClass);
+		validateParam(targetClass, "Class for instrospector can't be null");
 
 		return new Introspector(targetClass);
 	}
@@ -87,6 +87,7 @@ public class Introspector {
 	}
 
 	public Introspector member(Member member) {
+		validateParam(member, "Member can't be null");
 		if (member instanceof Field)
 			return field((Field) member);
 		else if (member instanceof Method)
@@ -198,9 +199,9 @@ public class Introspector {
 
 	// /////////////////////////////////////////////////////////////////////////
 
-	private static void validateParam(final Object param) {
+	private static void validateParam(final Object param, String message) {
 		if (param == null)
-			throw new InvalidParameterException("Class for instrospector can't be null");
+			throw new InvalidParameterException(message);
 	}
 
 	private void reset(final TargetType targetType) {
