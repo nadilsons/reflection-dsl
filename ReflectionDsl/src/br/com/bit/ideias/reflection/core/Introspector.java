@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.core;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import br.com.bit.ideias.reflection.common.Extractor;
@@ -85,17 +86,26 @@ public class Introspector {
 		return this;
 	}
 
+	public Introspector member(Member member) {
+		if (member instanceof Field)
+			return field((Field) member);
+		else if (member instanceof Method)
+			return method((Method) member);
+		else
+			throw new InvalidParameterException("Colocar uma exception Me");
+	}
+
 	public Introspector field(final String fieldName) {
 		this.extractor.setField(fieldName);
 		reset(TargetType.FIELD);
 
 		return this;
 	}
-	
+
 	public Introspector field(final Field field) {
 		this.extractor.setField(field);
 		reset(TargetType.FIELD);
-		
+
 		return this;
 	}
 
@@ -105,11 +115,11 @@ public class Introspector {
 
 		return this;
 	}
-	
+
 	public Introspector method(final Method method) {
 		this.extractor.setMethod(method);
 		reset(TargetType.METHOD);
-		
+
 		return this;
 	}
 
@@ -121,13 +131,13 @@ public class Introspector {
 		return isMethod ? invokeMethod(params) : invokeField(params);
 	}
 
-    private Object invokeField(final Object... params) {
-        return extractor.field().invoke(accessPrivateMembers, params);
-    }
+	private Object invokeField(final Object... params) {
+		return extractor.field().invoke(accessPrivateMembers, params);
+	}
 
-    private Object invokeMethod(final Object... params) {
-        return extractor.method().invoke(accessPrivateMembers, params);
-    }
+	private Object invokeMethod(final Object... params) {
+		return extractor.method().invoke(accessPrivateMembers, params);
+	}
 
 	// /////////////////////////////////////////////////////////////////////////
 
@@ -164,14 +174,14 @@ public class Introspector {
 		criterion = new CriterionImpl(this);
 		return criterion;
 	}
-	
+
 	public static Criterion createCriterion(String className) {
-        return forClass(className).createCriterion();
-    }
-	
+		return forClass(className).createCriterion();
+	}
+
 	public static Criterion createCriterion(Class<?> targetClass) {
-        return forClass(targetClass).createCriterion();
-    }
+		return forClass(targetClass).createCriterion();
+	}
 
 	// /////////////////////////////////////////////////////////////////////////
 	/**
@@ -197,4 +207,5 @@ public class Introspector {
 		this.isMethod = TargetType.METHOD.equals(targetType);
 		this.accessPrivateMembers = false;
 	}
+
 }
