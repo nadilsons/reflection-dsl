@@ -86,7 +86,7 @@ public class Introspector {
 		return this;
 	}
 
-	public Introspector member(Member member) {
+	public Introspector member(final Member member) {
 		validateParam(member, "Member can't be null");
 		if (member instanceof Field)
 			return field((Field) member);
@@ -176,11 +176,11 @@ public class Introspector {
 		return criterion;
 	}
 
-	public static Criterion createCriterion(String className) {
+	public static Criterion createCriterion(final String className) {
 		return forClass(className).createCriterion();
 	}
 
-	public static Criterion createCriterion(Class<?> targetClass) {
+	public static Criterion createCriterion(final Class<?> targetClass) {
 		return forClass(targetClass).createCriterion();
 	}
 
@@ -193,13 +193,14 @@ public class Introspector {
 		return extractor.getTargetClass();
 	}
 
-	public Object getTargetInstance() {
-		return extractor.getTargetInstance();
+	@SuppressWarnings("unchecked")
+	public <T> T getTargetInstance() {
+		return (T) extractor.getTargetInstance();
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
 
-	private static void validateParam(final Object param, String message) {
+	private static void validateParam(final Object param, final String message) {
 		if (param == null)
 			throw new InvalidParameterException(message);
 	}
