@@ -9,13 +9,13 @@ import br.com.bit.ideias.reflection.type.SearchType;
  * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
-public abstract class ExpressionImpl implements Expression {
+public abstract class BaseExpression implements Expression {
 
 	protected String value;
 
 	protected SearchType searchType;
 
-	public ExpressionImpl(final String value, final SearchType searchType) {
+	public BaseExpression(final String value, final SearchType searchType) {
 		this.value = value;
 		this.searchType = searchType;
 	}

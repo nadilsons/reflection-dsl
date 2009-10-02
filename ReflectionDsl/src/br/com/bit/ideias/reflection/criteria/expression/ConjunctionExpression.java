@@ -11,7 +11,7 @@ import java.util.List;
  *       For a ConjunctionExpression to be evaluated as true, all its
  *       subexpressions should evaluate to true
  */
-public class ConjunctionExpression extends ExpressionImpl implements ComplexExpression {
+public class ConjunctionExpression extends BaseExpression implements ComplexExpression {
 	protected final List<Expression> expressions = new ArrayList<Expression>();
 
 	public ConjunctionExpression() {

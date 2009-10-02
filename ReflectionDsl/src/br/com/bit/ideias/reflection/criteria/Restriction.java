@@ -3,10 +3,12 @@ package br.com.bit.ideias.reflection.criteria;
 import java.lang.annotation.Annotation;
 
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
+import br.com.bit.ideias.reflection.criteria.expression.DisjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.criteria.expression.SimpleExpression;
-import br.com.bit.ideias.reflection.criteria.target.Target;
 import br.com.bit.ideias.reflection.type.LikeType;
+import br.com.bit.ideias.reflection.type.ModifierType;
+import br.com.bit.ideias.reflection.type.SearchType;
 import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
@@ -14,76 +16,107 @@ import br.com.bit.ideias.reflection.type.TargetType;
  * @author Nadilson Oliveira da Silva
  * @since 27/07/2009
  */
-public class Restriction { 
-
-	private static final Target TARGET = new Target();
+public class Restriction {
 
 	private Restriction() {
 
 	}
 
-	public static SimpleExpression annotatedWith(Class<? extends Annotation> clazzAnnotation) {
-		return TARGET.annotatedWith(clazzAnnotation);
+	// /////////////////////////////////////////////////////////////////////////
+	// SimpleExpression ///////////////////////////////////////////////////////
+	// /////////////////////////////////////////////////////////////////////////
+	public static SimpleExpression eq(final String value) {
+		return new SimpleExpression(value, SearchType.EQ);
 	}
 
+	public static SimpleExpression ne(final String value) {
+		return new SimpleExpression(value, SearchType.NE);
+	}
+
+	public static SimpleExpression like(final String value) {
+		return new SimpleExpression(value, SearchType.LIKE_START);
+	}
+
+	public static SimpleExpression like(final String value, final LikeType likeType) {
+		switch (likeType) {
+		case START:
+			return like(value);
+		case END:
+			return new SimpleExpression(value, SearchType.LIKE_END);
+		case ANYWHERE:
+			return regex(value);
+		default:
+			throw new RuntimeException("Not implemented");
+		}
+	}
+
+	public static SimpleExpression regex(final String value) {
+		return new SimpleExpression(value, SearchType.REGEX);
+	}
+
+	public static SimpleExpression in(final String... values) {
+		final StringBuilder concat = new StringBuilder();
+		for (final String value : values)
+			concat.append(value).append(Expression.NAME_SEPARATOR);
+
+		return new SimpleExpression(concat.toString(), SearchType.IN);
+	}
+
+	// /////////////////////////////////////////////////////////////////////////
+	// ConfigExpression ////////////////////////////////////////////////////////
+	// /////////////////////////////////////////////////////////////////////////
+	public static SimpleExpression withModifiers(final ModifierType... modifierTypes) {
+		final StringBuilder concat = new StringBuilder();
+		for (final ModifierType modifierType : modifierTypes)
+			concat.append(modifierType).append(Expression.NAME_SEPARATOR);
+
+		return new SimpleExpression(concat.toString(), SearchType.WITH_MODIFIERS);
+	}
+
+	// /////////////////////////////////////////////////////////////////////////
+	// ClassExpression /////////////////////////////////////////////////////////
+	// /////////////////////////////////////////////////////////////////////////
+	public static SimpleExpression targetType(final TargetType targetType) {
+		return new SimpleExpression(targetType.name(), SearchType.TARGET_TYPE);
+	}
+
+	public static SimpleExpression annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
+		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION);
+	}
+
+	public static SimpleExpression fieldClassEq(final Class<?> classType) {
+		return new SimpleExpression(classType.getName(), SearchType.FIELD_CLASS_EQ);
+	}
+
+	public static SimpleExpression methodReturnClassEq(final Class<?> classType) {
+		return new SimpleExpression(classType.getName(), SearchType.METHOD_RETURN_CLASS_EQ);
+	}
+
+	public static SimpleExpression withParams(final Class<?>... classTypes) {
+		final StringBuilder concat = new StringBuilder();
+		for (final Class<?> value : classTypes)
+			concat.append(value.getName()).append(Expression.NAME_SEPARATOR);
+
+		return new SimpleExpression(concat.toString(), SearchType.WITH_PARAMS);
+	}
+
+	// /////////////////////////////////////////////////////////////////////////
+	// ComplexExpression //////////////////////////////////////////////////////
+	// /////////////////////////////////////////////////////////////////////////
 	public static ComplexExpression disjunction() {
-		return TARGET.disjunction();
+		return new DisjunctionExpression();
 	}
 
-	public static ComplexExpression disjunction(Expression... expressions) {
-		return TARGET.disjunction(expressions);
-	}
+	public static ComplexExpression disjunction(final Expression... expressions) {
+		final ComplexExpression disjunctionExpression = disjunction();
+		if (expressions == null)
+			return disjunctionExpression;
 
-	public static SimpleExpression eq(String value) {
-		return TARGET.eq(value);
-	}
+		for (final Expression expression : expressions) {
+			disjunctionExpression.add(expression);
+		}
 
-	public static SimpleExpression in(String... values) {
-		return TARGET.in(values);
+		return disjunctionExpression;
 	}
-
-	public static SimpleExpression like(String value, LikeType likeType) {
-		return TARGET.like(value, likeType);
-	}
-
-	public static SimpleExpression like(String value) {
-		return TARGET.like(value);
-	}
-
-	public static SimpleExpression ne(String value) {
-		return TARGET.ne(value);
-	}
-
-	public static SimpleExpression regex(String value) {
-		return TARGET.regex(value);
-	}
-
-	public static SimpleExpression targetType(TargetType targetType) {
-		return TARGET.targetType(targetType);
-	}
-
-	public static SimpleExpression showOnlyPublic(boolean flag) {
-		return TARGET.showOnlyPublic(flag);
-	}
-
-	public static SimpleExpression typeEq(Class<?> classType) {		
-		return TARGET.typeEq(classType);
-	}
-
-	public static SimpleExpression typeReturn(Class<?> classType) {
-		return TARGET.typeReturn(classType);
-	}
-
-	public static SimpleExpression typesParams(Class<?>... classTypes) {
-		return TARGET.typesParams(classTypes);
-	}
-
-	// public static static static FieldsTarget fields() {
-	// return FieldsTarget.getInstance();
-	// }
-	//
-	// public static static static MethodsTarget methods() {
-	// return MethodsTarget.getInstance();
-	// }
 
 }
