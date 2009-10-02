@@ -261,7 +261,7 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testTypeParams() {
-		criterion.add(Restriction.withParams(String.class));
+		criterion.add(Restriction.methodWithParams(String.class));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
@@ -270,7 +270,7 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testTypeParamsComMaisDeUmParametro() {
-		criterion.add(Restriction.withParams(String.class, Integer.class, Boolean.class));
+		criterion.add(Restriction.methodWithParams(String.class, Integer.class, Boolean.class));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
@@ -279,7 +279,7 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testTypeParamsComMaisDeUmParametroPrimitivo() {
-		criterion.add(Restriction.withParams(String.class, Integer.class, boolean.class));
+		criterion.add(Restriction.methodWithParams(String.class, Integer.class, boolean.class));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());

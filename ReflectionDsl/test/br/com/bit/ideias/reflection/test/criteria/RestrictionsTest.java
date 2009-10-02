@@ -238,7 +238,7 @@ public class RestrictionsTest {
 
 	@Test
 	public void testRestrictionShowOnlyPublicTrueComAtributosNaClassePai() throws Exception {
-		criterion = Introspector.createCriterion(ClasseDominioFilha.class);
+		criterion = introspectorClasseFilha.createCriterion();
 		criterion.add(Restriction.like("atributo", LikeType.ANYWHERE));
 		criterion.add(Restriction.withModifiers(ModifierType.PRIVATE, ModifierType.PROTECTED));
 		final CriterionResult result = criterion.list();
@@ -286,7 +286,7 @@ public class RestrictionsTest {
 
 	@Test
 	public void testWithParams() {
-		criterion.add(Restriction.withParams(String.class));
+		criterion.add(Restriction.methodWithParams(String.class));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
@@ -295,7 +295,7 @@ public class RestrictionsTest {
 
 	@Test
 	public void testWithParamsComMaisDeUmParametro() {
-		criterion.add(Restriction.withParams(String.class, Integer.class, boolean.class));
+		criterion.add(Restriction.methodWithParams(String.class, Integer.class, boolean.class));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());

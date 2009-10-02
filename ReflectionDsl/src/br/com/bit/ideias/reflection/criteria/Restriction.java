@@ -92,7 +92,7 @@ public class Restriction {
 		return new SimpleExpression(classType.getName(), SearchType.METHOD_RETURN_CLASS_EQ);
 	}
 
-	public static SimpleExpression withParams(final Class<?>... classTypes) {
+	public static SimpleExpression methodWithParams(final Class<?>... classTypes) {
 		final StringBuilder concat = new StringBuilder();
 		for (final Class<?> value : classTypes)
 			concat.append(value.getName()).append(Expression.NAME_SEPARATOR);
