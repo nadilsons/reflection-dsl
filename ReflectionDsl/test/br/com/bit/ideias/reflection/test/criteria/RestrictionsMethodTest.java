@@ -17,6 +17,7 @@ import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
 import br.com.bit.ideias.reflection.type.LikeType;
+import br.com.bit.ideias.reflection.type.ModifierType;
 import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
@@ -161,7 +162,7 @@ public class RestrictionsMethodTest {
 	@Test
 	public void testRestrictionShowOnlyPublicTrue() throws Exception {
 		criterion.add(Restriction.like("metodo"));
-		criterion.add(Restriction.showOnlyPublic(true));
+		criterion.add(Restriction.withModifiers(ModifierType.PUBLIC));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
@@ -171,7 +172,7 @@ public class RestrictionsMethodTest {
 	@Test
 	public void testRestrictionShowOnlyPublicFalse() throws Exception {
 		criterion.add(Restriction.like("metodo"));
-		criterion.add(Restriction.showOnlyPublic(false));
+		criterion.add(Restriction.withModifiers(ModifierType.PRIVATE, ModifierType.PROTECTED));
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
@@ -213,7 +214,7 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testRestrictionUniqueShouldReturnOnlyOneMember() throws Exception {
-		criterion.add(Restriction.like("metodoQueVaiLanc")).add(Restriction.showOnlyPublic(true));
+		criterion.add(Restriction.like("metodoQueVaiLanc")).add(Restriction.withModifiers(ModifierType.PUBLIC));
 
 		final Method methodActual = criterion.uniqueResult();
 		final Method methodExpected = ClasseDominio.class.getDeclaredMethod("metodoQueVaiLancarException");
@@ -242,45 +243,45 @@ public class RestrictionsMethodTest {
 
 	@Test
 	public void testTypeEq() {
-		criterion.add(Restriction.typeEq(String.class));
+		criterion.add(Restriction.fieldClassEq(String.class));
 		final CriterionResult result = criterion.list();
-		
+
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertTrue(result.getMethods().isEmpty());
 	}
-	
+
 	@Test
 	public void testTypeReturn() {
-		criterion.add(Restriction.typeReturn(Integer.class));
+		criterion.add(Restriction.methodReturnClassEq(Integer.class));
 		final CriterionResult result = criterion.list();
-		
+
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertEquals(3, result.getMethods().size());
 	}
-	
+
 	@Test
 	public void testTypeParams() {
-		criterion.add(Restriction.typesParams(String.class));
+		criterion.add(Restriction.withParams(String.class));
 		final CriterionResult result = criterion.list();
-		
+
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertEquals(2, result.getMethods().size());
 	}
-	
+
 	@Test
 	public void testTypeParamsComMaisDeUmParametro() {
-		criterion.add(Restriction.typesParams(String.class, Integer.class, Boolean.class));
+		criterion.add(Restriction.withParams(String.class, Integer.class, Boolean.class));
 		final CriterionResult result = criterion.list();
-		
+
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertEquals(1, result.getMethods().size());
 	}
-	
+
 	@Test
 	public void testTypeParamsComMaisDeUmParametroPrimitivo() {
-		criterion.add(Restriction.typesParams(String.class, Integer.class, boolean.class));
+		criterion.add(Restriction.withParams(String.class, Integer.class, boolean.class));
 		final CriterionResult result = criterion.list();
-		
+
 		Assert.assertTrue(result.getFields().isEmpty());
 		Assert.assertEquals(1, result.getMethods().size());
 	}

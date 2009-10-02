@@ -1,6 +1,5 @@
 package br.com.bit.ideias.reflection.test.artefacts;
 
-
 /**
  * @author Nadilson Oliveira da Silva
  * @date 18/02/2009
@@ -27,6 +26,8 @@ public class ClasseDominio {
 	public boolean comecaPriva;
 
 	private boolean comecapriva;
+
+	static final Object constante = null;
 
 	public ClasseDominio() {
 		_evitaFinal();
@@ -95,12 +96,12 @@ public class ClasseDominio {
 	public void setAlive(final boolean isAlive) {
 		this.isAlive = isAlive;
 	}
-	
-	public void metodoComTresParametros(String p1, Integer p2, Boolean p3) {
-		
+
+	public void metodoComTresParametros(final String p1, final Integer p2, final Boolean p3) {
+
 	}
-	
-	public void metodoComTresParametrosPrimitivos(String p1, Integer p2, boolean p3) {
-		
+
+	public void metodoComTresParametrosPrimitivos(final String p1, final Integer p2, final boolean p3) {
+
 	}
 }
