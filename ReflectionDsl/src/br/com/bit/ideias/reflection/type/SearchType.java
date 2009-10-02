@@ -5,7 +5,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.regex.Pattern;
 
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -80,64 +79,68 @@ public enum SearchType {
 			return classe;
 		}
 	},
-	ONLY_PUBLIC {
+	WITH_MODIFIERS {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
-			final boolean onlyPublic = Boolean.parseBoolean(expression.getValue());
-			return !onlyPublic || Modifier.isPublic(member.getModifiers());
+			final String[] e = expression.getValue().split(Expression.NAME_SEPARATOR);
+			for (final String typeString : e) {
+				final ModifierType type = ModifierType.valueOf(typeString);
+				if (type.matches(member))
+					return true;
+			}
+			return false;
 		}
 	},
-	TYPE {
+	TARGET_TYPE {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
 			final TargetType targetType = TargetType.valueOf(expression.getValue());
 			return targetType.isValidMember(member);
 		}
-	}, 
-	TYPE_EQ {
+	},
+	FIELD_CLASS_EQ {
 		@Override
-		public boolean matches(Member member, Expression expression) {
-			Class<?> classe = extractClass(expression.getValue());
-			return Field.class.equals(member.getClass()) && ((Field)member).getType().equals(classe);
+		public boolean matches(final Member member, final Expression expression) {
+			final Class<?> classe = extractClass(expression.getValue());
+			return Field.class.equals(member.getClass()) && ((Field) member).getType().equals(classe);
 		}
 	},
-	TYPE_RETURN {
+	METHOD_RETURN_CLASS_EQ {
 		@Override
-		public boolean matches(Member member, Expression expression) {
-			Class<?> classe = extractClass(expression.getValue());
-			return Method.class.equals(member.getClass()) && ((Method)member).getReturnType().equals(classe);
+		public boolean matches(final Member member, final Expression expression) {
+			final Class<?> classe = extractClass(expression.getValue());
+			return Method.class.equals(member.getClass()) && ((Method) member).getReturnType().equals(classe);
 		}
-	}, 
-	TYPES_PARAMS {
+	},
+	WITH_PARAMS {
 		@Override
-		public boolean matches(Member member, Expression expression) {		
-			if(!Method.class.equals(member.getClass()))
+		public boolean matches(final Member member, final Expression expression) {
+			if (!Method.class.equals(member.getClass()))
 				return false;
-			
+
 			final String[] values = expression.getValue().split(Expression.NAME_SEPARATOR);
-			Class<?>[] parameterTypes = ((Method)member).getParameterTypes();
-			
-			if(values.length != parameterTypes.length)
+			final Class<?>[] parameterTypes = ((Method) member).getParameterTypes();
+
+			if (values.length != parameterTypes.length)
 				return false;
-			
+
 			for (int i = 0; i < parameterTypes.length; i++) {
-				if(!parameterTypes[i].equals(extractClass(values[i])))
+				if (!parameterTypes[i].equals(extractClass(values[i])))
 					return false;
 			}
-			
+
 			return true;
 		}
 	};
 
 	public abstract boolean matches(Member member, Expression expression);
-	
-	private static Class<?> extractClass(String className) {
+
+	private static Class<?> extractClass(final String className) {
 		try {
-			return Class.forName(className);			
-		} catch (ClassNotFoundException e) {
+			return Class.forName(className);
+		} catch (final ClassNotFoundException e) {
 			throw new ClassNotExistsException(e);
 		}
 	}
-	
 
 }
