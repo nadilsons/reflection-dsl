@@ -176,7 +176,7 @@ public class RestrictionsMethodTest {
 		final CriterionResult result = criterion.list();
 
 		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertEquals(4, result.getMethods().size());
+		Assert.assertEquals(1, result.getMethods().size());
 	}
 
 	@Test
