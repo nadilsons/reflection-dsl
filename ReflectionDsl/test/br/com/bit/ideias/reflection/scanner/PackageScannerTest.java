@@ -19,7 +19,7 @@ import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
 public class PackageScannerTest {
     @Test
     public void scannOnArtefactsPackageShouldReturnAllClasses() throws Exception {
-        PackageScanner scanner = PackageScanner.forPackage("br.com.bit.ideias.reflection.test.artefacts.*");
+        PackageScanner scanner = PackageScanner.forPackage("br.com.bit.ideias.reflection.test.artefacts");
         
         ScannerResult result = scanner.scan();
         Set<Class<?>> classes = result.getClasses();

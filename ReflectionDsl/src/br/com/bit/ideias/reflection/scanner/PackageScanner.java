@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -47,8 +48,10 @@ public class PackageScanner {
 
     
     private String path;
+    private String packagePath;
 
     private PackageScanner(String packagePath) {
+    	this.packagePath = packagePath;
         this.path = CLASSPATH_ALL_URL_PREFIX + convertClassNameToResourcePath(packagePath) + RESOURCE_PATTERN;
     }
     
@@ -68,18 +71,31 @@ public class PackageScanner {
     }
 
     public ScannerResult scan() {
-        try {
-            Resource[] resources = getResources(path);
-            
-            for (Resource resource : resources) {
-                System.out.println(resource);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return new ScannerResult();
-    }
+		Set<Class<?>> classes = new HashSet<Class<?>>();
+		try {
+			Resource[] resources = getResources(path);
+
+			for (Resource resource : resources) {
+				String classPath = resource.toString().replace("/", ".");
+				classPath = classPath.substring(classPath.indexOf(packagePath));
+				String className = classPath.substring(0, classPath.length() - 6);
+
+				addClass(classes, className);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return new ScannerResult(classes);
+	}
+
+	private void addClass(Set<Class<?>> classes, String className) {
+		try {
+			classes.add(Class.forName(className));
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
     protected ClassLoader getClassLoader() {
         return this.getClass().getClassLoader();
