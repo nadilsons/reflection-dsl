@@ -22,9 +22,9 @@ import java.util.jar.JarFile;
  */
 public class PackageScanner {
     private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
-    private static final String RESOURCE_PATTERN = "**/*.class";
+    //private static final String RESOURCE_PATTERN = "**" + File.separator + "*.class";
     private String pathSeparator = "/";
-    public static final String JAR_URL_SEPARATOR = "!/";
+//    public static final String JAR_URL_SEPARATOR = "!/";
     /** URL prefix for loading from the file system: "file:" */
     public static final String FILE_URL_PREFIX = "file:";
 
@@ -52,7 +52,7 @@ public class PackageScanner {
 
     private PackageScanner(String packagePath) {
     	this.packagePath = packagePath;
-        this.path = CLASSPATH_ALL_URL_PREFIX + convertClassNameToResourcePath(packagePath) + RESOURCE_PATTERN;
+        this.path = CLASSPATH_ALL_URL_PREFIX + convertClassNameToResourcePath(packagePath) + "**" + File.separator + "*.class";
     }
     
     private static Method equinoxResolveMethod;
@@ -407,10 +407,10 @@ public class PackageScanner {
             // being arbitrary as long as following the entry format.
             // We'll also handle paths with and without leading "file:" prefix.
             String urlFile = rootDirResource.getURL().getFile();
-            int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
+            int separatorIndex = urlFile.indexOf(getJarUrlSeparator());
             if (separatorIndex != -1) {
                 jarFileUrl = urlFile.substring(0, separatorIndex);
-                rootEntryPath = urlFile.substring(separatorIndex + JAR_URL_SEPARATOR.length());
+                rootEntryPath = urlFile.substring(separatorIndex + getJarUrlSeparator().length());
                 jarFile = getJarFile(jarFileUrl);
             }
             else {
@@ -554,7 +554,7 @@ public class PackageScanner {
                 URL_PROTOCOL_ZIP.equals(protocol) ||
                 URL_PROTOCOL_VFSZIP.equals(protocol) ||
                 URL_PROTOCOL_WSJAR.equals(protocol) ||
-                (URL_PROTOCOL_CODE_SOURCE.equals(protocol) && url.getPath().indexOf(JAR_URL_SEPARATOR) != -1));
+                (URL_PROTOCOL_CODE_SOURCE.equals(protocol) && url.getPath().indexOf(getJarUrlSeparator()) != -1));
     }
     
     /**
@@ -744,5 +744,11 @@ public class PackageScanner {
      */
     public static URI toURI(String location) throws URISyntaxException {
         return new URI(location.replaceAll(" ", "%20"));
+    }
+    
+    private String getJarUrlSeparator() {
+    	final String JAR_URL_SEPARATOR = "!".concat(File.separator);
+    	
+    	return JAR_URL_SEPARATOR;
     }
 }
