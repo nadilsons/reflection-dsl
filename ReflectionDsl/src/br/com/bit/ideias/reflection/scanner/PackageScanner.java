@@ -76,7 +76,7 @@ public class PackageScanner {
 			Resource[] resources = getResources(path);
 
 			for (Resource resource : resources) {
-				String classPath = resource.toString().replace("/", ".");
+				String classPath = resource.toString().replace(File.separator, ".");
 				classPath = classPath.substring(classPath.indexOf(packagePath));
 				String className = classPath.substring(0, classPath.length() - 6);
 
@@ -111,7 +111,7 @@ public class PackageScanner {
      * @return the corresponding resource path, pointing to the class
      */
     protected String convertClassNameToResourcePath(String className) {
-        return className.replace('.', '/');
+        return className.replace('.', File.separatorChar);
     }
     
     public Resource[] getResources(String locationPattern) throws IOException {
@@ -202,12 +202,12 @@ public class PackageScanner {
             throw new IllegalArgumentException("Resource path [" + rootDir + "] does not denote a directory");
         }
         
-        String fullPattern = rootDir.getAbsolutePath().replace(File.separatorChar, '/');
-        if (!pattern.startsWith("/")) {
-            fullPattern += "/";
+        String fullPattern = rootDir.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
+        if (!pattern.startsWith(File.separator)) {
+            fullPattern += File.separator;
         }
         
-        fullPattern = fullPattern + pattern.replace(File.separatorChar, '/');
+        fullPattern = fullPattern + pattern.replace(File.separatorChar, File.separatorChar);
         Set<File> result = new LinkedHashSet<File>(8);
         doRetrieveMatchingFiles(fullPattern, rootDir, result);
         return result;
@@ -229,8 +229,8 @@ public class PackageScanner {
         }
         for (int i = 0; i < dirContents.length; i++) {
             File content = dirContents[i];
-            String currPath = content.getAbsolutePath().replace(File.separatorChar, '/');
-            if (content.isDirectory() && doMatch(fullPattern, currPath + "/", false)) {
+            String currPath = content.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
+            if (content.isDirectory() && doMatch(fullPattern, currPath + File.separator, false)) {
                 doRetrieveMatchingFiles(fullPattern, content, result);
             }
             if (doMatch(fullPattern, currPath, true)) {
@@ -422,10 +422,10 @@ public class PackageScanner {
         }
 
         try {
-            if (!"".equals(rootEntryPath) && !rootEntryPath.endsWith("/")) {
+            if (!"".equals(rootEntryPath) && !rootEntryPath.endsWith(File.separator)) {
                 // Root entry path must end with slash to allow for proper matching.
                 // The Sun JRE does not return a slash here, but BEA JRockit does.
-                rootEntryPath = rootEntryPath + "/";
+                rootEntryPath = rootEntryPath + File.separator;
             }
             Set<Resource> result = new LinkedHashSet<Resource>(8);
             for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements();) {
@@ -465,7 +465,7 @@ public class PackageScanner {
         int prefixEnd = location.indexOf(":") + 1;
         int rootDirEnd = location.length();
         while (rootDirEnd > prefixEnd && isPattern(location.substring(prefixEnd, rootDirEnd))) {
-            rootDirEnd = location.lastIndexOf('/', rootDirEnd - 2) + 1;
+            rootDirEnd = location.lastIndexOf(File.separatorChar, rootDirEnd - 2) + 1;
         }
         if (rootDirEnd == 0) {
             rootDirEnd = prefixEnd;
@@ -483,7 +483,7 @@ public class PackageScanner {
      */
     protected Resource[] findAllClassPathResources(String location) throws IOException {
         String path = location;
-        if (path.startsWith("/")) {
+        if (path.startsWith(File.separator)) {
             path = path.substring(1);
         }
         
