@@ -35,18 +35,18 @@ public class ExtractorMethod extends BaseExtractor {
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
 		return invoke(accessPrivateMembers, false, params);
 	}
+	
+	public Method get(Class<?>... parametersTypes) {
+		return getMethod(parametersTypes);
+	}
 
 	public Object invoke(final boolean accessPrivateMembers, final boolean primitiveParam, final Object... params) {
-		final Class<?> targetClass = extractor.getTargetClass();
 		final Object targetInstance = extractor.getTargetInstance();
 		try {
 			final Class<?>[] parametersTypes = getParametersTypes(primitiveParam, params);
-			final Method method = (this.method == null) ? targetClass.getDeclaredMethod(methodName, parametersTypes) : this.method;
+			final Method method = getMethod(parametersTypes);
 			method.setAccessible(accessPrivateMembers);
 			return method.invoke(targetInstance, params);
-
-		} catch (final NoSuchMethodException e) {
-			throw new MethodNotExistsException(e);
 		} catch (final IllegalAccessException e) {
 			throw new MethodPrivateException(e);
 		} catch (final InvocationTargetException e) {
@@ -54,4 +54,12 @@ public class ExtractorMethod extends BaseExtractor {
 		}
 	}
 
+	private Method getMethod(final Class<?>[] parametersTypes) {
+		final Class<?> targetClass = extractor.getTargetClass();
+		try {
+			return (this.method == null) ? targetClass.getDeclaredMethod(methodName, parametersTypes) : this.method;
+		} catch (final NoSuchMethodException e) {
+			throw new MethodNotExistsException(e);
+		}
+	}
 }

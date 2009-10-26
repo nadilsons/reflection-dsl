@@ -123,6 +123,10 @@ public class Introspector {
 
 		return this;
 	}
+	
+	public  <T extends Member> T get(final Class<?>... parametersTypes) {
+		return (T) (isMethod ? extractor.method().get(parametersTypes) : extractor.field().get());
+	}
 
 	public Object invoke() {
 		return invoke(new Object[] {});

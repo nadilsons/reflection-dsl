@@ -46,6 +46,10 @@ public class ExtractorField {
 			throw new FieldPrivateException(e);
 		}
 	}
+	
+	public Field get() {
+		return field;
+	}
 
 	public void directAccess() {
 		this.directAccess = true;

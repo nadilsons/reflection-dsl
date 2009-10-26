@@ -300,6 +300,14 @@ public class IntrospectorTest {
 		introspectorForClass.field("atributoPrivadoInt").directAccess().accessPrivateMembers().invoke(10);
 		introspectorInObject.field("atributoPrivadoInt").directAccess().accessPrivateMembers().invoke(10);
 	}
+	
+	@Test
+	public void testGetField() throws Exception {
+		Field actual = introspectorForClass.field("comecaPriva").get();
+		Field expected = TARGET_CLASS.getDeclaredField("comecaPriva");
+		
+		assertEquals(expected, actual);
+	}
 
 	// /////////////////////////////////////////////////////////////////////////
 	// invokeMethod
@@ -382,6 +390,23 @@ public class IntrospectorTest {
 	public void testInvokeMethodPrivadoComAcesso() throws Exception {
 		introspectorForClass.method("metodoPrivado").accessPrivateMembers().invoke("testando");
 		introspectorInObject.method("metodoPrivado").accessPrivateMembers().invoke("testando");
+	}
+	
+	@Test
+	public void testGetMethod() throws Exception {
+		Method actual = introspectorForClass.method("getAtributoPrivadoString").get();
+		Method expected = TARGET_CLASS.getDeclaredMethod("getAtributoPrivadoString");
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetMethodComParametros() throws Exception {
+		//(final String p1, final Integer p2, final Boolean p3) 
+		Method actual = introspectorForClass.method("metodoComTresParametros").get(String.class, Integer.class, Boolean.class);
+		Method expected = TARGET_CLASS.getDeclaredMethod("metodoComTresParametros", String.class, Integer.class, Boolean.class);
+		
+		assertEquals(expected, actual);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
