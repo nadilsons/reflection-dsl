@@ -127,6 +127,8 @@ public class Introspector {
 	public  <T extends Member> T get(final Class<?>... parametersTypes) {
 		return (T) (isMethod ? extractor.method().get(parametersTypes) : extractor.field().get());
 	}
+	
+	 
 
 	public Object invoke() {
 		return invoke(new Object[] {});
@@ -134,14 +136,6 @@ public class Introspector {
 
 	public Object invoke(final Object... params) {
 		return isMethod ? invokeMethod(params) : invokeField(params);
-	}
-
-	private Object invokeField(final Object... params) {
-		return extractor.field().invoke(accessPrivateMembers, params);
-	}
-
-	private Object invokeMethod(final Object... params) {
-		return extractor.method().invoke(accessPrivateMembers, params);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
@@ -214,4 +208,12 @@ public class Introspector {
 		this.accessPrivateMembers = false;
 	}
 
+	private Object invokeField(final Object... params) {
+		return extractor.field().invoke(accessPrivateMembers, params);
+	}
+
+	private Object invokeMethod(final Object... params) {
+		return extractor.method().invoke(accessPrivateMembers, params);
+	}
+	
 }
