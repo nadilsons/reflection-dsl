@@ -47,7 +47,10 @@ public class ExtractorField {
 		}
 	}
 	
-	public Field get() {
+	public Field get(Class<?>... parametersTypes) {
+		if(parametersTypes.length > 0)
+			throw new InvalidParameterException("This method should not be called with parameters");
+		
 		return field;
 	}
 
