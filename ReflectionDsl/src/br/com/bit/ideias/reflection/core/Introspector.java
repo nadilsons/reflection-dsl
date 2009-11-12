@@ -124,18 +124,20 @@ public class Introspector {
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public  <T extends Member> T get(final Class<?>... parametersTypes) {
 		return (T) (isMethod ? extractor.method().get(parametersTypes) : extractor.field().get(parametersTypes));
 	}
 	
 	 
 
-	public Object invoke() {
+	public <T> T invoke() {
 		return invoke(new Object[] {});
 	}
 
-	public Object invoke(final Object... params) {
-		return isMethod ? invokeMethod(params) : invokeField(params);
+	@SuppressWarnings("unchecked")
+	public <T> T  invoke(final Object... params) {
+		return (T) (isMethod ? invokeMethod(params) : invokeField(params));
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
