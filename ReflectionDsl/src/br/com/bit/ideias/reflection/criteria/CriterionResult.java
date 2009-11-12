@@ -1,7 +1,9 @@
 package br.com.bit.ideias.reflection.criteria;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +29,13 @@ public class CriterionResult {
 
 	public List<Method> getMethods() {
 		return Collections.unmodifiableList(methods);
+	}
+	
+	public List<Member> getMembers() {
+		List<Member> retorno = new ArrayList<Member>(fields);
+		retorno.addAll(methods);
+		
+		return Collections.unmodifiableList(retorno);
 	}
 
 }
