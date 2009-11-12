@@ -1,5 +1,6 @@
 package br.com.bit.ideias.reflection.test;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,6 +23,7 @@ import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
+import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioSemConstructor;
 import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
 import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
@@ -105,6 +107,12 @@ public class IntrospectorTest {
 	// /////////////////////////////////////////////////////////////////////////
 	// create
 	// /////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateComClasseSemConstructorExplicito() throws Exception {		
+		introspectorForClass = Introspector.forClass(ClasseDominioSemConstructor.class).create();
+		assertNotNull(introspectorForClass.getTargetInstance());
+	}
+	
 	@Test
 	public void testCreate() throws Exception {
 		introspectorForClass.create();
