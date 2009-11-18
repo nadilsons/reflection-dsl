@@ -3,6 +3,7 @@ package br.com.bit.ideias.reflection.core;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 import br.com.bit.ideias.reflection.common.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
@@ -21,6 +22,8 @@ import br.com.bit.ideias.reflection.type.TargetType;
  * @date 18/02/2009
  */
 public class Introspector {
+
+	private final Pattern PATTERN = Pattern.compile("[gs]et.*");
 
 	private final Extractor extractor;
 
@@ -123,20 +126,18 @@ public class Introspector {
 
 		return this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public  <T extends Member> T get(final Class<?>... parametersTypes) {
+	public <T extends Member> T get(final Class<?>... parametersTypes) {
 		return (T) (isMethod ? extractor.method().get(parametersTypes) : extractor.field().get(parametersTypes));
 	}
-	
-	 
 
 	public <T> T invoke() {
 		return invoke(new Object[] {});
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T  invoke(final Object... params) {
+	public <T> T invoke(final Object... params) {
 		return (T) (isMethod ? invokeMethod(params) : invokeField(params));
 	}
 
@@ -198,6 +199,18 @@ public class Introspector {
 		return (T) extractor.getTargetInstance();
 	}
 
+	public String getPropertyName(Method method) {
+		String name = method.getName();
+		
+		if (!PATTERN.matcher(name).matches())
+			throw new InvalidParameterException("Only getters or setter methods are allowed");
+		
+		char[] letters = name.substring(3).toCharArray();
+		letters[0] = Character.toLowerCase(letters[0]);
+		
+		return new String(letters);
+	}
+
 	// /////////////////////////////////////////////////////////////////////////
 
 	private static void validateParam(final Object param, final String message) {
@@ -217,5 +230,5 @@ public class Introspector {
 	private Object invokeMethod(final Object... params) {
 		return extractor.method().invoke(accessPrivateMembers, params);
 	}
-	
+
 }
