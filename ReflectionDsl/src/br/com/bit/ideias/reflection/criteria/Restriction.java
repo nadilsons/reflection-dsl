@@ -83,6 +83,10 @@ public class Restriction {
 	public static SimpleExpression annotatedWith(final Class<? extends Annotation> clazzAnnotation) {
 		return new SimpleExpression(clazzAnnotation.getName(), SearchType.ANNOTATION);
 	}
+	
+	public static SimpleExpression notAnnotatedWith(final Class<? extends Annotation> clazzAnnotation) {
+		return new SimpleExpression(clazzAnnotation.getName(), SearchType.NOT_ANNOTATION);
+	}
 
 	public static SimpleExpression fieldClassEq(final Class<?> classType) {
 		return new SimpleExpression(classType.getName(), SearchType.FIELD_CLASS_EQ);
