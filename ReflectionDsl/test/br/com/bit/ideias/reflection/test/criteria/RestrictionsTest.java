@@ -16,6 +16,7 @@ import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
+import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation2;
 import br.com.bit.ideias.reflection.type.LikeType;
 import br.com.bit.ideias.reflection.type.ModifierType;
 import br.com.bit.ideias.reflection.type.TargetType;
@@ -193,6 +194,16 @@ public class RestrictionsTest {
 
 		Assert.assertTrue(result.getMethods().isEmpty());
 		Assert.assertEquals(3, result.getFields().size());
+	}
+	
+	@Test
+	public void testRestrictionAnnotatedWithComDoisAdd() throws Exception {
+		criterion.add(Restriction.annotatedWith(MyAnnotation.class));
+		criterion.add(Restriction.annotatedWith(MyAnnotation2.class));
+		final CriterionResult result = criterion.list();
+
+		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertEquals(0, result.getFields().size());
 	}
 
 	@Test
