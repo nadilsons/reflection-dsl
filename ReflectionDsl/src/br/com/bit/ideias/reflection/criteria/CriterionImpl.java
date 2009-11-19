@@ -32,8 +32,12 @@ public class CriterionImpl implements Criterion {
 		expressionHolder.add(expression);
 		return this;
 	}
+	
+	public Introspector getIntrospector() {
+        return introspector;
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	public <T extends Member> T uniqueResult() {
 		final CriterionResult result = list();
 		if (isEmpty(result.getFields()) && isEmpty(result.getMethods()))
