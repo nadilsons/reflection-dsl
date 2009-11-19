@@ -78,7 +78,13 @@ public enum SearchType {
 			}
 			return classe;
 		}
-	},
+	}, 
+	NOT_ANNOTATION {
+		@Override
+		public boolean matches(Member member, Expression expression) {
+			return !ANNOTATION.matches(member, expression);
+		}
+	},	
 	WITH_MODIFIERS {
 		@Override
 		public boolean matches(final Member member, final Expression expression) {
