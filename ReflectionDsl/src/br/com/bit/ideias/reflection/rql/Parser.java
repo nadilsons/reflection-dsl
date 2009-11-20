@@ -174,10 +174,15 @@ public class Parser {
                         } 
                         return Restriction.annotatedWith(classFromValue);
                     case MODIFIER:
-                        ModifierType modifier = ModifierType.valueOf(value);
+                        ModifierType modifier = ModifierType.valueOf(value.toUpperCase());
                         return Restriction.withModifiers(modifier);
                     case TARGET:
                         return Restriction.targetType(TargetType.valueOf(value.toUpperCase()));
+                    case FIELDCLASS:
+                        return Restriction.fieldClassEq(getClassFromValue(value));
+                    case METHODRETURNCLASS:
+                        return Restriction.methodReturnClassEq(getClassFromValue(value));
+                    
                 }
 
                 throw new SyntaxException("");
@@ -234,16 +239,10 @@ public class Parser {
             public Expression getExpression(Clause clause, String value) {
                 switch (clause) {
                     case METHOD:
-                        Class<?>[] params = null;
-                        if(value.indexOf(",") == -1) {
-                            params = new Class<?>[]{getClassFromValue(value.trim())};
-                        } else {
-                            String[] classes = value.split(",");
-                            params = new Class<?>[classes.length];
-                            
-                            for (int i = 0; i < classes.length; i++) {
-                                params[i] = getClassFromValue(classes[i].trim());
-                            }
+                        String[] parts = value.split("[ ]{0,},[ ]{0,}");
+                        Class<?>[] params = new Class<?>[parts.length];
+                        for (int i = 0; i < parts.length; i++) {
+                            params[i] = getClassFromValue(removeEdges(parts[i]));
                         }
                         
                         return Restriction.methodWithParams(params);
