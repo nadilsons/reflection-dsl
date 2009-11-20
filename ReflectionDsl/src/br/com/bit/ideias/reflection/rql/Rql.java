@@ -24,9 +24,9 @@ import br.com.bit.ideias.reflection.rql.query.QueryPart;
  * @date 16/11/2009
  */
 public class Rql {
-    private static final Pattern PATTERN = Pattern.compile("from[ ]+[a-zA-Z]{1}[a-zA-Z0-9.]+([ ]+where[ ]+.+)?");
-    private static final Pattern METHOD_WITH = Pattern.compile("(\\b|.*)method[ ]+with[ ]+");
-    private static final Pattern NAME_IN  = Pattern.compile("(\\b|.*[ ]+)name[ ]+in[ ]+");
+    private static final Pattern MAIN_PATTERN = Pattern.compile("from[ ]+[a-zA-Z]{1}[a-zA-Z0-9.]+([ ]+where[ ]+.+)?");
+    private static final Pattern METHOD_WITH_PATTERN = Pattern.compile("(\\b|.*)method[ ]+with[ ]+");
+    private static final Pattern NAME_IN_PATTERN  = Pattern.compile("(\\b|.*[ ]+)name[ ]+in[ ]+");
     private static final Pattern OPERATORS_PATTERN = Pattern.compile("([ ]+|\\b)([aA][nN][dD]|[oO][rR])([ ]+|\\b)");
     private static final Pattern CLASS_PATTERN = Pattern.compile("[^ ]*");
     private static Rql instance = new Rql(null);
@@ -97,7 +97,7 @@ public class Rql {
     private void validateOverPattern(String rql) {
         String toTest = rql.toLowerCase();
         
-        if(!PATTERN.matcher(toTest).matches()) throw new SyntaxException("Query must follow the pattern: FROM [class_name] followed by optional WHERE clause");
+        if(!MAIN_PATTERN.matcher(toTest).matches()) throw new SyntaxException("Query must follow the pattern: FROM [class_name] followed by optional WHERE clause");
     }
 
     private boolean isEmpty(String text) {
@@ -191,7 +191,7 @@ public class Rql {
     }
 
     private boolean isMethodWithParameter(String lowerRQL) {
-        return METHOD_WITH.matcher(lowerRQL).matches() || NAME_IN.matcher(lowerRQL).matches();
+        return METHOD_WITH_PATTERN.matcher(lowerRQL).matches() || NAME_IN_PATTERN.matcher(lowerRQL).matches();
     }
     
     private void parsePartial(ComplexPart complexPart, String originalRql, AtomicInteger pos, String partial) {      
