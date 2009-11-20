@@ -24,7 +24,7 @@ import br.com.bit.ideias.reflection.type.TargetType;
  */
 public class ParserTest {
     private final String QUERY_DOMINIO = "FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominio WHERE target eq 'field' and ";
-    private final String QUERY_FILHA = "FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha WHERE target eq 'method' AND ";
+    private final String QUERY_FILHA = "FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha WHERE ";
     
     private final Introspector introspector = Introspector.forClass(ClasseDominio.class);
 
@@ -177,7 +177,7 @@ public class ParserTest {
 
     @Test
     public void testRestrictionAnnotatedWith() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotated with 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
+        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotation eq 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
         final CriterionResult result = criterion.list();
 
         Assert.assertTrue(result.getMethods().isEmpty());
@@ -186,7 +186,7 @@ public class ParserTest {
     
     @Test
     public void testRestrictionAnnotatedWithComDoisAdd() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotated with 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation' and annotated with 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation2'");
+        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotation eq 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation' and annotation eq 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation2'");
         final CriterionResult result = criterion.list();
 
         Assert.assertTrue(result.getMethods().isEmpty());
@@ -204,7 +204,7 @@ public class ParserTest {
 
     @Test(expected = TooManyResultException.class)
     public void testRestrictionUniqueShouldThrowAnExceptionIfThereAreMoreThanOneResult() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotated with 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
+        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotation eq 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
         criterion.uniqueResult();
     }
 
@@ -225,7 +225,7 @@ public class ParserTest {
 
     @Test
     public void testRestrictionShowOnlyPublicFalse() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "name like '/comeca[P|p]riva/' and modifier eq 'PRIVATE' and modifier eq 'PROTECTED'");
+        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "name like '/comeca[P|p]riva/' and modifier eq 'PRIVATE' or modifier eq 'PROTECTED'");
         final CriterionResult result = criterion.list();
 
         Assert.assertTrue(result.getMethods().isEmpty());
@@ -234,7 +234,7 @@ public class ParserTest {
 
     @Test
     public void testRestrictionShowOnlyPublicTrueComAtributosNaClassePai() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_FILHA + "name like '%atributo%' and modifier eq 'PRIVATE' and modifier eq 'PROTECTED'");
+        criterion = Parser.getInstance().parse(QUERY_FILHA + "name like '%atributo%' and modifier eq 'PRIVATE' or modifier eq 'PROTECTED'");
         final CriterionResult result = criterion.list();
 
         Assert.assertTrue(result.getMethods().isEmpty());
@@ -252,7 +252,7 @@ public class ParserTest {
 
     @Test
     public void testRestrictionAnnotatedWithNaClassePai() throws Exception {
-        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotated with 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
+        criterion = Parser.getInstance().parse(QUERY_DOMINIO + "annotation eq 'br.com.bit.ideias.reflection.test.artefacts.MyAnnotation'");
         final CriterionResult result = criterion.list();
 
         Assert.assertTrue(result.getMethods().isEmpty());
