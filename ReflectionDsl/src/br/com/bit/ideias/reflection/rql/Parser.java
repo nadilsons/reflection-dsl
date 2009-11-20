@@ -19,7 +19,9 @@ import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.rql.exception.SyntaxException;
+import br.com.bit.ideias.reflection.type.LikeType;
 import br.com.bit.ideias.reflection.type.ModifierType;
+import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
  * @author Leonardo Campos
@@ -70,40 +72,45 @@ public class Parser {
         
         @Override
         public Expression parse() {
-            ConjunctionExpression expression = new ConjunctionExpression();
-            
-            if((parts.size() - 1) != connectors.size())
+            if ((parts.size() - 1) != connectors.size())
                 throw new SyntaxException("The number of connectors AND/OR is invalid");
+
+            if(parts.size() == 1)
+                return parts.get(0).parse();
             
-            if(connectors.contains(Connector.OR)) {
-                ComplexExpression disjunction = null;
-                
-                int index = 0;
-                Iterator<Connector> iterator = connectors.iterator();
-                while(iterator.hasNext()) {
-                    Connector connector = iterator.next();
-                    
-                    if(connector == Connector.OR) {
-                        if(disjunction == null) {
-                            //transforms previous and next into an disjunction
-                            QueryPart previous = parts.get(index);
-                            QueryPart actual = parts.get(index + 1);
-                            
-                            disjunction = Restriction.disjunction(previous.parse(), actual.parse());
-                            expression.add(disjunction);
-                            //now, add the disjunction to the complex expression
-                        } else {
-                            //adds next to the existing disjunction
-                            disjunction.add(parts.get(index + 1).parse());
-                        }
+            ConjunctionExpression expression = new ConjunctionExpression();
+            ComplexExpression disjunction = null;
+
+            int index = 0;
+            Iterator<Connector> iterator = connectors.iterator();
+            while (iterator.hasNext()) {
+                Connector connector = iterator.next();
+
+                if (connector == Connector.OR) {
+                    if (disjunction == null) {
+                        // transforms previous and next into an disjunction
+                        QueryPart previous = parts.get(index);
+                        QueryPart actual = parts.get(index + 1);
+
+                        disjunction = Restriction.disjunction(previous.parse(), actual.parse());
+                        expression.add(disjunction);
+                        // now, add the disjunction to the complex expression
                     } else {
-                        //Just null the disjunction variable and add the expression
-                        disjunction = null;
-                        expression.add(parts.get(index).parse());
+                        // adds next to the existing disjunction
+                        disjunction.add(parts.get(index + 1).parse());
                     }
-                    
-                    index++;
+                } else {
+                    // Just null the disjunction variable and add the expression
+                    disjunction = null;
+                    expression.add(parts.get(index).parse());
                 }
+
+                index++;
+            }
+            
+            if(disjunction == null) {
+                //it means it ended with an AND conjunction
+                expression.add(parts.get(index).parse());
             }
             
             return expression;
@@ -169,11 +176,60 @@ public class Parser {
                     case MODIFIER:
                         ModifierType modifier = ModifierType.valueOf(value);
                         return Restriction.withModifiers(modifier);
+                    case TARGET:
+                        return Restriction.targetType(TargetType.valueOf(value.toUpperCase()));
                 }
 
                 throw new SyntaxException("");
             }
-        },NE,LIKE, IN, WITH {
+        },NE {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Expression getExpression(Clause clause, String value) {
+                if(clause == Clause.NAME) {
+                    return Restriction.ne(value);
+                } else if (clause == Clause.ANNOTATION) {
+                    Class<?> classFromValue = getClassFromValue(value);
+                    try {
+                        return Restriction.notAnnotatedWith((Class<? extends Annotation>) classFromValue);
+                    } catch (ClassCastException e) {
+                        throw new SyntaxException("Class must be an Annotation");
+                    }
+                }
+                throw new SyntaxException("NE");
+            }
+        },LIKE {
+            @Override
+            public Expression getExpression(Clause clause, String value) {
+                if(value.startsWith("/")) {
+                    //it is a Regex, so it should and with another "/"
+                    
+                    if(!value.endsWith("/")) throw new SyntaxException("Unclosed regex expression");
+                    return Restriction.regex(removeEdges(value));
+                }
+                
+                if(value.startsWith("%") && value.endsWith("%"))
+                    return Restriction.like(removeEdges(value), LikeType.ANYWHERE);
+                
+                if(value.startsWith("%"))
+                    return Restriction.like(value.substring(1), LikeType.END);
+                
+                if(value.endsWith("%"))
+                    return Restriction.like(value.substring(0, value.length() - 1), LikeType.START);
+                
+                return Restriction.eq(value);
+            }
+        }, IN {
+            @Override
+            public Expression getExpression(Clause clause, String value) {
+                String[] parts = value.split("[ ]{0,},[ ]{0,}");
+                for (int i = 0; i < parts.length; i++) {
+                    parts[i] = removeEdges(parts[i]);
+                }
+                
+                return Restriction.in(parts);
+            }
+        }, WITH {
             @Override
             public Expression getExpression(Clause clause, String value) {
                 switch (clause) {
@@ -197,7 +253,7 @@ public class Parser {
             }
         };
 
-        public Expression getExpression(Clause clause, String substring) {
+        public Expression getExpression(Clause clause, String value) {
             return null;
         }
 
@@ -209,6 +265,10 @@ public class Parser {
                 throw new SyntaxException(String.format("Right hand must be a Class => %s", value));
             }
             return klass;
+        }
+        
+        protected String removeEdges(String value) {
+            return value.substring(1, value.length() - 1);
         }
     }
 
@@ -289,7 +349,7 @@ public class Parser {
                     }
                     
                     lowerRQL = builder.toString().toLowerCase();
-                    isMethodWithParenthesis = Pattern.matches("^method[ ]+with[ ]+", lowerRQL) || Pattern.matches("^name[ ]+in[ ]+", lowerRQL);
+                    isMethodWithParenthesis = Pattern.matches("(\\b|.*)method[ ]+with[ ]+", lowerRQL) || Pattern.matches("(\\b|.*[ ]+)name[ ]+in[ ]+", lowerRQL);
                     
                     if(isMethodWithParenthesis) {
                         builder.append(chr);
@@ -341,7 +401,7 @@ public class Parser {
     
     private void parsePartial(ComplexPart part, String originalRql, AtomicInteger pos, int level, String partial) {
       //Before this subquery, there was query on this stack level
-        String operatorsPattern = "([ ]+|\\b)([aA][nN][dD]|[oO][rR])[ ]+";
+        String operatorsPattern = "([ ]+|\\b)([aA][nN][dD]|[oO][rR])([ ]+|\\b)";
         
         Matcher matcher = Pattern.compile(operatorsPattern).matcher(partial);
         List<Connector> connectors = new ArrayList<Connector>();
@@ -376,7 +436,8 @@ public class Parser {
         Clause clause = Clause.valueOf(clauseName);
         
         rql = rql.substring(pos).trim();
-        String op = rql.substring(0, pos - 1).toUpperCase().trim();
+        pos = rql.indexOf(' ');
+        String op = rql.substring(0, pos).toUpperCase().trim();
         Operator operator = Operator.valueOf(op);
         
         if(!clause.acceptsOperator(operator))
