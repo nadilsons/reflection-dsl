@@ -1,8 +1,8 @@
 package br.com.bit.ideias.reflection.rql;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -99,15 +99,15 @@ public class ParserTest {
         }
     }
     
-//    @Test
-//    public void testParseRestrictionsShouldReturnSimpleExpression() throws Exception {
-//        String query = "name eq 'teste'";
-//        
-//        List<Expression> expressions = call(query);
-//        
-//        assertNotNull("Deveria ter retornado algo", expressions);
-//        assertEquals(1, expressions.size());
-//    }
+    @Test
+    public void testParseRestrictionsShouldReturnSimpleExpression() throws Exception {
+        String query = "name eq 'teste'";
+        
+        List<Expression> expressions = call(query);
+        
+        assertNotNull("Deveria ter retornado algo", expressions);
+        assertEquals(1, expressions.size());
+    }
 //    
 //    @Test
 //    public void testParseRestrictionsShouldAddSimpleExpression() throws Exception {
