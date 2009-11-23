@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.rql.exception.SyntaxException;
+import br.com.bit.ideias.reflection.exceptions.SyntaxException;
 import br.com.bit.ideias.reflection.rql.query.ComplexPart;
 import br.com.bit.ideias.reflection.rql.query.ExpressionPart;
 import br.com.bit.ideias.reflection.rql.query.QueryClause;

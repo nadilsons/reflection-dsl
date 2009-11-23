@@ -10,9 +10,9 @@ import org.junit.Test;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
+import br.com.bit.ideias.reflection.exceptions.SyntaxException;
 import br.com.bit.ideias.reflection.exceptions.TooManyResultException;
 import br.com.bit.ideias.reflection.rql.Rql;
-import br.com.bit.ideias.reflection.rql.exception.SyntaxException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 
 /**

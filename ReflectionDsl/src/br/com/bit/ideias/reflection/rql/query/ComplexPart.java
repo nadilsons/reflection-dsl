@@ -8,7 +8,7 @@ import br.com.bit.ideias.reflection.criteria.Restriction;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.rql.exception.SyntaxException;
+import br.com.bit.ideias.reflection.exceptions.SyntaxException;
 
 /**
  * @author Leonardo Campos

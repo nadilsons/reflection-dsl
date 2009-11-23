@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.rql.exception;
+package br.com.bit.ideias.reflection.exceptions;
 
 /**
  * @author Leonardo Campos

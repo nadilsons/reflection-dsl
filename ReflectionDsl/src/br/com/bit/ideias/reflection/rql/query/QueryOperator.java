@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import br.com.bit.ideias.reflection.criteria.Restriction;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.rql.exception.SyntaxException;
+import br.com.bit.ideias.reflection.exceptions.SyntaxException;
 import br.com.bit.ideias.reflection.type.LikeType;
 import br.com.bit.ideias.reflection.type.ModifierType;
 import br.com.bit.ideias.reflection.type.TargetType;
