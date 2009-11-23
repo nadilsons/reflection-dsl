@@ -5,7 +5,7 @@ package br.com.bit.ideias.reflection.exceptions;
  * @date 18/02/2009
  * 
  */
-public class BaseReflectionDslException extends RuntimeException {
+public abstract class BaseReflectionDslException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
