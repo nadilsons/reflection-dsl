@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
-import br.com.bit.ideias.reflection.interfaces.Interceptor;
+import br.com.bit.ideias.reflection.interceptor.Interceptor;
 
 /**
  * @author Nadilson Oliveira da Silva

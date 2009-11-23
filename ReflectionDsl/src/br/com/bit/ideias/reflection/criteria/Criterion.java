@@ -1,6 +1,7 @@
 package br.com.bit.ideias.reflection.criteria;
 
 import java.lang.reflect.Member;
+import java.util.List;
 
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 
@@ -13,7 +14,7 @@ public interface Criterion {
 
 	public Criterion add(Expression expression);
 
-	public CriterionResult list();
+	public <T extends Member> List<T> list();
 
 	public <T extends Member> T uniqueResult();
 }

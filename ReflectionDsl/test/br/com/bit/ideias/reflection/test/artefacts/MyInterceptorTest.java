@@ -3,8 +3,8 @@
  */
 package br.com.bit.ideias.reflection.test.artefacts;
 
+import br.com.bit.ideias.reflection.interceptor.Interceptor;
 import br.com.bit.ideias.reflection.interceptor.InvocationContext;
-import br.com.bit.ideias.reflection.interfaces.Interceptor;
 import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**

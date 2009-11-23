@@ -1,6 +1,8 @@
-package br.com.bit.ideias.reflection.test.criteria;
+package br.com.bit.ideias.reflection.criteria;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,7 +10,6 @@ import org.junit.Test;
 
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
-import br.com.bit.ideias.reflection.criteria.CriterionResult;
 import br.com.bit.ideias.reflection.criteria.Restriction;
 import br.com.bit.ideias.reflection.criteria.expression.ComplexExpression;
 import br.com.bit.ideias.reflection.exceptions.NoResultException;
@@ -26,7 +27,7 @@ import br.com.bit.ideias.reflection.type.TargetType;
  * @author Nadilson Oliveira da Silva
  * @since 28/07/2009
  */
-public class RestrictionsTest {
+public class RestrictionTest {
 
 	private final Introspector introspector = Introspector.forClass(ClasseDominio.class);
 
@@ -48,32 +49,31 @@ public class RestrictionsTest {
 	public void testRestrictionEqComTargetTypeNaoEspecificado() throws Exception {
 		criterion = introspector.createCriterion();
 		criterion.add(Restriction.like("tributoPrivadoString", LikeType.END));
-		final CriterionResult result = criterion.list();
+		final List<Member> result = criterion.list();
 
-		Assert.assertEquals(2, result.getMethods().size());
-		Assert.assertEquals(1, result.getFields().size());
+		Assert.assertEquals(3, result.size());
 	}
 
 	@Test
 	public void testRestrictionEqDirectCriterion() throws Exception {
 		final Field field = ClasseDominio.class.getDeclaredField("atributoPrivadoInt");
 		final Criterion localCriterion = Introspector.createCriterion(ClasseDominio.class).add(Restriction.eq("atributoPrivadoInt"));
-		final CriterionResult result = localCriterion.list();
+		localCriterion.add(Restriction.targetType(TargetType.FIELD));
+		;
+		final List<Field> result = localCriterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
-		Assert.assertEquals(field, result.getFields().get(0));
+		Assert.assertEquals(1, result.size());
+		Assert.assertEquals(field, result.get(0));
 	}
 
 	@Test
 	public void testRestrictionEq() throws Exception {
 		final Field field = ClasseDominio.class.getDeclaredField("atributoPrivadoInt");
 		criterion.add(Restriction.eq("atributoPrivadoInt"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
-		Assert.assertEquals(field, result.getFields().get(0));
+		Assert.assertEquals(1, result.size());
+		Assert.assertEquals(field, result.get(0));
 	}
 
 	@Test
@@ -84,31 +84,28 @@ public class RestrictionsTest {
 		disjunction.add(Restriction.eq("atributoPrivadoInt"));
 		criterion.add(disjunction);
 
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
-		Assert.assertEquals(field, result.getFields().get(0));
+		Assert.assertEquals(1, result.size());
+		Assert.assertEquals(field, result.get(0));
 	}
 
 	@Test
 	public void testRestrictionEqEncadeado() throws Exception {
 		criterion.add(Restriction.eq("atributoPrivadoInt"));
 		criterion.add(Restriction.eq("isAlive"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertTrue(result.getFields().isEmpty());
+		Assert.assertTrue(result.isEmpty());
 	}
 
 	@Test
 	public void testRestrictionNe() throws Exception {
 		criterion.add(Restriction.ne("atributoPrivadoInt"));
 		criterion.add(Restriction.ne("constante"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(7, result.getFields().size());
+		Assert.assertEquals(7, result.size());
 	}
 
 	@Test
@@ -117,103 +114,92 @@ public class RestrictionsTest {
 		criterion.add(Restriction.ne("isAlive"));
 		criterion.add(Restriction.ne("Privative"));
 		criterion.add(Restriction.ne("constante"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(5, result.getFields().size());
+		Assert.assertEquals(5, result.size());
 	}
 
 	@Test
 	public void testRestrictionLike() throws Exception {
 		criterion.add(Restriction.like("atributo"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(4, result.getFields().size());
+		Assert.assertEquals(4, result.size());
 	}
 
 	@Test
 	public void testRestrictionLikeEncadeado() throws Exception {
 		criterion.add(Restriction.like("atributo"));
 		criterion.add(Restriction.ne("atributoPrivadoInt"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(3, result.getFields().size());
+		Assert.assertEquals(3, result.size());
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeStart() throws Exception {
 		criterion.add(Restriction.like("atributo", LikeType.START));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(4, result.getFields().size());
+		Assert.assertEquals(4, result.size());
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeEnd() throws Exception {
 		criterion.add(Restriction.like("ive", LikeType.END));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(2, result.getFields().size());
+		Assert.assertEquals(2, result.size());
 	}
 
 	@Test
 	public void testRestrictionLikeComLikeTypeAnywhere() throws Exception {
 		criterion.add(Restriction.like("Priva", LikeType.ANYWHERE));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(5, result.getFields().size());
+		Assert.assertEquals(5, result.size());
 	}
 
 	@Test
 	public void testRestrictionRegex() throws Exception {
 		criterion.add(Restriction.regex("comeca[P|p]riva"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(2, result.getFields().size());
+		Assert.assertEquals(2, result.size());
 	}
 
 	@Test
 	public void testRestrictionIn() throws Exception {
 		criterion.add(Restriction.in("atributoPrivadoInt", "comecaPriva"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(2, result.getFields().size());
+		Assert.assertEquals(2, result.size());
 	}
 
 	@Test
 	public void testRestrictionAnnotatedWith() throws Exception {
 		criterion.add(Restriction.annotatedWith(MyAnnotation.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(3, result.getFields().size());
+		Assert.assertEquals(3, result.size());
 	}
-	
+
 	@Test
 	public void testRestrictionAnnotatedWithComDoisAdd() throws Exception {
 		criterion.add(Restriction.annotatedWith(MyAnnotation.class));
 		criterion.add(Restriction.annotatedWith(MyAnnotation2.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(0, result.getFields().size());
+		Assert.assertEquals(0, result.size());
 	}
 
 	@Test
 	public void testRestrictionShowOnlyPublicTrue() throws Exception {
 		criterion.add(Restriction.regex("comeca[P|p]riva"));
 		criterion.add(Restriction.withModifiers(ModifierType.PUBLIC));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
+		Assert.assertEquals(1, result.size());
 	}
 
 	@Test(expected = TooManyResultException.class)
@@ -241,10 +227,9 @@ public class RestrictionsTest {
 	public void testRestrictionShowOnlyPublicFalse() throws Exception {
 		criterion.add(Restriction.regex("comeca[P|p]riva"));
 		criterion.add(Restriction.withModifiers(ModifierType.PRIVATE, ModifierType.PROTECTED));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
+		Assert.assertEquals(1, result.size());
 	}
 
 	@Test
@@ -252,92 +237,86 @@ public class RestrictionsTest {
 		criterion = introspectorClasseFilha.createCriterion();
 		criterion.add(Restriction.like("atributo", LikeType.ANYWHERE));
 		criterion.add(Restriction.withModifiers(ModifierType.PRIVATE, ModifierType.PROTECTED));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(5, result.getFields().size());
+		Assert.assertEquals(5, result.size());
 	}
 
 	@Test
 	public void testRestrictionEqComPropriedadeNaClassePai() throws Exception {
 		criterion = introspectorClasseFilha.createCriterion();
 		criterion.add(Restriction.regex("comeca[P|p]riva"));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(2, result.getFields().size());
+		Assert.assertEquals(2, result.size());
 	}
 
 	@Test
 	public void testRestrictionAnnotatedWithNaClassePai() throws Exception {
 		criterion.add(Restriction.annotatedWith(MyAnnotation.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(3, result.getFields().size());
+		Assert.assertEquals(3, result.size());
 	}
 
 	@Test
 	public void testTypeEq() {
 		criterion.add(Restriction.fieldClassEq(String.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertEquals(2, result.getFields().size());
-		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertEquals(2, result.size());
+
 	}
 
 	@Test
 	public void testMethodReturnClass() {
 		criterion.add(Restriction.methodReturnClassEq(Integer.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertTrue(result.isEmpty());
+
 	}
 
 	@Test
 	public void testWithParams() {
 		criterion.add(Restriction.methodWithParams(String.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertTrue(result.isEmpty());
+
 	}
 
 	@Test
 	public void testWithParamsComMaisDeUmParametro() {
 		criterion.add(Restriction.methodWithParams(String.class, Integer.class, boolean.class));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getFields().isEmpty());
-		Assert.assertTrue(result.getMethods().isEmpty());
+		Assert.assertTrue(result.isEmpty());
+
 	}
 
 	@Test
 	public void testCriteriaProcuraPorFieldsConstantes() {
 		criterion.add(Restriction.withModifiers(ModifierType.FINAL, ModifierType.STATIC));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
+		Assert.assertEquals(1, result.size());
 	}
 
 	@Test
 	public void testCriteriaProcuraPorFieldsEstaticos() {
 		criterion.add(Restriction.withModifiers(ModifierType.STATIC));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(1, result.getFields().size());
+		Assert.assertEquals(1, result.size());
 	}
 
 	@Test
 	public void testCriteriaProcuraPorFieldsSynchronized() {
 		criterion.add(Restriction.withModifiers(ModifierType.SYNCHRONIZED));
-		final CriterionResult result = criterion.list();
+		final List<Field> result = criterion.list();
 
-		Assert.assertTrue(result.getMethods().isEmpty());
-		Assert.assertEquals(0, result.getFields().size());
+		Assert.assertEquals(0, result.size());
 	}
 
 }

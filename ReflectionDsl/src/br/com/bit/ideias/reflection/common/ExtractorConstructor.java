@@ -6,8 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import net.sf.cglib.proxy.Enhancer;
 import br.com.bit.ideias.reflection.exceptions.ConstructorNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.ObjectCreateException;
+import br.com.bit.ideias.reflection.interceptor.Interceptor;
 import br.com.bit.ideias.reflection.interceptor.MethodInterceptorImpl;
-import br.com.bit.ideias.reflection.interfaces.Interceptor;
 
 /**
  * @author Nadilson Oliveira da Silva

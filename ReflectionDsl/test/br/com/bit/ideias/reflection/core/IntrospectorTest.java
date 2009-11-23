@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.test;
+package br.com.bit.ideias.reflection.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -107,11 +107,11 @@ public class IntrospectorTest {
 	// create
 	// /////////////////////////////////////////////////////////////////////////
 	@Test
-	public void testCreateComClasseSemConstructorExplicito() throws Exception {		
+	public void testCreateComClasseSemConstructorExplicito() throws Exception {
 		introspectorForClass = Introspector.forClass(ClasseDominioSemConstructor.class).create();
 		assertNotNull(introspectorForClass.getTargetInstance());
 	}
-	
+
 	@Test
 	public void testCreate() throws Exception {
 		introspectorForClass.create();

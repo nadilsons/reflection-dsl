@@ -1,7 +1,5 @@
 package br.com.bit.ideias.reflection.criteria;
 
-import static br.com.bit.ideias.reflection.util.CollectionUtil.isEmpty;
-
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,34 +37,28 @@ public class CriterionImpl implements Criterion {
 
     @SuppressWarnings("unchecked")
 	public <T extends Member> T uniqueResult() {
-		final CriterionResult result = list();
-		if (isEmpty(result.getFields()) && isEmpty(result.getMethods()))
+		final List result = list();
+		if (result.isEmpty())
 			throw new NoResultException();
 
-		if (!isEmpty(result.getFields()) && !isEmpty(result.getMethods()))
+		if (result.size() > 1)
 			throw new TooManyResultException();
 
-		if (!isEmpty(result.getFields())) {
-			if (result.getFields().size() > 1)
-				throw new TooManyResultException();
-
-			return (T) result.getFields().get(0);
-		}
-
-		if (result.getMethods().size() > 1)
-			throw new TooManyResultException();
-
-		return (T) result.getMethods().get(0);
+		return (T) result.get(0);
 	}
 
-	public CriterionResult list() {
+    @SuppressWarnings("unchecked")
+    public <T extends Member> List<T> list() {
+		List<Member> all = new ArrayList<Member>();
 		List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
 		List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
 
 		fields = executeSearch(fields);
 		methods = executeSearch(methods);
 
-		return new CriterionResult(fields, methods);
+		all.addAll(fields);
+		all.addAll(methods);
+		return (List<T>) all;
 	}
 
 	private List<Member> executeSearch(final List<? extends Member> members) {

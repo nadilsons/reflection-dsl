@@ -12,7 +12,7 @@ import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
-import br.com.bit.ideias.reflection.interfaces.Interceptor;
+import br.com.bit.ideias.reflection.interceptor.Interceptor;
 import br.com.bit.ideias.reflection.type.TargetType;
 
 /**

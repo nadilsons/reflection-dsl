@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import br.com.bit.ideias.reflection.interfaces.Interceptor;
 import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**
