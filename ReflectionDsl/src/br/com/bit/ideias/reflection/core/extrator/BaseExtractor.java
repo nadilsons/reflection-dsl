@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.common;
+package br.com.bit.ideias.reflection.core.extrator;
 
 /**
  * @author Nadilson Oliveira da Silva

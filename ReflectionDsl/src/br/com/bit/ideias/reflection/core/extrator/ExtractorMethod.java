@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.common;
+package br.com.bit.ideias.reflection.core.extrator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

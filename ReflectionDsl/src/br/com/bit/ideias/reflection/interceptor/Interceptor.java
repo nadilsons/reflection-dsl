@@ -1,6 +1,6 @@
 package br.com.bit.ideias.reflection.interceptor;
 
-import br.com.bit.ideias.reflection.common.Extractor;
+import br.com.bit.ideias.reflection.core.extrator.Extractor;
 import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**

@@ -5,7 +5,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
-import br.com.bit.ideias.reflection.common.Extractor;
+import br.com.bit.ideias.reflection.core.extrator.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionImpl;
 import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
