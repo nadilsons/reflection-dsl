@@ -1,5 +1,6 @@
 package br.com.bit.ideias.reflection.cache;
 
+import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -16,7 +17,7 @@ public class LRUCache implements Cache {
         return instance;
     }
     
-    private class InnerCache extends LinkedHashMap<Object, Object> {
+    private class InnerCache extends LinkedHashMap<Object, SoftReference<Object>> {
         private static final long serialVersionUID = 1L;
         
         private final int maxEntries;
@@ -27,7 +28,7 @@ public class LRUCache implements Cache {
         }
 
         @Override
-        protected boolean removeEldestEntry(Entry<Object, Object> eldest) {
+        protected boolean removeEldestEntry(Entry<Object, SoftReference<Object>> eldest) {
             return this.size() > maxEntries;
         }
     }
@@ -51,10 +52,16 @@ public class LRUCache implements Cache {
     }
 
     public void add(Object key, Object value) {
-        delegate.put(key, value);
+        delegate.put(key, new SoftReference<Object>(value));
     }
 
     public Object get(Object key) {
-        return delegate.get(key);
+        SoftReference<Object> softReference = delegate.get(key);
+        if(softReference == null) return null;
+        Object retorno = softReference.get();
+        
+        if(retorno == null) delegate.remove(key);
+        
+		return retorno;
     }
 }
