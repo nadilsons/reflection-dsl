@@ -31,6 +31,7 @@ public class Rql {
     private static final Pattern NAME_IN_PATTERN  = Pattern.compile("(\\b|.*[ ]+)name[ ]+in[ ]+");
     private static final Pattern OPERATORS_PATTERN = Pattern.compile("([ ]+|\\b)([aA][nN][dD]|[oO][rR])([ ]+|\\b)");
     private static final Pattern CLASS_PATTERN = Pattern.compile("[^ ]*");
+    private static final Pattern EXPRESSION_PATTERN = Pattern.compile("^(name|annotation|modifier|fieldclass|methodreturnclass|method|target)[ ]+(eq|in|like|ne|with|=|!=)[ ]+('[^\\']*'|\\([^\\)]*\\))$");
     private static Rql instance = new Rql(null);
     private String initQuery = null;
     private static final String INIT_QUERY_PATTER = "FROM %s "; 
@@ -227,7 +228,7 @@ public class Rql {
         String originalRql = rql;
         rql = rql.trim();
         String lowerRql = rql.toLowerCase();
-        if(!Pattern.matches("^(name|annotation|modifier|fieldclass|methodreturnclass|method|target)[ ]+(eq|in|like|ne|with|=|!=)[ ]+('[^\\']*'|\\([^\\)]*\\))$", lowerRql))
+        if(!EXPRESSION_PATTERN.matcher(lowerRql).matches())
             throw new SyntaxException(String.format("There is an error on this part of your rql => %s", rql));
         
         //now we get what it is demmanded
