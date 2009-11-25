@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.bit.ideias.reflection.cache.Cache;
+import br.com.bit.ideias.reflection.cache.LRUCache;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -32,9 +34,11 @@ public class Rql {
     private static Rql instance = new Rql(null);
     private String initQuery = null;
     private static final String INIT_QUERY_PATTER = "FROM %s "; 
+    private Cache cache;
 
     private Rql(String initQuery) {
         this.initQuery = initQuery;
+        this.cache = LRUCache.getInstance();
     }
 
     public static Rql getInstance() {
@@ -50,6 +54,10 @@ public class Rql {
     }
 
     public Criterion parse(String rql) {
+        String originalRql = rql;
+        Criterion criterion = (Criterion)cache.get(originalRql);
+        if(criterion != null) return criterion;
+        
         rql = addInitQuery(rql);
         
         if(isEmpty(rql)) throw new SyntaxException("Empty query");
@@ -76,6 +84,7 @@ public class Rql {
         QueryPart part = parseRestrictions(rql, new AtomicInteger());
         retorno.add(part.parse());
         
+        cache.add(originalRql, retorno);
         return retorno;
     }
 

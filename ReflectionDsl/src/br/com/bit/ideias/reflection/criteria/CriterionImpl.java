@@ -4,6 +4,9 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.bit.ideias.reflection.cache.Cache;
+import br.com.bit.ideias.reflection.cache.CompositeKey;
+import br.com.bit.ideias.reflection.cache.LRUCache;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -73,13 +76,21 @@ public class CriterionImpl implements Criterion {
 	@SuppressWarnings("unchecked")
 	private List<? extends Member> obtainAllMembers(final TargetType targetType) {
 		Class<?> classe = introspector.getTargetClass();
+		
+		CompositeKey key = new CompositeKey(classe, targetType);
+		
+		Cache cache = LRUCache.getInstance();
+		
+        List<? extends Member> fields = (List<? extends Member>) cache.get(key);
+        if(fields != null) return fields;
 
-		final List<? extends Member> fields = targetType.obtainMembersInClass(classe);
+		fields = targetType.obtainMembersInClass(classe);
 		while (classe.getSuperclass() != null) {
 			classe = classe.getSuperclass();
 			fields.addAll((List) targetType.obtainMembersInClass(classe));
 		}
 
+		cache.add(key, fields);
 		return fields;
 	}
 }
