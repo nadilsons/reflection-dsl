@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.bit.ideias.reflection.cache.Cache;
+import br.com.bit.ideias.reflection.cache.CacheProvider;
 import br.com.bit.ideias.reflection.cache.CompositeKey;
-import br.com.bit.ideias.reflection.cache.LRUCache;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -79,7 +79,7 @@ public class CriterionImpl implements Criterion {
 		
 		CompositeKey key = new CompositeKey(classe, targetType);
 		
-		Cache cache = LRUCache.getInstance();
+		Cache cache = CacheProvider.getCache();
 		
         List<? extends Member> fields = (List<? extends Member>) cache.get(key);
         if(fields != null) return fields;

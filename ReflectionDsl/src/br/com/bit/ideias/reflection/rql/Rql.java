@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.bit.ideias.reflection.cache.Cache;
-import br.com.bit.ideias.reflection.cache.LRUCache;
+import br.com.bit.ideias.reflection.cache.CacheProvider;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -39,7 +39,7 @@ public class Rql {
 
     private Rql(String initQuery) {
         this.initQuery = initQuery;
-        this.cache = LRUCache.getInstance();
+        this.cache = CacheProvider.getCache();
     }
 
     public static Rql getInstance() {
