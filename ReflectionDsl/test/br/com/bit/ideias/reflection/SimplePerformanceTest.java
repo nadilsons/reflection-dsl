@@ -19,7 +19,7 @@ public class SimplePerformanceTest {
         String methodName = "getAtributoPrivadoString";
         String rql = String.format("from br.com.bit.ideias.reflection.test.artefacts.ClasseDominio where name eq '%s'", methodName);
         ClasseDominio classeDominio = new ClasseDominio();
-        int times = 1000000;
+        int times = 130000;
         
         //========================================
         long init = System.currentTimeMillis();
