@@ -1,7 +1,6 @@
 package br.com.bit.ideias.reflection.rql.query;
 
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
-import br.com.bit.ideias.reflection.rql.Rql;
 
 /**
  * @author Leonardo Campos

@@ -1,4 +1,4 @@
-package br.com.bit.ideias.reflection.rql;
+package br.com.bit.ideias.reflection.rql.query;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -8,18 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import br.com.bit.ideias.reflection.cache.Cache;
-import br.com.bit.ideias.reflection.cache.CacheProvider;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
 import br.com.bit.ideias.reflection.exceptions.SyntaxException;
-import br.com.bit.ideias.reflection.rql.query.ComplexPart;
-import br.com.bit.ideias.reflection.rql.query.ExpressionPart;
-import br.com.bit.ideias.reflection.rql.query.QueryClause;
-import br.com.bit.ideias.reflection.rql.query.QueryConnector;
-import br.com.bit.ideias.reflection.rql.query.QueryOperator;
-import br.com.bit.ideias.reflection.rql.query.QueryPart;
 
 /**
  * @author Leonardo Campos
@@ -32,35 +24,13 @@ public class Rql {
     private static final Pattern OPERATORS_PATTERN = Pattern.compile("([ ]+|\\b)([aA][nN][dD]|[oO][rR])([ ]+|\\b)");
     private static final Pattern CLASS_PATTERN = Pattern.compile("[^ ]*");
     private static final Pattern EXPRESSION_PATTERN = Pattern.compile("^(name|annotation|modifier|fieldclass|methodreturnclass|method|target)[ ]+(eq|in|like|ne|with|=|!=)[ ]+('[^\\']*'|\\([^\\)]*\\))$");
-    private static Rql instance = new Rql(null);
-    private String initQuery = null;
-    private static final String INIT_QUERY_PATTER = "FROM %s "; 
-    private Cache cache;
+    private static Rql instance = new Rql();
 
-    private Rql(String initQuery) {
-        this.initQuery = initQuery;
-        this.cache = CacheProvider.getCache();
-    }
-
-    public static Rql getInstance() {
+    protected static Rql getInstance() {
         return instance;
     }
-    
-    public static Rql forClass(Class<?> klass) {
-        return new Rql(String.format(INIT_QUERY_PATTER, klass.getName()));
-    }
-    
-    public static Rql forClass(String klass) {
-        return new Rql(String.format(INIT_QUERY_PATTER, klass));
-    }
 
-    public Criterion parse(String rql) {
-        String originalRql = rql;
-        Criterion criterion = (Criterion)cache.get(originalRql);
-        if(criterion != null) return criterion;
-        
-        rql = addInitQuery(rql);
-        
+    protected Criterion parse(String rql) {
         if(isEmpty(rql)) throw new SyntaxException("Empty query");
         
         rql = rql.trim();
@@ -85,7 +55,6 @@ public class Rql {
         QueryPart part = parseRestrictions(rql, new AtomicInteger());
         retorno.add(part.parse());
         
-        cache.add(originalRql, retorno);
         return retorno;
     }
 
@@ -112,19 +81,6 @@ public class Rql {
 
     private boolean isEmpty(String text) {
         return text == null || text.trim().length() == 0;
-    }
-
-    private String addInitQuery(String rql) {
-        if(initQuery != null) {
-            if(isEmpty(rql))
-                rql = initQuery;
-            else if(rql.trim().toLowerCase().startsWith("where"))
-                rql = initQuery + rql;
-            else {
-                rql = initQuery + "WHERE " + rql;
-            }
-        }
-        return rql;
     }
     
     private QueryPart parseRestrictions(String rql, AtomicInteger pos) {
@@ -224,7 +180,7 @@ public class Rql {
         }
     }
 
-    public static Expression parseSimple(String rql) {
+    protected static Expression parseSimple(String rql) {
         String originalRql = rql;
         rql = rql.trim();
         String lowerRql = rql.toLowerCase();

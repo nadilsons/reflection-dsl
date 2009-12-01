@@ -16,103 +16,85 @@ import br.com.bit.ideias.reflection.type.TargetType;
  */
 public enum QueryOperator {
     EQ {
-        @SuppressWarnings("unchecked")
         @Override
         public Expression getExpression(QueryClause clause, String value) {
             switch (clause) {
-                case NAME:
-                    return Restriction.eq(value);
                 case ANNOTATION:
-                    Class<? extends Annotation> classFromValue = null;
-                    try {
-                        classFromValue = (Class<? extends Annotation>) getClassFromValue(value);
-                    } catch (ClassCastException e) {
-                        throw new SyntaxException(String.format("Right hand must be an Annotation => %s", value));
-                    } 
-                    return Restriction.annotatedWith(classFromValue);
+                    return Restriction.annotatedWith(getAnnotationClassFromValue(value));
                 case MODIFIER:
-                    ModifierType modifier = ModifierType.valueOf(value.toUpperCase());
-                    return Restriction.withModifiers(modifier);
+                    return Restriction.withModifiers(ModifierType.valueOf(value.toUpperCase()));
                 case TARGET:
                     return Restriction.targetType(TargetType.valueOf(value.toUpperCase()));
                 case FIELDCLASS:
                     return Restriction.fieldClassEq(getClassFromValue(value));
                 case METHODRETURNCLASS:
                     return Restriction.methodReturnClassEq(getClassFromValue(value));
-                
+                default:
+                    //If it's not anything else, than it is NAME CLAUSE
+                    return Restriction.eq(value);
             }
+        }
+    },
+    NE {
+        @Override
+        public Expression getExpression(QueryClause clause, String value) {
+            if (clause == QueryClause.ANNOTATION)
+                return Restriction.notAnnotatedWith(getAnnotationClassFromValue(value));
 
-            throw new SyntaxException("");
+            //If not an Annotation, it is a NAME CLAUSE
+            return Restriction.ne(value);
         }
-    },NE {
-        @SuppressWarnings("unchecked")
+    },
+    LIKE {
         @Override
         public Expression getExpression(QueryClause clause, String value) {
-            if(clause == QueryClause.NAME) {
-                return Restriction.ne(value);
-            } else if (clause == QueryClause.ANNOTATION) {
-                Class<?> classFromValue = getClassFromValue(value);
-                try {
-                    return Restriction.notAnnotatedWith((Class<? extends Annotation>) classFromValue);
-                } catch (ClassCastException e) {
-                    throw new SyntaxException("Class must be an Annotation");
-                }
-            }
-            throw new SyntaxException("NE");
-        }
-    },LIKE {
-        @Override
-        public Expression getExpression(QueryClause clause, String value) {
-            if(value.startsWith("/")) {
-                //it is a Regex, so it should and with another "/"
-                if(!value.endsWith("/")) throw new SyntaxException("Unclosed regex expression");
+            if (value.startsWith("/")) {
+                // it is a Regex, so it should end with another "/"
+                if (!value.endsWith("/"))
+                    throw new SyntaxException("Unclosed regex expression");
                 return Restriction.regex(removeEdges(value));
             }
-            
-            if(value.startsWith("%") && value.endsWith("%"))
+
+            if (value.startsWith("%") && value.endsWith("%"))
                 return Restriction.like(removeEdges(value), LikeType.ANYWHERE);
-            
-            if(value.startsWith("%"))
+
+            if (value.startsWith("%"))
                 return Restriction.like(value.substring(1), LikeType.END);
-            
-            if(value.endsWith("%"))
+
+            if (value.endsWith("%"))
                 return Restriction.like(value.substring(0, value.length() - 1), LikeType.START);
-            
+
             return Restriction.eq(value);
         }
-    }, IN {
+    },
+    IN {
         @Override
         public Expression getExpression(QueryClause clause, String value) {
             String[] parts = ARRAY_SEPARATOR_PATTERN.split(value);
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = removeEdges(parts[i]);
             }
-            
+
             return Restriction.in(parts);
         }
-    }, WITH {
+    },
+    WITH {
         @Override
         public Expression getExpression(QueryClause clause, String value) {
-            switch (clause) {
-                case METHOD:
-                    String[] parts = ARRAY_SEPARATOR_PATTERN.split(value);
-                    Class<?>[] params = new Class<?>[parts.length];
-                    for (int i = 0; i < parts.length; i++) {
-                        params[i] = getClassFromValue(removeEdges(parts[i]));
-                    }
-                    
-                    return Restriction.methodWithParams(params);
+            //It must be a METHOD CLAUSE, it is the only clause that accepts WITH
+            String[] parts = ARRAY_SEPARATOR_PATTERN.split(value);
+            Class<?>[] params = new Class<?>[parts.length];
+            for (int i = 0; i < parts.length; i++) {
+                params[i] = getClassFromValue(removeEdges(parts[i]));
             }
 
-            throw new SyntaxException("");
+            return Restriction.methodWithParams(params);
         }
     };
 
     public static final Pattern ARRAY_SEPARATOR_PATTERN = Pattern.compile("[ ]{0,},[ ]{0,}");
-    
-    public Expression getExpression(QueryClause clause, String value) {
-        return null;
-    }
+
+    public abstract Expression getExpression(QueryClause clause, String value);
 
     protected Class<?> getClassFromValue(String value) {
         Class<?> klass = null;
@@ -123,8 +105,18 @@ public enum QueryOperator {
         }
         return klass;
     }
-    
+
     protected String removeEdges(String value) {
         return value.substring(1, value.length() - 1);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Class<? extends Annotation> getAnnotationClassFromValue(String value) {
+        Class<? extends Annotation> classFromValue = null;
+        classFromValue = (Class<? extends Annotation>) getClassFromValue(value);
+        if (!classFromValue.isAnnotation())
+            throw new SyntaxException(String.format("Right hand must be an Annotation => %s", value));
+
+        return classFromValue;
     }
 }

@@ -31,6 +31,6 @@ public class ConjunctionExpression extends BaseExpression implements ComplexExpr
 				return false;
 		}
 
-		return true && !expressions.isEmpty();
+		return true;
 	}
 }

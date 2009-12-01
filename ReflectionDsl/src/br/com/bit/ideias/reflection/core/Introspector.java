@@ -13,6 +13,8 @@ import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.interceptor.Interceptor;
+import br.com.bit.ideias.reflection.rql.query.Query;
+import br.com.bit.ideias.reflection.rql.query.QueryImpl;
 import br.com.bit.ideias.reflection.type.TargetType;
 
 /**
@@ -176,14 +178,30 @@ public class Introspector {
 		criterion = new CriterionImpl(this);
 		return criterion;
 	}
+	
+	public Query query(String query) {
+        return new QueryImpl(this, query);
+    }
 
 	public static Criterion createCriterion(final String className) {
 		return forClass(className).createCriterion();
 	}
 
-	public static Criterion createCriterion(final Class<?> targetClass) {
-		return forClass(targetClass).createCriterion();
+	public static Query query(final Class<?> targetClass, String query) {
+		return forClass(targetClass).query(query);
 	}
+	
+	public static Query query(final String className, String query) {
+        return forClass(className).query(query);
+    }
+	
+	public static Query createQuery(final String query) {
+        return new QueryImpl(query);
+    }
+
+    public static Criterion createCriterion(final Class<?> targetClass) {
+        return forClass(targetClass).createCriterion();
+    }
 
 	// /////////////////////////////////////////////////////////////////////////
 	/**
