@@ -1,13 +1,10 @@
 package br.com.bit.ideias.reflection;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.Restriction;
-import br.com.bit.ideias.reflection.rql.Rql;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 
 /**
@@ -98,7 +95,7 @@ public class SimplePerformanceTest {
         //========================================
         init = System.currentTimeMillis();
         for (int i = 0; i < times; i++) {
-            Method method = Rql.getInstance().parse(rql).uniqueResult();
+            Method method = Introspector.forClass(ClasseDominio.class).query(rql).uniqueResult();
             try {
                 method.invoke(classeDominio);
             } catch (IllegalArgumentException e) {
