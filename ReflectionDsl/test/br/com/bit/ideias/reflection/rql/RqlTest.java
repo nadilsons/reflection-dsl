@@ -26,6 +26,14 @@ public class RqlTest {
 	private final String QUERY_FILHA = "FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha WHERE ";
 
     private Query query;
+    
+    @Test
+    public void testForClassShouldWorkWithOrWithoutFromClause() throws Exception {
+        String from = "from br.com.bit.ideias.reflection.test.artefacts.ClasseDominio ";
+        Introspector.forClass(ClasseDominio.class).query(from + "where name eq 'getAtributoPrivadoString'").uniqueResult();
+        Introspector.forClass(ClasseDominio.class).query("where name eq 'getAtributoPrivadoString'").uniqueResult();
+        Introspector.forClass(ClasseDominio.class).query("name eq 'getAtributoPrivadoString'").uniqueResult();
+    }
 
 	@Test
 	public void testInvalidNumberOfParenthesisShouldThrowSyntaxException() throws Exception {
