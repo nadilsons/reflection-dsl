@@ -71,6 +71,7 @@ public class QueryImpl implements Query {
             return initQuery;
 
         if (query.trim().toLowerCase().startsWith("where")) return initQuery + query;
+        if (query.trim().toLowerCase().startsWith("from")) return query;
         
         return initQuery + "WHERE " + query;
     }
