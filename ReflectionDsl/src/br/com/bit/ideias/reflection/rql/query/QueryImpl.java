@@ -33,22 +33,16 @@ public class QueryImpl implements Query {
     @SuppressWarnings("unchecked")
     public <T extends Member> List<T> list() {
         String finalQuery = finalQuery();
-        String loweredQuery = lower(finalQuery);
         
-        List<T> members = (List<T>) cache.get(loweredQuery);
+        List<T> members = (List<T>) cache.get(finalQuery);
         if (members != null)
             return members;
 
         members = Rql.getInstance().parse(finalQuery).list();
 
-        cache.add(loweredQuery, members);
+        cache.add(finalQuery, members);
 
         return members;
-    }
-
-    private String lower(String text) {
-        if(text == null) return null;
-        return text.toLowerCase();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,15 +58,15 @@ public class QueryImpl implements Query {
     }
 
     private String finalQuery() {
-        if (introspector == null)
-            return query;
-        String initQuery = format("FROM %s ", introspector.getTargetClass().getName());
-        if (query == null)
-            return initQuery;
-
-        if (query.trim().toLowerCase().startsWith("where")) return initQuery + query;
-        if (query.trim().toLowerCase().startsWith("from")) return query;
+        if (introspector == null) return query;
+        String caseInsensitiveQuery = query.trim().toLowerCase();
+        if (caseInsensitiveQuery.startsWith("from")) return query;
         
-        return initQuery + "WHERE " + query;
+        if (query == null) return format("FROM %s ", introspector.getTargetClass().getName());;
+
+        if (caseInsensitiveQuery.startsWith("where")) return format("FROM %s %s", introspector.getTargetClass().getName(), query);
+        
+        
+        return format("FROM %s WHERE %s", introspector.getTargetClass().getName(), query);
     }
 }

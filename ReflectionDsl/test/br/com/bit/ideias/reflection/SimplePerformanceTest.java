@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import br.com.bit.ideias.reflection.core.Introspector;
+import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.Restriction;
+import br.com.bit.ideias.reflection.rql.query.Query;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 
 /**
@@ -17,85 +19,104 @@ public class SimplePerformanceTest {
         String rql = String.format("from br.com.bit.ideias.reflection.test.artefacts.ClasseDominio where name eq '%s'", methodName);
         ClasseDominio classeDominio = new ClasseDominio();
         int times = 1300000;
+        long init = 0;
+        long difference = 0;
+        long finish = 0;
         
+        boolean testRegularMethodCall = false;
+        boolean testRegularReflectionCall = false;
+        boolean testIntrospectorCall = false;
+        boolean testCriterionCall = true;
         //========================================
-        long init = System.currentTimeMillis();
-        for (int i = 0; i < times; i++) {
-            classeDominio.getAtributoPrivadoString();
-        }
-        long finish = System.currentTimeMillis();
-        
-        System.out.println("Regular method call");
-        long difference = finish - init;
-        System.out.println(difference);
-        //========================================
-        
-        //========================================
-        init = System.currentTimeMillis();
-        for (int i = 0; i < times; i++) {
-            try {
-                Method declaredMethod = ClasseDominio.class.getDeclaredMethod(methodName);
-                declaredMethod.invoke(classeDominio);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+        if(testRegularMethodCall) {
+            init = System.currentTimeMillis();
+            for (int i = 0; i < times; i++) {
+                classeDominio.getAtributoPrivadoString();
             }
+            finish = System.currentTimeMillis();
+            
+            System.out.println("Regular method call");
+            difference = finish - init;
+            System.out.println(difference);
         }
-        finish = System.currentTimeMillis();
+        //========================================
         
-        difference = finish - init;
-        System.out.println("Regular reflection lookup and method call");
-        System.out.println(difference);
+        //========================================
+        if(testRegularReflectionCall) {
+            init = System.currentTimeMillis();
+            for (int i = 0; i < times; i++) {
+                try {
+                    Method declaredMethod = ClasseDominio.class.getDeclaredMethod(methodName);
+                    declaredMethod.invoke(classeDominio);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+            finish = System.currentTimeMillis();
+            
+            difference = finish - init;
+            System.out.println("Regular reflection lookup and method call");
+            System.out.println(difference);
+        }
         //========================================
         
         
         //========================================
-        init = System.currentTimeMillis();
-        for (int i = 0; i < times; i++) {
-            Introspector.inObject(classeDominio).method(methodName).invoke();
+        if(testIntrospectorCall) {
+            init = System.currentTimeMillis();
+            for (int i = 0; i < times; i++) {
+                Introspector.inObject(classeDominio).method(methodName).invoke();
+            }
+            finish = System.currentTimeMillis();
+            
+            difference = finish - init;
+            System.out.println("Introspector reflection lookup and method call");
+            System.out.println(difference);
         }
-        finish = System.currentTimeMillis();
-        
-        difference = finish - init;
-        System.out.println("Introspector reflection lookup and method call");
-        System.out.println(difference);
         //========================================
         
         
         
       //========================================
-        init = System.currentTimeMillis();
-        for (int i = 0; i < times; i++) {
-            Method result = Introspector.createCriterion(ClasseDominio.class).add(Restriction.eq(methodName)).uniqueResult();
-            try {
-                result.invoke(classeDominio);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+        if(testCriterionCall) {
+            Criterion criterion = Introspector.createCriterion(ClasseDominio.class).add(Restriction.eq(methodName));
+            init = System.currentTimeMillis();
+            for (int i = 0; i < times; i++) {
+                Method result = criterion.uniqueResult();
+                try {
+                    result.invoke(classeDominio);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }
+            finish = System.currentTimeMillis();
+            
+            difference = finish - init;
+            System.out.println("Criterion method call");
+            System.out.println(difference);
         }
-        finish = System.currentTimeMillis();
-        
-        difference = finish - init;
-        System.out.println("Criterion method call");
-        System.out.println(difference);
         //========================================
         
         
         //========================================
         init = System.currentTimeMillis();
+        Introspector introspector = Introspector.forClass(ClasseDominio.class);
+        Query query = introspector.query(rql);
+        
         for (int i = 0; i < times; i++) {
-            Method method = Introspector.forClass(ClasseDominio.class).query(rql).uniqueResult();
+            Method method = query.uniqueResult();
             try {
                 method.invoke(classeDominio);
             } catch (IllegalArgumentException e) {
