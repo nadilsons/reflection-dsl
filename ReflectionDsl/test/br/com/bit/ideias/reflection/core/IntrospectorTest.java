@@ -1,9 +1,7 @@
 package br.com.bit.ideias.reflection.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,20 +9,15 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.com.bit.ideias.reflection.core.Introspector;
-import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ConstructorNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldPrivateException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
-import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioSemConstructor;
-import br.com.bit.ideias.reflection.test.artefacts.MyInterceptorTest;
-import br.com.bit.ideias.reflection.type.TreatmentExceptionType;
 
 /**
  * @author Nadilson Oliveira da Silva
@@ -45,14 +38,11 @@ public class IntrospectorTest {
 
 	private Introspector introspectorInObject;
 
-	private MyInterceptorTest interceptor;
-
 	@Before
 	public void prepare() {
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
 		introspectorForClass.create(INTEIRO, STRING);
 		introspectorInObject = Introspector.inObject(classeDominio);
-		interceptor = new MyInterceptorTest();
 
 		classeDominio.setAtributoPrivadoInteiro(INTEIRO);
 		classeDominio.setAtributoPrivadoString(STRING);
@@ -98,11 +88,6 @@ public class IntrospectorTest {
 		Introspector.inObject(null);
 	}
 
-	@Test(expected = ApplyInterceptorException.class)
-	public void testInObjectTentarAplicarInterceptor() throws Exception {
-		introspectorInObject.applyInterceptor(interceptor);
-	}
-
 	// /////////////////////////////////////////////////////////////////////////
 	// create
 	// /////////////////////////////////////////////////////////////////////////
@@ -139,42 +124,6 @@ public class IntrospectorTest {
 	public void testCreateComInterceptor() throws Exception {
 		introspectorForClass = Introspector.forClass(TARGET_CLASS);
 		// introspectorForClass.applyInterceptor(interceptor).create(params);
-	}
-
-	@Test(expected = ApplyInterceptorException.class)
-	public void testApplyInterceptorParaObjetoJaCriado() throws Exception {
-		introspectorForClass.applyInterceptor(interceptor);
-	}
-
-	@Test
-	public void testChamadasAoInterceptador() throws Exception {
-		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
-
-		introspectorForClass.field("atributoPrivadoInteiro").invoke();
-		assertTrue(interceptor.isBeforedMethodCalled());
-		assertTrue(interceptor.isAfterMethodCalled());
-		assertFalse(interceptor.isAfterExceptionMethodCalled());
-	}
-
-	@Test(expected = MethodAccessException.class)
-	public void testChamadasAoInterceptadorAposExcecaoQueDeveSerRelancada() throws Exception {
-		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
-
-		introspectorForClass.method("metodoQueVaiLancarException").invoke();
-	}
-
-	@Test
-	public void testChamadasAoInterceptadorAposExcecaoQueNaoDeveSerRelancada() throws Exception {
-		interceptor = new MyInterceptorTest(TreatmentExceptionType.STOP_EXCEPTION);
-		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		introspectorForClass.applyInterceptor(interceptor).create(INTEIRO, STRING);
-
-		introspectorForClass.method("metodoQueVaiLancarException").invoke();
-		assertTrue(interceptor.isBeforedMethodCalled());
-		assertTrue(interceptor.isAfterMethodCalled());
-		assertTrue(interceptor.isAfterExceptionMethodCalled());
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
