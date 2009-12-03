@@ -8,11 +8,9 @@ import java.util.regex.Pattern;
 import br.com.bit.ideias.reflection.core.extrator.Extractor;
 import br.com.bit.ideias.reflection.criteria.Criterion;
 import br.com.bit.ideias.reflection.criteria.CriterionImpl;
-import br.com.bit.ideias.reflection.exceptions.ApplyInterceptorException;
 import br.com.bit.ideias.reflection.exceptions.ClassNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
-import br.com.bit.ideias.reflection.interceptor.Interceptor;
 import br.com.bit.ideias.reflection.rql.query.Query;
 import br.com.bit.ideias.reflection.rql.query.QueryImpl;
 import br.com.bit.ideias.reflection.type.TargetType;
@@ -163,14 +161,6 @@ public class Introspector {
 
 	public Introspector directAccess(final boolean flag) {
 		this.extractor.field().directAccess(flag);
-		return this;
-	}
-
-	public Introspector applyInterceptor(final Interceptor interceptor) {
-		if (!extractor.isEmpty())
-			throw new ApplyInterceptorException("Interceptors can't be applyied to already instanced objects");
-
-		extractor.applyInterceptor(interceptor);
 		return this;
 	}
 

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
-import br.com.bit.ideias.reflection.interceptor.Interceptor;
 
 /**
  * @author Nadilson Oliveira da Silva
@@ -20,8 +19,6 @@ public class Extractor extends BaseExtractor {
 	private ExtractorMethod extractorMethod;
 
 	private ExtractorField extractorField;
-
-	private Interceptor interceptor;
 
 	private Extractor(final Class<?> classe) {
 		this.targetClass = classe;
@@ -41,7 +38,7 @@ public class Extractor extends BaseExtractor {
 	}
 
 	public ExtractorConstructor constructor() {
-		extractorConstructor = new ExtractorConstructor(this, interceptor);
+		extractorConstructor = new ExtractorConstructor(this);
 		return extractorConstructor;
 	}
 
@@ -78,10 +75,6 @@ public class Extractor extends BaseExtractor {
 			throw new InvalidStateException("Field nao foi especificado");
 
 		return extractorField;
-	}
-
-	public void applyInterceptor(final Interceptor interceptor) {
-		this.interceptor = interceptor;
 	}
 
 	public Object getTargetInstance() {

@@ -3,11 +3,8 @@ package br.com.bit.ideias.reflection.core.extrator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import net.sf.cglib.proxy.Enhancer;
 import br.com.bit.ideias.reflection.exceptions.ConstructorNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.ObjectCreateException;
-import br.com.bit.ideias.reflection.interceptor.Interceptor;
-import br.com.bit.ideias.reflection.interceptor.MethodInterceptorImpl;
 
 /**
  * @author Nadilson Oliveira da Silva
@@ -20,20 +17,17 @@ public class ExtractorConstructor extends BaseExtractor {
 
 	private Object targetInstance;
 
-	private final Interceptor interceptor;
-
 	ExtractorConstructor(final Extractor extractor, final Object instance) {
-		this(extractor, null);
+	    this(extractor);
 		this.targetInstance = instance;
 	}
 
-	ExtractorConstructor(final Extractor extractor, final Interceptor interceptor) {
+	ExtractorConstructor(final Extractor extractor) {
 		this.extractor = extractor;
-		this.interceptor = interceptor;
 	}
 
 	public Object newInstance(final Object... params) {
-		return (interceptor == null) ? constructorStandard(params) : constructorWithInterceptor(params);
+		return constructorStandard(params);
 	}
 
 	public Object getTargetInstance() {
@@ -58,15 +52,4 @@ public class ExtractorConstructor extends BaseExtractor {
 			throw new ObjectCreateException(e);
 		}
 	}
-
-	private Object constructorWithInterceptor(final Object... params) {
-		final Enhancer e = new Enhancer();
-
-		e.setSuperclass(extractor.getTargetClass());
-		e.setCallback(new MethodInterceptorImpl(interceptor));
-		targetInstance = e.create(getParametersTypes(params), params);
-
-		return targetInstance;
-	}
-
 }
