@@ -1,11 +1,15 @@
 package br.com.bit.ideias.reflection.type;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import br.com.bit.ideias.reflection.cache.Cache;
+import br.com.bit.ideias.reflection.cache.CacheProvider;
 
 /**
  * 
@@ -25,16 +29,61 @@ public enum TargetType {
 		}
 	},
 	METHOD {
-		@Override
-		protected Member[] getMembers(final Class<?> classe) {
-			return classe.getDeclaredMethods();
-		}
+        @Override
+        protected Member[] getMembers(final Class<?> classe) {
+            return classe.getDeclaredMethods();
+        }
 
-		@Override
-		public boolean isValidMember(final Member member) {
-			return member instanceof Method;
-		}
+        @Override
+        public boolean isValidMember(final Member member) {
+            return member instanceof Method;
+        }
+    }, CONSTRUCTOR {
+        @Override
+        protected Member[] getMembers(final Class<?> classe) {
+            return classe.getDeclaredConstructors();
+        }
+
+        @Override
+        public boolean isValidMember(final Member member) {
+            return member instanceof Constructor;
+        }
+    }, ANY {
+        @Override
+        protected Member[] getMembers(Class<?> classe) {
+            Member[] members = (Member[]) cache.get(classe);
+            if(members != null) return members;
+            
+            Member[] methods = METHOD.getMembers(classe);
+            Member[] fields = FIELD.getMembers(classe);
+            
+            int methodsLength = methods.length;
+            int fieldsLength = fields.length;
+            
+            members = new Member[(methodsLength + fieldsLength)];
+            
+            for (int i = 0; i < methodsLength; i++) {
+                members[i] = methods[i];
+            }
+            methods = null;
+            
+            for (int i = 0; i < fieldsLength; i++) {
+                members[i + methodsLength] = fields[i];
+            }
+            fields = null;
+            
+            cache.add(classe, members);
+            
+            return members;
+        }
+
+        @Override
+        public boolean isValidMember(Member member) {
+            return true;
+        }
 	};
+	
+	protected Cache cache = CacheProvider.getCache();
 
 	public List<Member> obtainMembersInClass(final Class<?> classe) {
 		final Member[] members = getMembers(classe);

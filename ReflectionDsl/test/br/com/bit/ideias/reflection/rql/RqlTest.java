@@ -93,6 +93,14 @@ public class RqlTest {
 		Assert.assertEquals(3, result.size());
 	}
 	
+	@Test
+    public void testRestrictionWithTargetConstructorShouldReturnTheConstructorsOfTheClass() throws Exception {
+        query = Introspector.createQuery("FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominio WHERE target = 'constructor'");
+        final List<Member> result = query.list();
+
+        Assert.assertEquals(3, result.size());
+    }
+	
 	@Test(expected=SyntaxException.class)
     public void testAnnotationShouldThrowExceptionIfNotAnnotation() throws Exception {
 	    Introspector.createQuery("FROM br.com.bit.ideias.reflection.test.artefacts.ClasseDominio WHERE annotation eq 'br.com.bit.ideias.reflection.test.artefacts.ClasseDominio'").list();
@@ -124,7 +132,7 @@ public class RqlTest {
 	@Test
     public void testFromClassShouldReturnMembers() throws Exception {
         List<Member> members = Introspector.createQuery("from br.com.bit.ideias.reflection.test.artefacts.ClasseDominio").list();
-        Assert.assertEquals(36, members.size());
+        Assert.assertEquals(39, members.size());
     }
 	
 	@Test(expected=SyntaxException.class)

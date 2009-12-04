@@ -53,6 +53,15 @@ public class RestrictionTest {
 
 		Assert.assertEquals(3, result.size());
 	}
+	
+	@Test
+    public void testRestrictionTargetTypeConstructor() throws Exception {
+        criterion = introspector.createCriterion();
+        criterion.add(Restriction.targetType(TargetType.CONSTRUCTOR));
+        final List<Member> result = criterion.list();
+
+        Assert.assertEquals(3, result.size());
+    }
 
 	@Test
 	public void testRestrictionEqDirectCriterion() throws Exception {

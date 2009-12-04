@@ -4,9 +4,6 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.bit.ideias.reflection.cache.Cache;
-import br.com.bit.ideias.reflection.cache.CacheProvider;
-import br.com.bit.ideias.reflection.cache.CompositeKey;
 import br.com.bit.ideias.reflection.core.Introspector;
 import br.com.bit.ideias.reflection.criteria.expression.ConjunctionExpression;
 import br.com.bit.ideias.reflection.criteria.expression.Expression;
@@ -52,16 +49,7 @@ public class CriterionImpl implements Criterion {
 
     @SuppressWarnings("unchecked")
     public <T extends Member> List<T> list() {
-		List<Member> all = new ArrayList<Member>();
-		List<? extends Member> methods = obtainAllMembers(TargetType.METHOD);
-		List<? extends Member> fields = obtainAllMembers(TargetType.FIELD);
-
-		fields = executeSearch(fields);
-		methods = executeSearch(methods);
-
-		all.addAll(fields);
-		all.addAll(methods);
-		return (List<T>) all;
+		return (List<T>) executeSearch(obtainAllMembers());
 	}
 
 	private List<Member> executeSearch(final List<? extends Member> members) {
@@ -74,23 +62,23 @@ public class CriterionImpl implements Criterion {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<? extends Member> obtainAllMembers(final TargetType targetType) {
+	/**
+	 * Obtain all members from class and superclasses;<br/>
+	 */
+	private List<? extends Member> obtainAllMembers() {
 		Class<?> classe = introspector.getTargetClass();
 		
-		CompositeKey key = new CompositeKey(classe, targetType);
-		
-		Cache cache = CacheProvider.getCache();
-		
-        List<? extends Member> fields = (List<? extends Member>) cache.get(key);
-        if(fields != null) return fields;
-
-		fields = targetType.obtainMembersInClass(classe);
+        List<? extends Member> members = TargetType.ANY.obtainMembersInClass(classe);
+        
+        //We don't want to get constructors from superclass, that's why we get
+        //them before looping.
+        members.addAll((List)TargetType.CONSTRUCTOR.obtainMembersInClass(classe));
+        
 		while (classe.getSuperclass() != null) {
 			classe = classe.getSuperclass();
-			fields.addAll((List) targetType.obtainMembersInClass(classe));
+			members.addAll((List) TargetType.ANY.obtainMembersInClass(classe));
 		}
 
-		cache.add(key, fields);
-		return fields;
+		return members;
 	}
 }
