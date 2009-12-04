@@ -25,7 +25,7 @@ public class SimplePerformanceTest {
         
         boolean testRegularMethodCall = true;
         boolean testRegularReflectionCall = true;
-        boolean testIntrospectorCall = false;
+        boolean testIntrospectorCall = true;
         boolean testCriterionCall = true;
         //========================================
         if(testRegularMethodCall) {

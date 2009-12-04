@@ -60,22 +60,20 @@ public class CriterionImpl implements Criterion {
 		return filtred;
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * Obtain all members from class and superclasses;<br/>
 	 */
 	private List<? extends Member> obtainAllMembers() {
 		Class<?> classe = introspector.getTargetClass();
-		
-        List<? extends Member> members = TargetType.ANY.obtainMembersInClass(classe);
+        List<Member> members = TargetType.ANY.obtainMembersInClass(classe);
         
         //We don't want to get constructors from superclass, that's why we get
         //them before looping.
-        members.addAll((List)TargetType.CONSTRUCTOR.obtainMembersInClass(classe));
+        members.addAll((List<Member>)TargetType.CONSTRUCTOR.obtainMembersInClass(classe));
         
 		while (classe.getSuperclass() != null) {
 			classe = classe.getSuperclass();
-			members.addAll((List) TargetType.ANY.obtainMembersInClass(classe));
+			members.addAll((List<Member>) TargetType.ANY.obtainMembersInClass(classe));
 		}
 
 		return members;

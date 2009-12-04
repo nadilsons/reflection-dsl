@@ -1,11 +1,15 @@
 package br.com.bit.ideias.reflection.core.extrator;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
+import br.com.bit.ideias.reflection.type.TargetType;
+import br.com.bit.ideias.reflection.util.ReflectionHelper;
 
 /**
  * @author Nadilson Oliveira da Silva
@@ -13,6 +17,8 @@ import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
  * 
  */
 public class ExtractorMethod extends BaseExtractor {
+
+	private static final ReflectionHelper HELPER = ReflectionHelper.getInstance();
 
 	private final Extractor extractor;
 
@@ -25,7 +31,7 @@ public class ExtractorMethod extends BaseExtractor {
 		this.methodName = methodName;
 		this.method = null;
 	}
-	
+
 	ExtractorMethod(final Extractor extractor, final Method method) {
 		this.extractor = extractor;
 		this.methodName = null;
@@ -35,7 +41,7 @@ public class ExtractorMethod extends BaseExtractor {
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
 		return invoke(accessPrivateMembers, false, params);
 	}
-	
+
 	public Method get(Class<?>... parametersTypes) {
 		return getMethod(parametersTypes);
 	}
@@ -57,9 +63,21 @@ public class ExtractorMethod extends BaseExtractor {
 	private Method getMethod(final Class<?>[] parametersTypes) {
 		final Class<?> targetClass = extractor.getTargetClass();
 		try {
-			return (this.method == null) ? targetClass.getDeclaredMethod(methodName, parametersTypes) : this.method;
+			return (this.method == null) ? findMethod(parametersTypes, targetClass) : this.method;
 		} catch (final NoSuchMethodException e) {
 			throw new MethodNotExistsException(e);
 		}
+	}
+
+	private Method findMethod(final Class<?>[] parametersTypes, final Class<?> targetClass) throws NoSuchMethodException {
+		List<Member> methods = HELPER.getMembers(targetClass, TargetType.METHOD);
+		
+		for (Member member : methods) {
+			Method method = (Method) member;
+			if (method.getName().equals(methodName) && HELPER.isSameParameters(method.getParameterTypes(), parametersTypes))
+				return method;
+		}
+
+		throw new NoSuchMethodException(String.format("Method %s not exists in %s", methodName, targetClass.getName()));
 	}
 }

@@ -16,19 +16,31 @@ public class ExtractorField {
 
 	private final Extractor extractor;
 
-	private final Field field;
+	private Field field;
 
 	private boolean directAccess;
 
 	ExtractorField(final Extractor extractor, final String fieldName) {
 		this.extractor = extractor;
 
-		try {
-			final Class<?> targetClass = extractor.getTargetClass();
-			this.field = targetClass.getDeclaredField(fieldName);
-		} catch (final NoSuchFieldException e) {
-			throw new FieldNotExistsException(e);
-		}
+		final Class<?> targetClass = extractor.getTargetClass();
+		Class<?> actualClass = targetClass;
+
+		do {
+			try {
+				this.field = actualClass.getDeclaredField(fieldName);
+			} catch (final NoSuchFieldException e) {
+				// Nothing to do 
+			}
+			
+			if (this.field != null)
+				break;
+
+			actualClass = actualClass.getSuperclass();
+		} while (actualClass != null);
+
+		if (field == null)
+			throw new FieldNotExistsException(String.format("Field %s not exists in %s", fieldName, targetClass.getName()));
 	}
 
 	ExtractorField(Extractor extractor, Field field) {
@@ -46,11 +58,11 @@ public class ExtractorField {
 			throw new FieldPrivateException(e);
 		}
 	}
-	
+
 	public Field get(Class<?>... parametersTypes) {
-		if(parametersTypes.length > 0)
+		if (parametersTypes.length > 0)
 			throw new InvalidParameterException("This method should not be called with parameters");
-		
+
 		return field;
 	}
 

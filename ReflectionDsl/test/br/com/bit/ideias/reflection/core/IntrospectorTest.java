@@ -17,6 +17,7 @@ import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
+import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioSemConstructor;
 
 /**
@@ -33,6 +34,8 @@ public class IntrospectorTest {
 	private static final Class<ClasseDominio> TARGET_CLASS = ClasseDominio.class;
 
 	private static final ClasseDominio classeDominio = new ClasseDominio(INTEIRO, STRING);
+	
+	private static final ClasseDominioFilha classeDominioFilha = new ClasseDominioFilha();
 
 	private Introspector introspectorForClass;
 
@@ -129,6 +132,15 @@ public class IntrospectorTest {
 	// /////////////////////////////////////////////////////////////////////////
 	// invokeField
 	// /////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testeInvokeFieldQueExisteNaClassePai() throws Exception {
+		introspectorInObject = Introspector.inObject(classeDominioFilha);		
+		Boolean valorBooleano = introspectorInObject.field("comecaPriva").directAccess().invoke();
+		
+		assertEquals(valorBooleano, Boolean.FALSE);	
+	}
+	
+	
 	@Test
 	public void testInvokeMemberSemParametroParaField() throws Exception {
 		final String valorTeste = "Valor para o teste";
@@ -274,6 +286,14 @@ public class IntrospectorTest {
 	// invokeMethod
 	// /////////////////////////////////////////////////////////////////////////
 	@Test
+	public void testeInvokeMethodQueExisteNaClassePai() throws Exception {
+		introspectorInObject = Introspector.inObject(classeDominioFilha);
+		Object dobro = introspectorInObject.method("getDobro").invoke(INTEIRO);
+		
+		assertEquals(dobro, INTEIRO * 2);	
+	}
+	
+	@Test
 	public void testInvokeMemberSemParametroParaMethod() throws Exception {
 		final Method method = TARGET_CLASS.getDeclaredMethod("getDobroAtributoPrivadoInteiro");
 		final Object invoke = introspectorForClass.member(method).invoke();
@@ -384,5 +404,5 @@ public class IntrospectorTest {
 		introspectorForClass = Introspector.forClass(ClasseDominio.class);
 		introspectorForClass.accessPrivateMembers();
 	}
-
+	
 }

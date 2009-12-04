@@ -256,12 +256,4 @@ public class RestrictionsMethodTest {
 
 		Assert.assertEquals(1, result.size());
 	}
-
-	@Test
-	public void testTypeParamsComMaisDeUmParametroPrimitivo() {
-		criterion.add(Restriction.methodWithParams(String.class, Integer.class, boolean.class));
-		final List<Method> result = criterion.list();
-
-		Assert.assertEquals(1, result.size());
-	}
 }
