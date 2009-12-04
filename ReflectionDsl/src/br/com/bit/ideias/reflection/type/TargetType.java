@@ -73,7 +73,7 @@ public enum TargetType {
 
         @Override
         public boolean isValidMember(final Member member) {
-            return member instanceof Constructor;
+            return member instanceof Constructor<?>;
         }
     }, ANY {
         @Override
