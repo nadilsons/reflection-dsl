@@ -18,13 +18,13 @@ public class SimplePerformanceTest {
         String methodName = "getAtributoPrivadoString";
         String rql = String.format("from br.com.bit.ideias.reflection.test.artefacts.ClasseDominio where name eq '%s'", methodName);
         ClasseDominio classeDominio = new ClasseDominio();
-        int times = 1300000;
+        int times = 130000;
         long init = 0;
         long difference = 0;
         long finish = 0;
         
-        boolean testRegularMethodCall = false;
-        boolean testRegularReflectionCall = false;
+        boolean testRegularMethodCall = true;
+        boolean testRegularReflectionCall = true;
         boolean testIntrospectorCall = false;
         boolean testCriterionCall = true;
         //========================================

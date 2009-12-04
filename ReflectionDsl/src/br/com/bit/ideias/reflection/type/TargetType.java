@@ -6,7 +6,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.com.bit.ideias.reflection.cache.Cache;
 import br.com.bit.ideias.reflection.cache.CacheProvider;
@@ -18,9 +20,17 @@ import br.com.bit.ideias.reflection.cache.CacheProvider;
  */
 public enum TargetType {
 	FIELD {
-		@Override
+        @Override
 		protected Member[] getMembers(final Class<?> classe) {
-			return classe.getDeclaredFields();
+		    Map<Class<?>, Member[]> cacheContext = getSubCache(classe, FIELD);
+		    
+		    Member[] fields = cacheContext.get(classe);
+		    if(fields != null) return fields;
+		    
+			Field[] declared = classe.getDeclaredFields();
+			cacheContext.put(classe, declared);
+			
+            return declared;
 		}
 
 		@Override
@@ -31,7 +41,15 @@ public enum TargetType {
 	METHOD {
         @Override
         protected Member[] getMembers(final Class<?> classe) {
-            return classe.getDeclaredMethods();
+            Map<Class<?>, Member[]> cacheContext = getSubCache(classe, METHOD);
+            
+            Member[] methods = cacheContext.get(classe);
+            if(methods != null) return methods;
+            
+            Method[] declared = classe.getDeclaredMethods();
+            cacheContext.put(classe, declared);
+            
+            return declared;
         }
 
         @Override
@@ -39,9 +57,18 @@ public enum TargetType {
             return member instanceof Method;
         }
     }, CONSTRUCTOR {
+        @SuppressWarnings("unchecked")
         @Override
         protected Member[] getMembers(final Class<?> classe) {
-            return classe.getDeclaredConstructors();
+            Map<Class<?>, Member[]> cacheContext = getSubCache(classe, CONSTRUCTOR);
+            
+            Member[] constructors = cacheContext.get(classe);
+            if(constructors != null) return constructors;
+            
+            Constructor[] declared = classe.getDeclaredConstructors();
+            cacheContext.put(classe, declared);
+            
+            return declared;
         }
 
         @Override
@@ -93,5 +120,16 @@ public enum TargetType {
 	public abstract boolean isValidMember(Member member);
 
 	protected abstract Member[] getMembers(final Class<?> classe);
-
+	
+	@SuppressWarnings("unchecked")
+    protected Map<Class<?>, Member[]> getSubCache(Class<?> classe, TargetType type) {
+	    Map<Class<?>, Member[]> fieldsCache = (Map<Class<?>, Member[]>) cache.get(type);
+	    
+        if(fieldsCache == null) {
+            fieldsCache = new HashMap<Class<?>, Member[]>();
+            cache.add(type, fieldsCache);
+        }
+        
+        return fieldsCache;
+	}
 }

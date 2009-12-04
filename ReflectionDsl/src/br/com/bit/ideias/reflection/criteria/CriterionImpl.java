@@ -17,7 +17,6 @@ import br.com.bit.ideias.reflection.type.TargetType;
  * @since 28/07/2009
  */
 public class CriterionImpl implements Criterion {
-	
 	private final ConjunctionExpression expressionHolder = new ConjunctionExpression();
 	
 	private final Introspector introspector;
