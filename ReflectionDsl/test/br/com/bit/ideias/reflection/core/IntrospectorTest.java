@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -121,12 +122,6 @@ public class IntrospectorTest {
 	public void testCreateParaConstructorNaoExistente() throws Exception {
 		introspectorForClass.create(true, "String_erro1");
 		introspectorForClass.create();
-	}
-
-	@Test
-	public void testCreateComInterceptor() throws Exception {
-		introspectorForClass = Introspector.forClass(TARGET_CLASS);
-		// introspectorForClass.applyInterceptor(interceptor).create(params);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////

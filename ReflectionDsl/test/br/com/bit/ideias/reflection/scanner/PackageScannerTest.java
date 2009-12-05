@@ -10,6 +10,11 @@ import org.junit.Test;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
+import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation2;
+import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.AnnotationParaPackageTest;
+import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.Class2ParaPackageTest;
+import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.ClasseParaPackageTest;
+import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.EnumParaPackageTest;
 
 
 /**
@@ -19,15 +24,16 @@ import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
 public class PackageScannerTest {
     @Test
     public void scannOnArtefactsPackageShouldReturnAllClasses() throws Exception {
-        PackageScanner scanner = PackageScanner.forPackage("br.com.bit.ideias.reflection.test.artefacts");
+        PackageScanner scanner = PackageScanner.forPackage("br.com.bit.ideias.reflection.test.artefacts.forPackageTest");
         
         ScannerResult result = scanner.scan();
         Set<Class<?>> classes = result.getClasses();
         
         Set<Class<?>> expected = new HashSet<Class<?>>();
-        expected.add(ClasseDominio.class);
-        expected.add(ClasseDominioFilha.class);
-        expected.add(MyAnnotation.class);
+        expected.add(AnnotationParaPackageTest.class);
+        expected.add(ClasseParaPackageTest.class);
+        expected.add(Class2ParaPackageTest.class);
+        expected.add(EnumParaPackageTest.class);
         
         assertEquals(expected, classes);
     }
