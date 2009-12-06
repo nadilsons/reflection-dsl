@@ -23,7 +23,7 @@ import java.util.jar.JarFile;
 public class PackageScanner {
     private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
     //private static final String RESOURCE_PATTERN = "**" + File.separator + "*.class";
-    private String pathSeparator = "/";
+    private char pathSeparator = File.separatorChar;
 //    public static final String JAR_URL_SEPARATOR = "!/";
     /** URL prefix for loading from the file system: "file:" */
     public static final String FILE_URL_PREFIX = "file:";
@@ -202,11 +202,13 @@ public class PackageScanner {
             throw new IllegalArgumentException("Resource path [" + rootDir + "] does not denote a directory");
         }
         
+        //TODO nao dá para entender o que esse código faz, troca 6 por meia dúzia???
         String fullPattern = rootDir.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
         if (!pattern.startsWith(File.separator)) {
             fullPattern += File.separator;
         }
         
+        // De novo a troca estranha
         fullPattern = fullPattern + pattern.replace(File.separatorChar, File.separatorChar);
         Set<File> result = new LinkedHashSet<File>(8);
         doRetrieveMatchingFiles(fullPattern, rootDir, result);
@@ -229,6 +231,8 @@ public class PackageScanner {
         }
         for (int i = 0; i < dirContents.length; i++) {
             File content = dirContents[i];
+            
+            //TODO mais uma vez o replace de 6 por meia dúzia
             String currPath = content.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
             if (content.isDirectory() && doMatch(fullPattern, currPath + File.separator, false)) {
                 doRetrieveMatchingFiles(fullPattern, content, result);
@@ -249,12 +253,22 @@ public class PackageScanner {
      * <code>false</code> if it didn't
      */
     protected boolean doMatch(String pattern, String path, boolean fullMatch) {
-        if (path.startsWith(this.pathSeparator) != pattern.startsWith(this.pathSeparator)) {
+        String separator = "" + this.pathSeparator;
+        if (path.startsWith(separator) != pattern.startsWith(separator)) {
             return false;
         }
 
-        String[] pattDirs = pattern.split(this.pathSeparator);
-        String[] pathDirs = path.split(this.pathSeparator);
+        String[] pattDirs = null;
+        String[] pathDirs = null;
+        if(this.pathSeparator == '\\') {
+            String windowsSeparator = "[\\\\]";
+            pattDirs = pattern.split(windowsSeparator);
+            pathDirs = path.split(windowsSeparator);
+        } else {
+            String unixSeparator = "/";
+            pattDirs = pattern.split(unixSeparator);
+            pathDirs = path.split(unixSeparator);
+        }
 
         int pattIdxStart = 0;
         int pattIdxEnd = pattDirs.length - 1;
@@ -277,14 +291,14 @@ public class PackageScanner {
         if (pathIdxStart > pathIdxEnd) {
             // Path is exhausted, only match if rest of pattern is * or **'s
             if (pattIdxStart > pattIdxEnd) {
-                return (pattern.endsWith(this.pathSeparator) ?
-                        path.endsWith(this.pathSeparator) : !path.endsWith(this.pathSeparator));
+                return (pattern.endsWith(separator) ?
+                        path.endsWith(separator) : !path.endsWith(separator));
             }
             if (!fullMatch) {
                 return true;
             }
             if (pattIdxStart == pattIdxEnd && pattDirs[pattIdxStart].equals("*") &&
-                    path.endsWith(this.pathSeparator)) {
+                    path.endsWith(separator)) {
                 return true;
             }
             for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
