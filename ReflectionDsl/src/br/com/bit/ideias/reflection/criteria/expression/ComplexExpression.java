@@ -8,7 +8,5 @@ package br.com.bit.ideias.reflection.criteria.expression;
  * behaves as a single one.
  */
 public interface ComplexExpression extends Expression {
-	
     public ComplexExpression add(Expression expression);
-
 }

@@ -1,5 +1,7 @@
 package br.com.bit.ideias.reflection.scanner;
 
+import static java.lang.String.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -18,15 +20,17 @@ import java.util.jar.JarFile;
 import br.com.bit.ideias.reflection.exceptions.pkgscanner.PackageScannerException;
 
 /**
+ * This class is based on Spring's Package Scanner, its difference is that it was simplified and has no dependencies with other libraries.
  * @author Leonardo Campos
  * @date 16/08/2009
  */
 public class PackageScanner {
-    private static final int CLASS_EXTENSION_LENGTH = 6;
+    private static final boolean FULL_MATCH = true;
+	private static final boolean NOT_FULL_MATCH = false;
+	private static final int CLASS_EXTENSION_LENGTH = 6;
 	private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
-    //private static final String RESOURCE_PATTERN = "**" + File.separator + "*.class";
     private char pathSeparator = File.separatorChar;
-//    public static final String JAR_URL_SEPARATOR = "!/";
+    
     /** URL prefix for loading from the file system: "file:" */
     public static final String FILE_URL_PREFIX = "file:";
 
@@ -58,6 +62,9 @@ public class PackageScanner {
     }
 
     public static PackageScanner forPackage(String path) {
+    	//We don't want to allow outside use of these special characters
+    	if(path.contains("*") || path.contains("?")) throw new PackageScannerException("Characters not allowed in pattern");
+    	
         return new PackageScanner(path);
     }
 
@@ -74,6 +81,21 @@ public class PackageScanner {
 
 		return new ScannerResult(classes);
 	}
+    
+    /**
+     * Retrieves all resources, regardless it is inside a jar file or in FileSystem
+     * @param locationPattern
+     * @return
+     * @throws IOException
+     */
+    public Resource[] getResources(String locationPattern) throws IOException {
+        String location = locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length());
+        
+		if (isPattern(location))
+            return findPathMatchingResources(locationPattern);
+        
+        return findAllClassPathResources(location);
+    }
 
     //Converts a resource into a fully qualified class name
 	protected String resourceToClassName(Resource resource) {
@@ -107,14 +129,6 @@ public class PackageScanner {
      */
     protected String convertClassNameToResourcePath(String className) {
         return className.replace('.', File.separatorChar);
-    }
-    
-    public Resource[] getResources(String locationPattern) throws IOException {
-            if (isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
-                return findPathMatchingResources(locationPattern);
-            } else {
-                return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
-            }
     }
     
     /**
@@ -156,9 +170,7 @@ public class PackageScanner {
      * @see org.springframework.util.PathMatcher
      */
     protected Set<Resource> findPathMatchingFileResources(Resource rootDirResource, String subPattern) throws IOException {
-        File rootDir = rootDirResource.getFile().getAbsoluteFile();
-
-        return doFindMatchingFileSystemResources(rootDir, subPattern);
+        return findMatchingFileSystemResources(rootDirResource.getFile().getAbsoluteFile(), subPattern);
     }
     
     /**
@@ -169,15 +181,16 @@ public class PackageScanner {
      * @return the Set of matching Resource instances
      * @throws IOException in case of I/O errors
      * @see #retrieveMatchingFiles
-     * @see org.springframework.util.PathMatcher
      */
-    protected Set<Resource> doFindMatchingFileSystemResources(File rootDir, String subPattern) throws IOException {
+    protected Set<Resource> findMatchingFileSystemResources(File rootDir, String subPattern) throws IOException {
         Set<File> matchingFiles = retrieveMatchingFiles(rootDir, subPattern);
+        
         Set<Resource> result = new LinkedHashSet<Resource>(matchingFiles.size());
         for (Iterator<File> it = matchingFiles.iterator(); it.hasNext();) {
             File file = (File) it.next();
             result.add(new FileSystemResource(file));
         }
+        
         return result;
     }
     
@@ -191,20 +204,24 @@ public class PackageScanner {
      * @throws IOException if directory contents could not be retrieved
      */
     protected Set<File> retrieveMatchingFiles(File rootDir, String pattern) throws IOException {
-        if (!rootDir.isDirectory()) {
-            throw new IllegalArgumentException("Resource path [" + rootDir + "] does not denote a directory");
-        }
+        if (!rootDir.isDirectory()) throw new IllegalArgumentException(format("Resource path [%s] does not denote a directory", rootDir));
         
-        String fullPattern = rootDir.getAbsolutePath();
-        if (!pattern.startsWith(File.separator)) {
-            fullPattern += File.separator;
-        }
-        
-        fullPattern = fullPattern + pattern;
         Set<File> result = new LinkedHashSet<File>(8);
-        doRetrieveMatchingFiles(fullPattern, rootDir, result);
+        
+        retrieveMatchingFiles(fullPattern(rootDir, pattern), rootDir, result);
+        
         return result;
     }
+
+    /**
+     * It concatenates rootDir + pattern (it guarantees that a file separator is between them)
+     * @param rootDir
+     * @param pattern
+     * @return
+     */
+	protected String fullPattern(File rootDir, String pattern) {
+		return rootDir.getAbsolutePath() + (pattern.startsWith(File.separator)?"":File.separator) + pattern;
+	}
     
     /**
      * Recursively retrieve files that match the given pattern,
@@ -215,23 +232,20 @@ public class PackageScanner {
      * @param result the Set of matching File instances to add to
      * @throws IOException if directory contents could not be retrieved
      */
-    protected void doRetrieveMatchingFiles(String fullPattern, File dir, Set<File> result) throws IOException {
+    protected void retrieveMatchingFiles(String fullPattern, File dir, Set<File> result) throws IOException {
         File[] dirContents = dir.listFiles();
-        if (dirContents == null) {
-            throw new IOException("Could not retrieve contents of directory [" + dir.getAbsolutePath() + "]");
-        }
-        for (int i = 0; i < dirContents.length; i++) {
-            File content = dirContents[i];
+        
+        if (dirContents == null) throw new IOException(format("Could not retrieve contents of directory [%s]", dir.getAbsolutePath()));
+        
+        for (File content : dirContents) {
+        	String currPath = content.getAbsolutePath();
+        	
+            if (content.isDirectory() && match(fullPattern, currPath + File.separator, NOT_FULL_MATCH))
+                retrieveMatchingFiles(fullPattern, content, result);
             
-            //TODO mais uma vez o replace de 6 por meia dúzia
-            String currPath = content.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
-            if (content.isDirectory() && doMatch(fullPattern, currPath + File.separator, false)) {
-                doRetrieveMatchingFiles(fullPattern, content, result);
-            }
-            if (doMatch(fullPattern, currPath, true)) {
+            if (match(fullPattern, currPath, FULL_MATCH))
                 result.add(content);
-            }
-        }
+		}
     }
     
     /**
@@ -243,67 +257,52 @@ public class PackageScanner {
      * @return <code>true</code> if the supplied <code>path</code> matched,
      * <code>false</code> if it didn't
      */
-    protected boolean doMatch(String pattern, String path, boolean fullMatch) {
+    protected boolean match(String pattern, String path, boolean fullMatch) {
         String separator = "" + this.pathSeparator;
-        if (path.startsWith(separator) != pattern.startsWith(separator)) {
-            return false;
-        }
+        if (path.startsWith(separator) != pattern.startsWith(separator)) return false;
 
         String[] pattDirs = null;
         String[] pathDirs = null;
-        if(this.pathSeparator == '\\') {
-            String windowsSeparator = "[\\\\]";
-            pattDirs = pattern.split(windowsSeparator);
-            pathDirs = path.split(windowsSeparator);
-        } else {
-            String unixSeparator = "/";
-            pattDirs = pattern.split(unixSeparator);
-            pathDirs = path.split(unixSeparator);
-        }
+        
+        String osSpecificSeparatorRegex = isWindows()?"[\\\\]":"/";
+
+        pattDirs = pattern.split(osSpecificSeparatorRegex);
+        pathDirs = path.split(osSpecificSeparatorRegex);
 
         int pattIdxStart = 0;
         int pattIdxEnd = pattDirs.length - 1;
+        
         int pathIdxStart = 0;
         int pathIdxEnd = pathDirs.length - 1;
 
         // Match all elements up to the first **
         while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
             String patDir = pattDirs[pattIdxStart];
-            if ("**".equals(patDir)) {
-                break;
-            }
-            if (!matchStrings(patDir, pathDirs[pathIdxStart])) {
-                return false;
-            }
+            if ("**".equals(patDir)) break;
+            
+            if (!matchStrings(patDir, pathDirs[pathIdxStart])) return false;
+            
             pattIdxStart++;
             pathIdxStart++;
         }
 
         if (pathIdxStart > pathIdxEnd) {
             // Path is exhausted, only match if rest of pattern is * or **'s
-            if (pattIdxStart > pattIdxEnd) {
-                return (pattern.endsWith(separator) ?
-                        path.endsWith(separator) : !path.endsWith(separator));
-            }
-            if (!fullMatch) {
-                return true;
-            }
-            if (pattIdxStart == pattIdxEnd && pattDirs[pattIdxStart].equals("*") &&
-                    path.endsWith(separator)) {
-                return true;
-            }
+            if (pattIdxStart > pattIdxEnd) return (pattern.endsWith(separator) ?path.endsWith(separator) : !path.endsWith(separator));
+            
+            if (!fullMatch) return true;
+            
+            if (pattIdxStart == pattIdxEnd && pattDirs[pattIdxStart].equals("*") && path.endsWith(separator)) return true;
+            
             for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-                if (!pattDirs[i].equals("**")) {
-                    return false;
-                }
+                if (!pattDirs[i].equals("**")) return false;
             }
+            
             return true;
-        }
-        else if (pattIdxStart > pattIdxEnd) {
+        } else if (pattIdxStart > pattIdxEnd) {
             // String not exhausted, but pattern is. Failure.
             return false;
-        }
-        else if (!fullMatch && "**".equals(pattDirs[pattIdxStart])) {
+        } else if (!fullMatch && "**".equals(pattDirs[pattIdxStart])) {
             // Path start definitely matches due to "**" part in pattern.
             return true;
         }
@@ -311,22 +310,20 @@ public class PackageScanner {
         // up to last '**'
         while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
             String patDir = pattDirs[pattIdxEnd];
-            if (patDir.equals("**")) {
-                break;
-            }
-            if (!matchStrings(patDir, pathDirs[pathIdxEnd])) {
-                return false;
-            }
+            if (patDir.equals("**")) break;
+            
+            if (!matchStrings(patDir, pathDirs[pathIdxEnd])) return false;
+            
             pattIdxEnd--;
             pathIdxEnd--;
         }
+        
         if (pathIdxStart > pathIdxEnd) {
             // String is exhausted
             for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-                if (!pattDirs[i].equals("**")) {
-                    return false;
-                }
+                if (!pattDirs[i].equals("**")) return false;
             }
+            
             return true;
         }
 
@@ -350,36 +347,31 @@ public class PackageScanner {
             int foundIdx = -1;
 
             strLoop:
-                for (int i = 0; i <= strLength - patLength; i++) {
-                    for (int j = 0; j < patLength; j++) {
-                        String subPat = (String) pattDirs[pattIdxStart + j + 1];
-                        String subStr = (String) pathDirs[pathIdxStart + i + j];
-                        if (!matchStrings(subPat, subStr)) {
-                            continue strLoop;
-                        }
-                    }
-                    foundIdx = pathIdxStart + i;
-                    break;
+            for (int i = 0; i <= strLength - patLength; i++) {
+                for (int j = 0; j < patLength; j++) {
+                    String subPat = (String) pattDirs[pattIdxStart + j + 1];
+                    String subStr = (String) pathDirs[pathIdxStart + i + j];
+                    
+                    if (!matchStrings(subPat, subStr)) continue strLoop;
                 }
-
-            if (foundIdx == -1) {
-                return false;
+                
+                foundIdx = pathIdxStart + i;
+                break;
             }
+
+            if (foundIdx == -1) return false;
 
             pattIdxStart = patIdxTmp;
             pathIdxStart = foundIdx + patLength;
         }
 
         for (int i = pattIdxStart; i <= pattIdxEnd; i++) {
-            if (!pattDirs[i].equals("**")) {
-                return false;
-            }
+            if (!pattDirs[i].equals("**")) return false;
         }
         
         return true;
     }
-    
-    
+
     /**
      * Find all resources in jar files that match the given location pattern
      * via the Ant-style PathMatcher.
@@ -438,7 +430,7 @@ public class PackageScanner {
                 String entryPath = entry.getName();
                 if (entryPath.startsWith(rootEntryPath)) {
                     String relativePath = entryPath.substring(rootEntryPath.length());
-                    if (doMatch(subPattern, relativePath, true)) {
+                    if (match(subPattern, relativePath, true)) {
                         result.add(rootDirResource.createRelative(relativePath));
                     }
                 }
@@ -550,64 +542,55 @@ public class PackageScanner {
      * '?' means one and only one character
      * @param pattern pattern to match against.
      * Must not be <code>null</code>.
-     * @param str string which must be matched against the pattern.
+     * @param toBeMatched string which must be matched against the pattern.
      * Must not be <code>null</code>.
      * @return <code>true</code> if the string matches against the
      * pattern, or <code>false</code> otherwise.
      */
-    private boolean matchStrings(String pattern, String str) {
-        char[] patArr = pattern.toCharArray();
-        char[] strArr = str.toCharArray();
-        int patIdxStart = 0;
-        int patIdxEnd = patArr.length - 1;
-        int strIdxStart = 0;
-        int strIdxEnd = strArr.length - 1;
+    private boolean matchStrings(String pattern, String toBeMatched) {
+        char[] patternChars = pattern.toCharArray();
+        char[] toBeMatchedChars = toBeMatched.toCharArray();
+        
+        int patternStart = 0;
+        int patternEnd = patternChars.length - 1;
+        
+        int toBeMatchedStart = 0;
+        int toBeMatchedEnd = toBeMatchedChars.length - 1;
+        
         char ch;
 
-        boolean containsStar = false;
-        for (int i = 0; i < patArr.length; i++) {
-            if (patArr[i] == '*') {
-                containsStar = true;
-                break;
+        boolean patternContainsStar = pattern.indexOf("*") > -1;
+
+        if (!patternContainsStar) {
+            if (patternEnd != toBeMatchedEnd) return false;
+            
+            for (int i = 0; i <= patternEnd; i++) {
+                ch = patternChars[i];
+                char toBeMatchedChar = toBeMatchedChars[i];
+                
+				if (!matchChar(ch, toBeMatchedChar)) return false;
             }
+            
+            return true;
         }
 
-        if (!containsStar) {
-            // No '*'s, so we make a shortcut
-            if (patIdxEnd != strIdxEnd) {
-                return false; // Pattern and string do not have the same size
-            }
-            for (int i = 0; i <= patIdxEnd; i++) {
-                ch = patArr[i];
-                if (ch != '?') {
-                    if (ch != strArr[i]) {
-                        return false;// Character mismatch
-                    }
-                }
-            }
-            return true; // String matches against pattern
-        }
-
-
-        if (patIdxEnd == 0) {
-            return true; // Pattern contains only '*', which matches anything
-        }
+        if (patternEnd == 0) return true; // Pattern contains only '*', which matches anything
 
         // Process characters before first star
-        while ((ch = patArr[patIdxStart]) != '*' && strIdxStart <= strIdxEnd) {
-            if (ch != '?') {
-                if (ch != strArr[strIdxStart]) {
-                    return false;// Character mismatch
-                }
-            }
-            patIdxStart++;
-            strIdxStart++;
+        while ((ch = patternChars[patternStart]) != '*' && toBeMatchedStart <= toBeMatchedEnd) {
+            char toBeMatchedChar = toBeMatchedChars[toBeMatchedStart];
+            
+			if (!matchChar(ch, toBeMatchedChar)) return false;
+            
+            patternStart++;
+            toBeMatchedStart++;
         }
-        if (strIdxStart > strIdxEnd) {
+        
+        if (toBeMatchedStart > toBeMatchedEnd) {
             // All characters in the string are used. Check if only '*'s are
             // left in the pattern. If so, we succeeded. Otherwise failure.
-            for (int i = patIdxStart; i <= patIdxEnd; i++) {
-                if (patArr[i] != '*') {
+            for (int i = patternStart; i <= patternEnd; i++) {
+                if (patternChars[i] != '*') {
                     return false;
                 }
             }
@@ -615,58 +598,56 @@ public class PackageScanner {
         }
 
         // Process characters after last star
-        while ((ch = patArr[patIdxEnd]) != '*' && strIdxStart <= strIdxEnd) {
-            if (ch != '?') {
-                if (ch != strArr[strIdxEnd]) {
-                    return false;// Character mismatch
-                }
-            }
-            patIdxEnd--;
-            strIdxEnd--;
+        while ((ch = patternChars[patternEnd]) != '*' && toBeMatchedStart <= toBeMatchedEnd) {
+            char toBeMatchedChar = toBeMatchedChars[toBeMatchedEnd];
+			if (!matchChar(ch, toBeMatchedChar)) return false;// Character mismatch
+            
+            patternEnd--;
+            toBeMatchedEnd--;
         }
-        if (strIdxStart > strIdxEnd) {
+        
+        if (toBeMatchedStart > toBeMatchedEnd) {
             // All characters in the string are used. Check if only '*'s are
             // left in the pattern. If so, we succeeded. Otherwise failure.
-            for (int i = patIdxStart; i <= patIdxEnd; i++) {
-                if (patArr[i] != '*') {
-                    return false;
-                }
+            for (int i = patternStart; i <= patternEnd; i++) {
+                if (patternChars[i] != '*') return false;
             }
+            
             return true;
         }
 
-        // process pattern between stars. padIdxStart and patIdxEnd point
+        // process pattern between stars. patternStart and patternEnd point
         // always to a '*'.
-        while (patIdxStart != patIdxEnd && strIdxStart <= strIdxEnd) {
+        while (patternStart != patternEnd && toBeMatchedStart <= toBeMatchedEnd) {
             int patIdxTmp = -1;
-            for (int i = patIdxStart + 1; i <= patIdxEnd; i++) {
-                if (patArr[i] == '*') {
+            for (int i = patternStart + 1; i <= patternEnd; i++) {
+                if (patternChars[i] == '*') {
                     patIdxTmp = i;
                     break;
                 }
             }
-            if (patIdxTmp == patIdxStart + 1) {
+            if (patIdxTmp == patternStart + 1) {
                 // Two stars next to each other, skip the first one.
-                patIdxStart++;
+                patternStart++;
                 continue;
             }
             // Find the pattern between padIdxStart & padIdxTmp in str between
             // strIdxStart & strIdxEnd
-            int patLength = (patIdxTmp - patIdxStart - 1);
-            int strLength = (strIdxEnd - strIdxStart + 1);
+            int patLength = (patIdxTmp - patternStart - 1);
+            int strLength = (toBeMatchedEnd - toBeMatchedStart + 1);
             int foundIdx = -1;
             strLoop:
             for (int i = 0; i <= strLength - patLength; i++) {
                 for (int j = 0; j < patLength; j++) {
-                    ch = patArr[patIdxStart + j + 1];
+                    ch = patternChars[patternStart + j + 1];
                     if (ch != '?') {
-                        if (ch != strArr[strIdxStart + i + j]) {
+                        if (ch != toBeMatchedChars[toBeMatchedStart + i + j]) {
                             continue strLoop;
                         }
                     }
                 }
 
-                foundIdx = strIdxStart + i;
+                foundIdx = toBeMatchedStart + i;
                 break;
             }
 
@@ -674,20 +655,24 @@ public class PackageScanner {
                 return false;
             }
 
-            patIdxStart = patIdxTmp;
-            strIdxStart = foundIdx + patLength;
+            patternStart = patIdxTmp;
+            toBeMatchedStart = foundIdx + patLength;
         }
 
         // All characters in the string are used. Check if only '*'s are left
         // in the pattern. If so, we succeeded. Otherwise failure.
-        for (int i = patIdxStart; i <= patIdxEnd; i++) {
-            if (patArr[i] != '*') {
+        for (int i = patternStart; i <= patternEnd; i++) {
+            if (patternChars[i] != '*') {
                 return false;
             }
         }
 
         return true;
     }
+
+	private boolean matchChar(char ch, char toBeMatchedChar) {
+		return ch == '?' || ch == toBeMatchedChar;
+	}
     
     /**
      * Resolve the given jar file URL into a JarFile object.
@@ -737,4 +722,8 @@ public class PackageScanner {
     	
     	return JAR_URL_SEPARATOR;
     }
+    
+    private boolean isWindows() {
+		return this.pathSeparator == '\\';
+	}
 }
