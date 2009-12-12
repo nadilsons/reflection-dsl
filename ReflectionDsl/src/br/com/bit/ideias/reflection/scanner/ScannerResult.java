@@ -8,7 +8,6 @@ import java.util.Set;
  * @date 16/08/2009
  */
 public class ScannerResult {
-	
 	private Set<Class<?>> classes;
 	
     public ScannerResult(Set<Class<?>> classes) {
@@ -18,5 +17,4 @@ public class ScannerResult {
 	public Set<Class<?>> getClasses() {
         return Collections.unmodifiableSet(classes);
     }
-
 }

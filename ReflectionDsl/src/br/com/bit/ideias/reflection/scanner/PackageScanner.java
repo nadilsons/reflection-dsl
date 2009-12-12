@@ -2,7 +2,6 @@ package br.com.bit.ideias.reflection.scanner;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,12 +15,15 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import br.com.bit.ideias.reflection.exceptions.pkgscanner.PackageScannerException;
+
 /**
  * @author Leonardo Campos
  * @date 16/08/2009
  */
 public class PackageScanner {
-    private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
+    private static final int CLASS_EXTENSION_LENGTH = 6;
+	private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
     //private static final String RESOURCE_PATTERN = "**" + File.separator + "*.class";
     private char pathSeparator = File.separatorChar;
 //    public static final String JAR_URL_SEPARATOR = "!/";
@@ -54,17 +56,6 @@ public class PackageScanner {
     	this.packagePath = packagePath;
         this.path = CLASSPATH_ALL_URL_PREFIX + convertClassNameToResourcePath(packagePath) + "**" + File.separator + "*.class";
     }
-    
-    private static Method equinoxResolveMethod;
-
-    static {
-        try {
-            Class<?> fileLocatorClass = PackageScanner.class.getClassLoader().loadClass("org.eclipse.core.runtime.FileLocator");
-            equinoxResolveMethod = fileLocatorClass.getMethod("resolve", new Class[] {URL.class});
-        } catch (Throwable ex) {
-            equinoxResolveMethod = null;
-        }
-    }
 
     public static PackageScanner forPackage(String path) {
         return new PackageScanner(path);
@@ -75,18 +66,22 @@ public class PackageScanner {
 		try {
 			Resource[] resources = getResources(path);
 
-			for (Resource resource : resources) {
-				String classPath = resource.toString().replace(File.separator, ".");
-				classPath = classPath.substring(classPath.indexOf(packagePath));
-				String className = classPath.substring(0, classPath.length() - 6);
-
-				addClass(classes, className);
-			}
+			for (Resource resource : resources)
+				addClass(classes, resourceToClassName(resource));
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new PackageScannerException(e);
 		}
 
 		return new ScannerResult(classes);
+	}
+
+    //Converts a resource into a fully qualified class name
+	protected String resourceToClassName(Resource resource) {
+		String pth = resource.toString().replace(File.separator, ".");
+		pth = pth.substring(pth.indexOf(packagePath));
+		
+		//This final piece removes the ".class" part
+		return pth.substring(0, pth.length() - CLASS_EXTENSION_LENGTH);
 	}
 
 	private void addClass(Set<Class<?>> classes, String className) {
@@ -138,15 +133,13 @@ public class PackageScanner {
         String subPattern = locationPattern.substring(rootDirPath.length());
         
         Resource[] rootDirResources = getResources(rootDirPath);
+        
         Set<Resource> result = new LinkedHashSet<Resource>(16);
         for (int i = 0; i < rootDirResources.length; i++) {
-            Resource rootDirResource = resolveRootDirResource(rootDirResources[i]);
-            if (isJarResource(rootDirResource)) {
-                result.addAll(doFindPathMatchingJarResources(rootDirResource, subPattern));
-            }
-            else {
-                result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern));
-            }
+            if (isJarResource(rootDirResources[i]))
+                result.addAll(findPathMatchingJarResources(rootDirResources[i], subPattern));
+            else
+                result.addAll(findPathMatchingFileResources(rootDirResources[i], subPattern));
         }
        
         return (Resource[]) result.toArray(new Resource[result.size()]);
@@ -162,7 +155,7 @@ public class PackageScanner {
      * @see #retrieveMatchingFiles
      * @see org.springframework.util.PathMatcher
      */
-    protected Set<Resource> doFindPathMatchingFileResources(Resource rootDirResource, String subPattern) throws IOException {
+    protected Set<Resource> findPathMatchingFileResources(Resource rootDirResource, String subPattern) throws IOException {
         File rootDir = rootDirResource.getFile().getAbsoluteFile();
 
         return doFindMatchingFileSystemResources(rootDir, subPattern);
@@ -202,14 +195,12 @@ public class PackageScanner {
             throw new IllegalArgumentException("Resource path [" + rootDir + "] does not denote a directory");
         }
         
-        //TODO nao dá para entender o que esse código faz, troca 6 por meia dúzia???
-        String fullPattern = rootDir.getAbsolutePath().replace(File.separatorChar, File.separatorChar);
+        String fullPattern = rootDir.getAbsolutePath();
         if (!pattern.startsWith(File.separator)) {
             fullPattern += File.separator;
         }
         
-        // De novo a troca estranha
-        fullPattern = fullPattern + pattern.replace(File.separatorChar, File.separatorChar);
+        fullPattern = fullPattern + pattern;
         Set<File> result = new LinkedHashSet<File>(8);
         doRetrieveMatchingFiles(fullPattern, rootDir, result);
         return result;
@@ -399,7 +390,7 @@ public class PackageScanner {
      * @see java.net.JarURLConnection
      * @see org.springframework.util.PathMatcher
      */
-    protected Set<Resource> doFindPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
+    protected Set<Resource> findPathMatchingJarResources(Resource rootDirResource, String subPattern) throws IOException {
         URLConnection con = rootDirResource.getURL().openConnection();
         JarFile jarFile = null;
         String jarFileUrl = null;
@@ -478,12 +469,13 @@ public class PackageScanner {
     protected String determineRootDir(String location) {
         int prefixEnd = location.indexOf(":") + 1;
         int rootDirEnd = location.length();
-        while (rootDirEnd > prefixEnd && isPattern(location.substring(prefixEnd, rootDirEnd))) {
+        
+        while (rootDirEnd > prefixEnd && isPattern(location.substring(prefixEnd, rootDirEnd)))
             rootDirEnd = location.lastIndexOf(File.separatorChar, rootDirEnd - 2) + 1;
-        }
-        if (rootDirEnd == 0) {
+        
+        if (rootDirEnd == 0)
             rootDirEnd = prefixEnd;
-        }
+        
         return location.substring(0, rootDirEnd);
     }
     
@@ -511,6 +503,9 @@ public class PackageScanner {
         return (Resource[]) result.toArray(new Resource[result.size()]);
     }
     
+    /**
+     * Verifies if the path has a * or a ?, meaning it is a patter
+     */
     public boolean isPattern(String path) {
         return (path.indexOf('*') != -1 || path.indexOf('?') != -1);
     }
@@ -526,30 +521,7 @@ public class PackageScanner {
     protected Resource convertClassLoaderURL(URL url) {
         return new UrlResource(url);
     }
-    
-    /**
-     * Resolve the specified resource for path matching.
-     * <p>The default implementation detects an Equinox OSGi "bundleresource:"
-     * / "bundleentry:" URL and resolves it into a standard jar file URL that
-     * can be traversed using Spring's standard jar file traversal algorithm.
-     * @param original the resource to resolfe
-     * @return the resolved resource (may be identical to the passed-in resource)
-     * @throws IOException in case of resolution failure
-     */
-    protected Resource resolveRootDirResource(Resource original) throws IOException {
-        if (equinoxResolveMethod != null) {
-            URL url = original.getURL();
-            if (url.getProtocol().startsWith("bundle")) {
-                try {
-                    return new UrlResource((URL) equinoxResolveMethod.invoke(null, url));
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return original;
-    }
-    
+
     /**
      * Return whether the given resource handle indicates a jar resource
      * that the <code>doFindPathMatchingJarResources</code> method can handle.

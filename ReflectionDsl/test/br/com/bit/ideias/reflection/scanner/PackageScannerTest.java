@@ -7,10 +7,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
-import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
-import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation;
-import br.com.bit.ideias.reflection.test.artefacts.MyAnnotation2;
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.AnnotationParaPackageTest;
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.Class2ParaPackageTest;
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.ClasseParaPackageTest;
