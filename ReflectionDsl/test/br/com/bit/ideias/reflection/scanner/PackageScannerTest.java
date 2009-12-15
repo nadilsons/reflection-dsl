@@ -11,6 +11,7 @@ import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.AnnotationPara
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.Class2ParaPackageTest;
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.ClasseParaPackageTest;
 import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.EnumParaPackageTest;
+import br.com.bit.ideias.reflection.test.artefacts.forPackageTest.subpackage.ClasseDoSubPacote;
 
 
 /**
@@ -30,6 +31,7 @@ public class PackageScannerTest {
         expected.add(ClasseParaPackageTest.class);
         expected.add(Class2ParaPackageTest.class);
         expected.add(EnumParaPackageTest.class);
+//        expected.add(ClasseDoSubPacote.class);
         
         assertEquals(expected, classes);
     }
