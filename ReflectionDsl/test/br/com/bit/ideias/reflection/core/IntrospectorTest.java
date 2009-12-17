@@ -412,7 +412,7 @@ public class IntrospectorTest {
 		introspectorForClass.directAccess();
 	}
 
-	@Test(expected = InvalidStateException.class)
+	@Test
 	public void testSetarAccessPrivateMembersSemInstancia() throws Exception {
 		introspectorForClass = Introspector.forClass(ClasseDominio.class);
 		introspectorForClass.accessPrivateMembers();

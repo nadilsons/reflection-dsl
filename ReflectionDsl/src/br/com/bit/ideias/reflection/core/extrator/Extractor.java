@@ -93,7 +93,7 @@ public class Extractor extends BaseExtractor {
 	 * extractorConstructor has an target instance reference
 	 */
 	public boolean isEmpty() {
-		return extractorConstructor == null || extractorConstructor.getTargetInstance() == null;
+		return false;//extractorConstructor == null;// || extractorConstructor.getTargetInstance() == null;
 	}
 
 }
