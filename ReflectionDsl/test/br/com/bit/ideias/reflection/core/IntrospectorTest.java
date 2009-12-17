@@ -1,11 +1,11 @@
 package br.com.bit.ideias.reflection.core;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +17,8 @@ import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.InvalidStateException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
+import br.com.bit.ideias.reflection.exceptions.StaticFieldNotExistsException;
+import br.com.bit.ideias.reflection.exceptions.StaticMethodNotExistsException;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominio;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioFilha;
 import br.com.bit.ideias.reflection.test.artefacts.ClasseDominioSemConstructor;
@@ -51,7 +53,23 @@ public class IntrospectorTest {
 		classeDominio.setAtributoPrivadoInteiro(INTEIRO);
 		classeDominio.setAtributoPrivadoString(STRING);
 	}
+	
+	@Test
+	public void testOverloadedMethodShouldWorkWithRightParameters() throws Exception {
+		Introspector.inObject("aaa").method("substring").invoke(1);
+		Introspector.inObject("aaa").method("substring").invoke(1,2);
+	}
+	
+	@Test(expected=InvalidParameterException.class)
+	public void testMoreThanOneParameterForAFieldShouldThrowException() throws Exception {
+		Introspector.inObject(new ClasseDominio()).field("comecaPriva").invoke(true, true, true);
+	}
 
+	@Test
+	public void testStaticMethodShouldNotRequireAnInstance() throws Exception {
+		String result = Introspector.forClass(String.class).method("valueOf").invoke(1);
+		assertEquals("1", result);
+	}
 	// /////////////////////////////////////////////////////////////////////////
 	// classForName
 	// /////////////////////////////////////////////////////////////////////////
@@ -253,7 +271,7 @@ public class IntrospectorTest {
 		introspectorForClass.field("atributoIsolado").directAccess().invoke();
 	}
 
-	@Test(expected = InvalidStateException.class)
+	@Test(expected = StaticFieldNotExistsException.class)
 	public void testInvokeFieldParaClasseNaoInstanciada() throws Exception {
 		Introspector.forClass(TARGET_CLASS).field("atributoIsolado").invoke(20);
 	}
@@ -352,7 +370,7 @@ public class IntrospectorTest {
 		introspectorForClass.method("metodoInexistente").invoke(200180);
 	}
 
-	@Test(expected = InvalidStateException.class)
+	@Test(expected = StaticMethodNotExistsException.class)
 	public void testInvokeMethodParaClasseNaoInstanciada() throws Exception {
 		Introspector.forClass(TARGET_CLASS).method("getDobroAtributoPrivadoInteiro").invoke(20);
 	}

@@ -6,6 +6,8 @@ import br.com.bit.ideias.reflection.exceptions.FieldNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.FieldPrivateException;
 import br.com.bit.ideias.reflection.exceptions.InvalidParameterException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
+import br.com.bit.ideias.reflection.exceptions.StaticFieldNotExistsException;
+import br.com.bit.ideias.reflection.exceptions.StaticMethodNotExistsException;
 
 /**
  * @author Nadilson Oliveira da Silva
@@ -53,9 +55,21 @@ public class ExtractorField {
 			throw new InvalidParameterException(String.format("Número excessivo de parametros [%s] para o metodo setter", params.length));
 
 		try {
-			return (directAccess) ? invokeField(accessPrivateMembers, params) : invokeMethod(accessPrivateMembers, params);
+			if(directAccess)
+				return invokeField(accessPrivateMembers, params);
+
+			return invokeMethod(accessPrivateMembers, params);
 		} catch (final IllegalAccessException e) {
 			throw new FieldPrivateException(e);
+		} catch (MethodNotExistsException e) {
+			boolean isStaticInvoke = extractor.getTargetInstance() == null;
+			
+			if(isStaticInvoke)
+				throw new StaticFieldNotExistsException();
+			
+			throw new FieldNotExistsException(e.getMessage());
+		} catch (StaticMethodNotExistsException e) {
+			throw new StaticFieldNotExistsException();
 		}
 	}
 
@@ -91,17 +105,12 @@ public class ExtractorField {
 	}
 
 	private Object invokeMethod(final boolean accessPrivateMembers, final Object... params) {
+		if(params.length > 1) throw new InvalidParameterException("Can't set a field with more than one parameter");
+		
 		final boolean getter = params.length == 0;
 		final ExtractorMethod em = new ExtractorMethod(extractor, getMethodForField(field, getter));
 
-		try {
-			return em.invoke(accessPrivateMembers, params);
-		} catch (final MethodNotExistsException e) {
-			if (params.length == 1)
-				return em.invoke(accessPrivateMembers, true, params);
-			else
-				throw e;
-		}
+		return em.invoke(accessPrivateMembers, params);
 	}
 
 	private String getMethodForField(final Field field, final boolean getter) {

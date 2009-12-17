@@ -79,7 +79,7 @@ public class Extractor extends BaseExtractor {
 
 	public Object getTargetInstance() {
 		if (extractorConstructor == null)
-			throw new InvalidStateException("Objeto não foi instanciado");
+			return null;
 
 		return extractorConstructor.getTargetInstance();
 	}

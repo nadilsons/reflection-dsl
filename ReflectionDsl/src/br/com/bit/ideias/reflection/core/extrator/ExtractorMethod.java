@@ -8,6 +8,7 @@ import java.util.List;
 import br.com.bit.ideias.reflection.exceptions.MethodAccessException;
 import br.com.bit.ideias.reflection.exceptions.MethodNotExistsException;
 import br.com.bit.ideias.reflection.exceptions.MethodPrivateException;
+import br.com.bit.ideias.reflection.exceptions.StaticMethodNotExistsException;
 import br.com.bit.ideias.reflection.type.TargetType;
 import br.com.bit.ideias.reflection.util.ReflectionHelper;
 
@@ -39,15 +40,22 @@ public class ExtractorMethod extends BaseExtractor {
 	}
 
 	public Object invoke(final boolean accessPrivateMembers, final Object... params) {
-		return invoke(accessPrivateMembers, false, params);
+		try {
+			return invoke(accessPrivateMembers, false, params);
+		} catch (final MethodNotExistsException e) {
+			return invoke(accessPrivateMembers, true, params);
+		} catch (final StaticMethodNotExistsException e) {
+			return invoke(accessPrivateMembers, true, params);
+		}
 	}
 
 	public Method get(Class<?>... parametersTypes) {
 		return getMethod(parametersTypes);
 	}
 
-	public Object invoke(final boolean accessPrivateMembers, final boolean primitiveParam, final Object... params) {
+	private Object invoke(final boolean accessPrivateMembers, final boolean primitiveParam, final Object... params) {
 		final Object targetInstance = extractor.getTargetInstance();
+		
 		try {
 			final Class<?>[] parametersTypes = getParametersTypes(primitiveParam, params);
 			final Method method = getMethod(parametersTypes);
@@ -65,6 +73,9 @@ public class ExtractorMethod extends BaseExtractor {
 		try {
 			return (this.method == null) ? findMethod(parametersTypes, targetClass) : this.method;
 		} catch (final NoSuchMethodException e) {
+			boolean isStaticInvoke = extractor.getTargetInstance() == null;
+			if(isStaticInvoke) throw new StaticMethodNotExistsException();
+			
 			throw new MethodNotExistsException(e);
 		}
 	}
