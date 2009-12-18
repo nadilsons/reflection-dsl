@@ -76,7 +76,7 @@ public class Rql {
     private void validateOverPattern(String rql) {
         String toTest = rql.toLowerCase();
         
-        if(!MAIN_PATTERN.matcher(toTest).matches()) throw new SyntaxException("Query must follow the pattern: FROM [class_name] followed by optional WHERE clause");
+        if(!MAIN_PATTERN.matcher(toTest).matches()) throw new SyntaxException(String.format("Query (%s) must follow the pattern: FROM [class_name] followed by optional WHERE clause", rql));
     }
 
     private boolean isEmpty(String text) {
