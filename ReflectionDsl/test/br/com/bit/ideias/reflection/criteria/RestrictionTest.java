@@ -328,4 +328,9 @@ public class RestrictionTest {
 		Assert.assertEquals(0, result.size());
 	}
 
+	@Test
+	public void testCriterionInCollections() {
+		Assert.fail();
+	}
+	
 }
