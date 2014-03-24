@@ -1,0 +1,106 @@
+= Reflection-dsl =
+== RQL - Reflection Query Language ==
+Before talking about this API, let's see an example:
+
+Imagine you have a class called MyClass, which has the the following methods<br/>
+void foo();
+void bar();
+
+{{{
+String query = "FROM mypackage.MyClass WHERE name eq 'foo'";
+List<Member> result = Introspector.createQuery(query).list();
+}}}
+
+This particular code is exactly the same as the Criterion example: we asked the code to filter, from all methods and fields, the one which name is exactly 'foo', regardless anything else.
+
+Now, let's examine it a bit further:<br>
+Every RQL will internally be converted into a Criterion or will throw a SyntaxException if not propertly formed.<br>
+It is not Case Sensitive in its clauses, but it is in the parameters used, example:
+{{{
+String query = "FROM mypackage.MyClass WHERE name eq 'foo'";
+//This query can is case insensitive in its clauses, so it can be writen:
+//fROm mypackage.MyClass WheRE NaMe eQ 'foo'
+//only mypackage.MyClass and 'foo' are case sensitive.
+List<Member> result = Introspector.createQuery(query).list();
+}}}
+Said that, we can think RQL as a different way to write a Criterion, so here we give you the list of Criterion Restrictions immediatly followed by its RQL counterpart<br>
+  * *Restriction.eq(String name)*
+{{{
+"name eq 'desired_name'"
+}}}
+  or
+  {{{
+"name = 'desired_name'"
+  }}}
+  or even
+  {{{
+"name like 'starts_with'"
+  }}}
+  * *Restriction.ne(String name)*
+{{{
+"name ne 'undesired_name'"
+}}}
+  or
+  {{{
+"name != 'undesired_name'"
+  }}}
+  * *Restriction.like(String name_starts_with)*
+{{{
+"name like 'starts_with%'"
+}}}
+  * *Restriction.like(String name_starts_with, LikeType.START)*
+{{{
+"name like 'starts_with%'"
+}}}
+  * *Restriction.like(String name_ends_with, LikeType.END)*
+{{{
+"name like '%ends_with'"
+}}}
+  * *Restriction.like(String name_within_text, LikeType.ANYWHERE)*
+{{{
+"name like '%ends_with%'"
+}}}
+  * *Restriction.regex(String regex)*
+{{{
+"name like '/regex_goes_here/'"
+}}}
+  * *Restriction.in(String...names)*
+{{{
+"name in ('name_one', 'name_two')"
+}}}
+  * *Restriction.withModifiers(ModifierType...modifierTypes)*
+{{{
+"modifier eq 'FINAL'"
+}}}
+ - this one has a slight difference since it accepts only one parameter, if you want the same effect, use or "modifier eq 'FINAL' or modifier eq 'PRIVATE'". We intend to add a _in_ clause for modifier in the near future.
+Available: ABSTRACT, FINAL, INTERFACE, NATIVE, PRIVATE, PROTECTED, PUBLIC, STATIC, STRICT, SYNCHRONIZED, TRANSIENT, VOLATILE;
+  * *Restriction.targetType(TargetType type)*
+{{{
+"target eq 'field'"  (FIELD, METHOD or CONSTRUCTOR)
+}}}
+  * *Restriction.annotatedWith(Class<? extends Annotation> clazz)*
+{{{
+"annotation eq 'fully.qualified.ClassName'"
+}}}
+  * *Restriction.notAnnotatedWith(Class<? extends Annotation> clazz)*
+{{{
+"annotation ne 'fully.qualified.ClassName'"
+}}}
+  * *Restriction.fieldClassEq(Class<?> classType)*
+{{{
+"fieldClass eq 'fully.qualified.ClassName'"
+}}}
+  * *Restriction.methodReturnClassEq(Class<?> classType)*
+{{{
+"methodReturnClass eq 'fully.qualified.ClassName'"
+}}}
+  * *Restriction.methodWithParams(Class<?>...classTypes)*
+{{{
+"method with ('java.lang.String')"
+}}}
+
+These listed above are simple expressions, you can concatenate any number of these expressions with the use of AND and OR keywords:
+{{{
+String query = "FROM mypackage.MyClass WHERE modifier eq 'FINAL' AND (name eq 'foo' or name eq 'bar')";
+List<Member> result = Introspector.createQuery(query).list();
+}}}

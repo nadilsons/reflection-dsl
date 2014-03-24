@@ -1,0 +1,42 @@
+Introspector is the internal DSL part of the project. It allows the use of a much more fluent code.
+
+Take a look at the examples:
+{{{
+// Specifying a class for introspection
+Introspector instrospector = Introspector.forClass(TestClass.class);
+
+// Invoking constructor with two parameters
+instrospector.create(1000, "s");
+
+// Retrieving the value of a field (through a getter method, in this example)
+Object value = instrospector.field("integerValue").invoke();
+
+// Retrieving the value of field directly
+Object value = instrospector.field("integerValue")
+    // spedifies it is about direct access
+    .directAccess()
+    // allows private members access
+    .accessPrivateMembers()
+    // gets the value of the field
+    .invoke();
+
+// Setting the value of a field (through a setter method, in this example)
+instrospector.field("integerValue").invoke(100);
+
+// Setando o valor o field diretamente
+instrospector.field("integerValue")
+    .directAccess()
+    .accessPrivateMembers()
+    .invoke(100);
+
+// Invoking a method
+instrospector.method("toString").invoke();
+instrospector.method("getDobro").invoke(20);
+}}}
+
+It's also possible to use an instance of a class instead of the class itself:
+{{{
+// Specifying an instance
+TestClass instance = new TestClass(1000, "S");
+Introspector instrospectorObject = Introspector.inObject(instance);
+}}}
