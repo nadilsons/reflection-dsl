@@ -1,0 +1,74 @@
+#Some examples
+
+== RQL to the rescue ==
+I had a Java file with lots and lots of Constants which I had to put into our Wiki to document the possible errors our system could return, here is a piece of that code, I changed the errors to be more generic:
+
+{{{
+﻿  public static final Integer ID_INVALID_EMAIL = 1101;
+﻿  public static final String DSC_INVALID_EMAIL = "INVALID MAIL";
+﻿
+﻿  public static final Integer ID_INVALID_DATE = 1110;
+﻿  public static final String DSC_INVALID_DATE = "INVALID DATE";
+﻿
+﻿  public static final Integer ID_INVALID_CURRENCY_FORMAT = 1111;
+﻿  public static final String DSC_INVALID_CURRENCY_FORMAT = "INVALID CURRENCY FORMAT";
+}}}
+
+There were a lot of them, and since I'm a lazy programmer I had to think of something easier than convert this manualy...
+
+I came up with something like this, using Reflection-dsl
+{{{
+public static void main(String[] args) {
+﻿  ﻿  Introspector introspector = Introspector.forClass(MyConstants.class);
+﻿  ﻿  //Lists all Constants which starts with ID_
+﻿  ﻿  List<Field> list = introspector.query("name like 'ID_%'").list();
+﻿  ﻿  Integer value = null;
+﻿  ﻿  String text = null;
+
+﻿  ﻿  System.out.println("{| cellspacing=\"1\" cellpadding=\"1\" border=\"1\" style=\"width: 790px; height: 3288px;\"\n" +
+﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  "|-\n" +
+﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  "| CODE\n" +
+﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  ﻿  "| MESSAGE");
+﻿  ﻿  }
+
+﻿  ﻿  for (Field field : list) {
+﻿  ﻿  ﻿  try {
+﻿  ﻿  ﻿  ﻿  //retrieves the value of the constant
+﻿  ﻿  ﻿  ﻿  value = (Integer) field.get(null);
+﻿  ﻿  ﻿  ﻿  String dscName = field.getName().replaceFirst("^ID_", "DSC_");
+﻿  ﻿  ﻿  ﻿  //Finds the DSC_ Constant related to the ID constant
+﻿  ﻿  ﻿  ﻿  Field fieldN = introspector.field(dscName).get();
+
+﻿  ﻿  ﻿  ﻿  //retrieves the value
+﻿  ﻿  ﻿  ﻿  text = (String) fieldN.get(null);
+﻿  ﻿  ﻿  } catch (Exception e) {
+﻿  ﻿  ﻿  ﻿  //Don't do this, I'm ashamed
+﻿  ﻿  ﻿  ﻿  e.printStackTrace();
+﻿  ﻿  ﻿  }
+﻿  ﻿  }
+﻿  ﻿  ﻿
+﻿  ﻿  System.out.println(String.format("|-\n" +
+﻿  ﻿  ﻿  "| %d\n" +
+﻿  ﻿  ﻿  "| \"%s\"", value, text));
+
+﻿  ﻿  System.out.println("|}");
+﻿  }
+}}}
+
+The output with this example would have been:
+{{{
+{| cellspacing="1" cellpadding="1" border="1" style="width: 790px; height: 3288px;"
+|-
+| CODE
+| MESSAGE
+|-
+| 1101
+| "INVALID MAIL"
+|-
+| 1102
+| "INVALID DATE"
+|-
+| 1103
+| "INVALID CURRENCY FORMAT"
+|}
+}}}
