@@ -1,4 +1,3 @@
-#labels Featured,Phase-Requirements,Phase-Implementation
 = Reflection-dsl =
 
 == Criterion API ==
