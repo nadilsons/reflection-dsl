@@ -17,3 +17,6 @@ The two last ones, Criterion and RQL, abstract a Class as an Database table, and
 Take a look at the Wiki pages, and of course, enjoy working with reflection!
 
 [Criteria Api](doc/Criteria_api.wiki)
+[Examples](doc/Examples.wiki)
+[Introspector](doc/Instrospector.wiki)
+[RQL](doc/Reflection_query_language.wiki)
