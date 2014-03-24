@@ -15,3 +15,5 @@ Reflection DSL comes in three different flavours:
 The two last ones, Criterion and RQL, abstract a Class as an Database table, and uses a API that should look very familiar to anyone who uses Hibernate.
 
 Take a look at the Wiki pages, and of course, enjoy working with reflection!
+
+[Criteria Api](doc/Criteria_api.wiki)
