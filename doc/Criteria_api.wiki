@@ -1,0 +1,61 @@
+#labels Featured,Phase-Requirements,Phase-Implementation
+= Reflection-dsl =
+
+== Criterion API ==
+Before talking about this API, let's see an example:
+
+Imagine you have a class called MyClass, which has the the following methods<br/>
+void foo();
+void bar();
+
+{{{
+Criterion criterion = Introspector.createCriterion(MyClass.class)
+criterion.add(Restriction.eq('foo'));
+
+List<Member> result = criterion.list();
+}}}
+
+If this code looks a bit (or even a lot) familiar to you, it is not coincidence, for we chose to make this API very similar to Hibernate's Criteria API.
+
+On this particular code, we asked the code to filter, from all methods and fields, the one which name is exactly  'foo', regardless anything else.
+
+Oh well, by the way, this code will give you back the foo() method after "list()" is called, as you may have imagined;
+
+Now, let's examine it a bit further:<br>
+  # To start the use of Criterion API, you need to get a hold of a Criterion instance.<br>This is done using an already existent Introspector instance, or create a criterion instance directly like the example above.
+  # Once in hold of a criterion instance, you have the following Restrictions to filter your results:
+  * Restriction.eq(String desired_name)
+  * Restriction.ne(String undesired_name)
+  * Restriction.like(String name_starts_with)
+  * Restriction.like(String name_starts_with, LikeType.START) (same as previous)
+  * Restriction.like(String name_ends_with, LikeType.END)
+  * Restriction.like(String name_within_text, LikeType.ANYWHERE)
+  * Restriction.regex(String regex)
+  * Restriction.in(String...names) - Any name in the list
+  * Restriction.withModifiers(ModifierType...modifierTypes)
+    Have the word *ANY* in mind when using withModifiers, if any of these modifiers is present on the Class member, it will be returned;
+    Available ModifierTypes: ABSTRACT, FINAL, INTERFACE, NATIVE, PRIVATE, PROTECTED, PUBLIC, STATIC, STRICT, SYNCHRONIZED, TRANSIENT, VOLATILE;
+  * Restriction.targetType(TargetType type) - type may be FIELD, METHOD or CONSTRUCTOR
+  * Restriction.annotatedWith(Class<? extends Annotation> clazz)
+  * Restriction.notAnnotatedWith(Class<? extends Annotation> clazz)
+  * Restriction.fieldClassEq(Class<?> classType) - Filter by the type of the field
+  * Restriction.methodReturnClassEq(Class<?> classType) - Filter the methods by the return type
+  * Restriction.methodWithParams(Class<?>...classTypes) - Filter the methods by the parameters it receives
+
+As you may have imagined, adding restrictions has the effect of *AND*, let's see the code bellow:
+{{{
+Criterion criterion = Introspector.createCriterion(MyClass.class).add(Restriction.eq("foo")).add(Restriction.eq("bar"));
+List<Member> result = criterion.list();
+}}}
+If you don't remember MyClass, it has the foo and bar methods;
+This code won't find any method which is able to _pass_ all restriction, because a field can't be called foo *AND* bar at the same time.<br><br>
+If you want an *OR* effect, it is the same as in Hibernate, use the following:
+{{{
+ComplexExpression disjunction = Restriction.disjunction(Restriction.eq("foo"),Restriction.eq("bar"));
+}}}
+
+ or use it directly<br>
+{{{
+Criterion criterion = Introspector.createCriterion(MyClass.class).add(Restriction.disjunction(Restriction.eq("foo"),Restriction.eq("bar")));
+List<Member> result = criterion.list();
+}}}
